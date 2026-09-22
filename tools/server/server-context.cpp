@@ -4928,7 +4928,7 @@ void server_routes::init_routes() {
 
     this->post_decision = [this](const server_http_req & req) {
         auto res = create_response();
-        const json body = json::parse(req.body, nullptr, false);
+        const json body = json::parse_no_throw(req.body);
         if (!body.is_object() || !body.contains("prompt") || !body.at("prompt").is_string() ||
                 body.at("prompt").get<std::string>().empty() || !body.contains("choices") ||
                 !body.at("choices").is_array() || body.at("choices").empty()) {
