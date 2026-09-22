@@ -1,0 +1,66 @@
+name: Build llama-modes Windows CUDA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install CUDA 13.4
+        uses: ./.github/actions/windows-setup-cuda
+        with:
+          cuda_version: '13.4'
+          cuda_arch: x64
+
+      - name: Install Ninja
+        run: choco install ninja -y
+
+      - name: Configure
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+          cmake -S . -B build -G "Ninja Multi-Config" ^
+            -DGGML_CUDA=ON ^
+            -DGGML_NATIVE=OFF ^
+            -DLLAMA_BUILD_SERVER=ON ^
+            -DLLAMA_BUILD_UI=OFF ^
+            -DCMAKE_CUDA_ARCHITECTURES=120
+
+      - name: Build llama-server
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cmake --build build --config Release --target llama-server
+
+      - name: Package
+        shell: powershell
+        run: |
+          $src = "build\bin\Release"
+          $dst = "package"
+
+          New-Item -ItemType Directory -Force -Path $dst | Out-Null
+
+          Copy-Item "$src\*" $dst -Recurse -Force
+
+          Get-ChildItem "$env:CUDA_PATH\bin\cudart64_*.dll" |
+            Copy-Item -Destination $dst -Force
+
+          Get-ChildItem "$env:CUDA_PATH\bin\cublas64_*.dll" |
+            Copy-Item -Destination $dst -Force
+
+          Get-ChildItem "$env:CUDA_PATH\bin\cublasLt64_*.dll" |
+            Copy-Item -Destination $dst -Force
+
+          Compress-Archive -Path "$dst\*" -DestinationPath "llama-modes-win-cuda.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: llama-modes-win-cuda
+          path: llama-modes-win-cuda.zip
