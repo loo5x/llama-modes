@@ -20,6 +20,12 @@ jobs:
       - name: Install Ninja
         run: choco install ninja -y
 
+      - name: Compiler cache
+        uses: ggml-org/ccache-action@v1.2.24
+        with:
+          key: llama-modes-windows-cuda-13.4
+          evict-old-files: 7d
+
       - name: Configure
         shell: cmd
         run: |
