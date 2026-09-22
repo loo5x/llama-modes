@@ -14,6 +14,7 @@
 
 enum server_task_type {
     SERVER_TASK_TYPE_COMPLETION,
+    SERVER_TASK_TYPE_DECISION,
     SERVER_TASK_TYPE_EMBEDDING,
     SERVER_TASK_TYPE_RERANK,
     SERVER_TASK_TYPE_INFILL,
@@ -153,6 +154,10 @@ struct server_task {
     task_params   params;
     server_tokens tokens;
 
+    // used by SERVER_TASK_TYPE_DECISION
+    std::vector<std::string> decision_choices;
+    llama_tokens decision_tokens;
+
     // only used by CLI, this allow tokenizing CLI inputs on server side
     // we need this because mtmd_context and vocab are not accessible outside of server_context
     bool                    cli = false;
@@ -195,6 +200,7 @@ struct server_task {
 
     bool need_logits() const {
         switch (type) {
+            case SERVER_TASK_TYPE_DECISION:
             case SERVER_TASK_TYPE_COMPLETION:
             case SERVER_TASK_TYPE_INFILL:
                 return true;
@@ -449,6 +455,14 @@ struct server_task_result_cmpl_partial : server_task_result {
     json to_json_oaicompat_asr();
 
     json to_json_anthropic();
+};
+
+struct server_task_result_decision : server_task_result {
+    std::vector<std::string> choices;
+    llama_tokens tokens;
+    std::vector<float> logits;
+
+    virtual json to_json() override;
 };
 
 struct server_task_result_embd : server_task_result {

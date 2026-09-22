@@ -18,6 +18,7 @@
 #include "mtmd-helper.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cinttypes>
 #include <exception>
@@ -2381,6 +2382,7 @@ private:
 
         switch (task.type) {
             case SERVER_TASK_TYPE_COMPLETION:
+            case SERVER_TASK_TYPE_DECISION:
             case SERVER_TASK_TYPE_INFILL:
             case SERVER_TASK_TYPE_EMBEDDING:
             case SERVER_TASK_TYPE_RERANK:
@@ -3816,6 +3818,27 @@ private:
             }
 
             if (slot.state == SLOT_STATE_DONE_PROMPT) {
+                if (slot.task->type == SERVER_TASK_TYPE_DECISION) {
+                    const float * logits = llama_get_logits_ith(slot.ctx_tgt, slot.i_batch - off);
+                    auto res = std::make_unique<server_task_result_decision>();
+                    res->id = slot.task->id;
+                    res->choices = slot.task->decision_choices;
+                    res->tokens = slot.task->decision_tokens;
+                    for (llama_token token : res->tokens) {
+                        if (!logits || !std::isfinite(logits[token])) {
+                            send_error(slot, "Decision logits are unavailable or non-finite", ERROR_TYPE_SERVER);
+                            slot.release();
+                            slot.i_batch = -1;
+                            return;
+                        }
+                        res->logits.push_back(logits[token]);
+                    }
+                    queue_results.send(std::move(res));
+                    slot.release();
+                    slot.i_batch = -1;
+                    return;
+                }
+
                 if (slot.task->type == SERVER_TASK_TYPE_EMBEDDING) {
                     // prompt evaluated for embedding
                     send_embedding(slot, batch_view);
@@ -4901,6 +4924,68 @@ void server_routes::init_routes() {
             data,
             files,
             TASK_RESPONSE_TYPE_NONE); // infill is not OAI compatible
+    };
+
+    this->post_decision = [this](const server_http_req & req) {
+        auto res = create_response();
+        const json body = json::parse(req.body, nullptr, false);
+        if (!body.is_object() || !body.contains("prompt") || !body.at("prompt").is_string() ||
+                body.at("prompt").get<std::string>().empty() || !body.contains("choices") ||
+                !body.at("choices").is_array() || body.at("choices").empty()) {
+            res->error(format_error_response("Expected a non-empty prompt string and a non-empty choices array", ERROR_TYPE_INVALID_REQUEST));
+            return res;
+        }
+        for (const auto & item : body.items()) {
+            if (item.key() != "prompt" && item.key() != "choices" && item.key() != "model") {
+                res->error(format_error_response("Unsupported decision field: " + item.key(), ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+        }
+        if (params.embedding || !llama_model_has_decoder(ctx_server.model_tgt)) {
+            res->error(format_error_response("Decision requires a model serving next-token logits", ERROR_TYPE_NOT_SUPPORTED));
+            return res;
+        }
+
+        server_task task(SERVER_TASK_TYPE_DECISION);
+        std::unordered_set<llama_token> seen;
+        for (const auto & choice : body.at("choices")) {
+            if (!choice.is_string() || choice.get<std::string>().empty()) {
+                res->error(format_error_response("Each choice must be a non-empty string", ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+            const auto text = choice.get<std::string>();
+            const auto tokens = common_tokenize(ctx_server.vocab, text, false, false);
+            if (tokens.size() != 1) {
+                res->error(format_error_response("Each choice must tokenize to exactly one token", ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+            if (!seen.insert(tokens[0]).second) {
+                res->error(format_error_response("Choices must have distinct token IDs", ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+            task.decision_choices.push_back(text);
+            task.decision_tokens.push_back(tokens[0]);
+        }
+        task.tokens = server_tokens(common_tokenize(ctx_server.vocab, body.at("prompt").get<std::string>(), true, true), false);
+        if (task.tokens.empty()) {
+            res->error(format_error_response("Prompt must tokenize to at least one token", ERROR_TYPE_INVALID_REQUEST));
+            return res;
+        }
+        task.params.cache_prompt = false;
+        task.id = res->rd.get_new_id();
+        std::vector<server_task> tasks;
+        tasks.push_back(std::move(task));
+        res->rd.post_tasks(std::move(tasks));
+        auto results = res->rd.wait_for_all(req.should_stop);
+        if (results.is_terminated) {
+            return res;
+        }
+        if (results.error) {
+            res->error(results.error->to_json());
+        } else {
+            res->ok(results.results[0]->to_json());
+        }
+        return res;
     };
 
     this->post_completions = [this](const server_http_req & req) {

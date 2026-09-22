@@ -674,6 +674,18 @@ These words will not be included in the completion, so make sure to add them to 
 - `truncated`: Boolean indicating if the context size was exceeded during generation, i.e. the number of tokens provided in the prompt (`tokens_evaluated`) plus tokens generated (`tokens predicted`) exceeded the context size (`n_ctx`)
 
 
+### POST `/decision` and `/v1/decision`: Score single-token choices
+
+Evaluate the prompt with the loaded model, then return the last prompt token's raw logits for the supplied choices. No tokens are sampled or generated. The prompt is processed once, in batches if needed, without prompt cache reuse.
+
+```json
+{"prompt": "Answer yes or no: Is water wet?\nAnswer:", "choices": [" yes", " no"]}
+```
+
+`prompt` must be a non-empty string. Model special tokens are parsed and the usual prompt special tokens are added; no chat template is applied. Each choice must tokenize independently to exactly one token, without adding or parsing special tokens. Whitespace matters; valid choices depend on the tokenizer. Empty choices and duplicate token IDs are rejected. Only `prompt`, `choices`, and the optional router `model` field are accepted.
+
+The response is `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms. Invalid input returns HTTP 400. Embedding-only servers are unsupported.
+
 ### POST `/tokenize`: Tokenize a given text
 
 *Options:*

@@ -10,6 +10,8 @@
 #include "speculative.h"
 #include "server-common.h"
 
+#include <algorithm>
+#include <cmath>
 #include <sstream>
 
 //
@@ -1458,6 +1460,28 @@ json server_task_result_cmpl_partial::to_json_anthropic() {
     }
 
     return events;
+}
+
+//
+// server_task_result_decision
+//
+json server_task_result_decision::to_json() {
+    const double max_logit = *std::max_element(logits.begin(), logits.end());
+    double sum = 0.0;
+    for (float logit : logits) {
+        sum += std::exp(double(logit) - max_logit);
+    }
+
+    json result = json::array();
+    for (size_t i = 0; i < choices.size(); ++i) {
+        result.push_back({
+            {"text", choices[i]},
+            {"token_id", tokens[i]},
+            {"logit", logits[i]},
+            {"probability", std::exp(double(logits[i]) - max_logit) / sum},
+        });
+    }
+    return {{"choices", result}};
 }
 
 //

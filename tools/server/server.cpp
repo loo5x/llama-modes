@@ -216,6 +216,7 @@ int llama_server(common_params & params, int argc, char ** argv) {
         routes.get_metrics                 = models_routes->proxy_get;
         routes.post_props                  = models_routes->proxy_post;
         routes.post_completions            = models_routes->proxy_post;
+        routes.post_decision               = models_routes->proxy_post;
         routes.post_completions_oai        = models_routes->proxy_post;
         routes.post_chat_completions       = models_routes->proxy_post;
         routes.post_control                = models_routes->proxy_post;
@@ -256,6 +257,8 @@ int llama_server(common_params & params, int argc, char ** argv) {
     ctx_http.get ("/models",                   ex_wrapper(routes.get_models));
     ctx_http.get ("/v1/models",                ex_wrapper(routes.get_models));
     ctx_http.post("/completion",               ex_wrapper(routes.post_completions)); // legacy
+    ctx_http.post("/decision",                 ex_wrapper(routes.post_decision));
+    ctx_http.post("/v1/decision",              ex_wrapper(routes.post_decision));
     ctx_http.post("/completions",              ex_wrapper(routes.post_completions));
     ctx_http.post("/v1/completions",           ex_wrapper(routes.post_completions_oai));
     ctx_http.post("/chat/completions",         ex_wrapper(routes.post_chat_completions));
