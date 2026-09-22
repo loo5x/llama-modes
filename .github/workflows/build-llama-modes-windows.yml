@@ -30,6 +30,7 @@ jobs:
             -DGGML_NATIVE=OFF ^
             -DLLAMA_BUILD_SERVER=ON ^
             -DLLAMA_BUILD_UI=OFF ^
+            -DLLAMA_BUILD_BORINGSSL=ON ^
             -DCMAKE_CUDA_ARCHITECTURES=120
 
       - name: Build llama-server
@@ -41,23 +42,63 @@ jobs:
       - name: Package
         shell: powershell
         run: |
+          $ErrorActionPreference = "Stop"
+
           $src = "build\bin\Release"
           $dst = "package"
 
           New-Item -ItemType Directory -Force -Path $dst | Out-Null
 
+          # Copy llama.cpp binaries and runtime DLLs
           Copy-Item "$src\*" $dst -Recurse -Force
 
-          Get-ChildItem "$env:CUDA_PATH\bin\cudart64_*.dll" |
-            Copy-Item -Destination $dst -Force
+          Write-Host "CUDA_PATH = $env:CUDA_PATH"
 
-          Get-ChildItem "$env:CUDA_PATH\bin\cublas64_*.dll" |
-            Copy-Item -Destination $dst -Force
+          # CUDA can place its runtime DLLs in slightly different directories.
+          $cudaDirs = @(
+            "$env:CUDA_PATH\bin",
+            "$env:CUDA_PATH\lib",
+            "$env:CUDA_PATH\bin\x64"
+          )
 
-          Get-ChildItem "$env:CUDA_PATH\bin\cublasLt64_*.dll" |
-            Copy-Item -Destination $dst -Force
+          foreach ($dir in $cudaDirs) {
+            if (Test-Path $dir) {
+              Write-Host "Searching CUDA DLLs in: $dir"
 
-          Compress-Archive -Path "$dst\*" -DestinationPath "llama-modes-win-cuda.zip"
+              Get-ChildItem -Path $dir -Filter "cudart64_*.dll" -ErrorAction SilentlyContinue |
+                Copy-Item -Destination $dst -Force
+
+              Get-ChildItem -Path $dir -Filter "cublas64_*.dll" -ErrorAction SilentlyContinue |
+                Copy-Item -Destination $dst -Force
+
+              Get-ChildItem -Path $dir -Filter "cublasLt64_*.dll" -ErrorAction SilentlyContinue |
+                Copy-Item -Destination $dst -Force
+            }
+          }
+
+          Write-Host ""
+          Write-Host "Packaged files:"
+          Get-ChildItem $dst | Select-Object Name, Length
+
+          # Fail the workflow instead of producing an incomplete artifact.
+          $requiredPatterns = @(
+            "llama-server.exe",
+            "ggml-cuda.dll",
+            "cudart64_*.dll",
+            "cublas64_*.dll",
+            "cublasLt64_*.dll"
+          )
+
+          foreach ($pattern in $requiredPatterns) {
+            if (-not (Get-ChildItem -Path $dst -Filter $pattern -ErrorAction SilentlyContinue)) {
+              throw "Required runtime file missing: $pattern"
+            }
+          }
+
+          Compress-Archive `
+            -Path "$dst\*" `
+            -DestinationPath "llama-modes-win-cuda.zip" `
+            -Force
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
