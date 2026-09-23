@@ -696,6 +696,33 @@ Each choice must tokenize independently to exactly one token, without adding or 
 
 The response is `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms; they are relative to those choices, not calibrated confidence. Invalid input returns HTTP 400. Embedding-only servers are unsupported.
 
+#### v0.2 runtime validation
+
+Commit `62fdc214c70db7d4fbe663a866f6efdfaac11a98` was validated on Windows with an NVIDIA RTX 5080 and GPT-OSS 20B MXFP4 GGUF. GitHub Actions workflow **Build llama-modes Windows CUDA**, run **#5**, completed successfully and produced artifact `llama-modes-win-cuda` (artifact ID `10773398723`).
+
+The message-mode request below returned a strong Yes decision and generated no tokens:
+
+```json
+{"messages": [{"role": "user", "content": "Is Paris the capital of France?"}], "choices": ["Yes", "No"]}
+```
+
+For each question below, message-mode `/decision` returned exactly the same token IDs, logits, and probabilities as raw `/decision` with the equivalent prompt prepared through `/apply-template` plus `<|channel|>final<|message|>`, using choices `["Yes", "No"]`:
+
+- Is Paris the capital of France?
+- Is Paris the capital of Germany?
+- Is it not the case that 1 is prime?
+- Is 21 a prime number?
+
+Raw v0.1 compatibility was explicitly re-tested with:
+
+```json
+{"prompt": "Answer yes or no: Is Paris the capital of France?\nAnswer:", "choices": [" yes", " no"]}
+```
+
+The probabilities remained `0.9057232214353681` for yes and `0.09427677856463187` for no. Normal `/v1/chat/completions` was also smoke-tested after the v0.2 changes and remained functional.
+
+This validates the GPT-OSS message path and backward compatibility for the tested runtime. It does not claim universal compatibility with every arbitrary chat template. Ambiguous template boundaries still fail closed by design.
+
 ### POST `/tokenize`: Tokenize a given text
 
 *Options:*
