@@ -682,9 +682,19 @@ Evaluate the prompt with the loaded model, then return the last prompt token's r
 {"prompt": "Answer yes or no: Is water wet?\nAnswer:", "choices": [" yes", " no"]}
 ```
 
-`prompt` must be a non-empty string. Model special tokens are parsed and the usual prompt special tokens are added; no chat template is applied. Each choice must tokenize independently to exactly one token, without adding or parsing special tokens. Whitespace matters; valid choices depend on the tokenizer. Empty choices and duplicate token IDs are rejected. Only `prompt`, `choices`, and the optional router `model` field are accepted.
+Exactly one of `prompt` or `messages` is required. In raw mode, `prompt` must be a non-empty string. Model special tokens are parsed and the usual prompt special tokens are added; no chat template is applied.
 
-The response is `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms. Invalid input returns HTTP 400. Embedding-only servers are unsupported.
+Alternatively, supply a conversation:
+
+```json
+{"messages": [{"role": "user", "content": "Is Paris the capital of France?"}], "choices": ["Yes", "No"]}
+```
+
+Message mode uses the model's native chat template to enter a new assistant content response directly, then evaluates the complete prompt once and generates zero tokens. It requires a non-empty conversation ending with a user message. Each message must contain only `role` and string `content`; supported roles are `system`, `developer`, `user`, and `assistant`. Tools, reasoning fields, multimodal content, and assistant continuation are unsupported. Templates whose assistant content boundary cannot be determined unambiguously are rejected. The complete rendered prompt uses the same special-token tokenization settings as normal text chat/completion.
+
+Each choice must tokenize independently to exactly one token, without adding or parsing special tokens. Whitespace matters; valid choices depend on the tokenizer. Empty choices and duplicate token IDs are rejected. Only `prompt` or `messages`, `choices`, and the optional router `model` field are accepted; request-level chat/template and sampling options are unsupported.
+
+The response is `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms; they are relative to those choices, not calibrated confidence. Invalid input returns HTTP 400. Embedding-only servers are unsupported.
 
 ### POST `/tokenize`: Tokenize a given text
 

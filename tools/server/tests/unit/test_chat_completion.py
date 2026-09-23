@@ -4,6 +4,85 @@ from utils import *
 
 server: ServerProcess
 
+
+@pytest.mark.parametrize("template,suffix", [
+    ("chatml", ""),
+    ("meta-llama-Llama-3.1-8B-Instruct.jinja", ""),
+    ("Qwen-Qwen3-0.6B.jinja", "<think>\n\n</think>\n\n"),
+    ("openai-gpt-oss-120b.jinja", "<|channel|>final<|message|>"),
+])
+def test_decision_messages_match_raw(template, suffix):
+    server.jinja = True
+    server.reasoning = "on"
+    server.n_ctx = 2048
+    server.n_slots = 1
+    if template == "chatml":
+        server.chat_template = template
+    else:
+        server.chat_template_file = os.path.abspath(f"../../../models/templates/{template}")
+    server.start()
+    messages = [{"role": "user", "content": "Is Paris the capital of France?"}]
+    rendered = server.make_request("POST", "/apply-template", {"messages": messages})
+    assert rendered.status_code == 200
+    choices = ["yes", "no"]
+    raw = server.make_request("POST", "/decision", {"prompt": rendered.body["prompt"] + suffix, "choices": choices})
+    direct = server.make_request("POST", "/v1/decision", {"messages": messages, "choices": choices})
+    assert raw.status_code == direct.status_code == 200
+    assert set(direct.body) == {"choices"}
+    assert len(raw.body["choices"]) == len(direct.body["choices"]) == 2
+    for expected, actual in zip(raw.body["choices"], direct.body["choices"]):
+        assert expected["token_id"] == actual["token_id"]
+        assert expected["logit"] == pytest.approx(actual["logit"], abs=1e-4)
+        assert expected["probability"] == pytest.approx(actual["probability"], abs=1e-5)
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("question", [
+    "Is Paris the capital of France?",
+    "Is it not the case that 1 is prime?",
+])
+def test_decision_gpt_oss_same_state_greedy(question):
+    model = os.environ.get("LLAMA_TEST_GPT_OSS_MODEL")
+    if not model:
+        pytest.skip("Set LLAMA_TEST_GPT_OSS_MODEL to a local GPT-OSS GGUF for same-state validation")
+    assert os.path.isfile(model), f"Missing GPT-OSS model: {model}"
+    server.model_hf_repo = None
+    server.model_hf_file = None
+    server.model_file = model
+    server.model_alias = "gpt-oss"
+    server.jinja = True
+    server.n_ctx = 4096
+    server.n_slots = 1
+    server.n_batch = 512
+    server.n_ubatch = 512
+    server.chat_template_file = os.path.abspath("../../../models/templates/openai-gpt-oss-120b.jinja")
+    server.start(timeout_seconds=300)
+    messages = [{"role": "user", "content": question}]
+    rendered = server.make_request("POST", "/apply-template", {"messages": messages})
+    assert rendered.status_code == 200
+    assert rendered.body["prompt"].endswith("<|start|>assistant")
+    prompt = rendered.body["prompt"] + "<|channel|>final<|message|>"
+    raw = server.make_request("POST", "/decision", {"prompt": prompt, "choices": ["Yes", "No"]})
+    direct = server.make_request("POST", "/decision", {"messages": messages, "choices": ["Yes", "No"]})
+    assert raw.status_code == direct.status_code == 200
+    assert len(raw.body["choices"]) == len(direct.body["choices"]) == 2
+    for expected, actual in zip(raw.body["choices"], direct.body["choices"]):
+        assert expected["token_id"] == actual["token_id"]
+        assert expected["logit"] == pytest.approx(actual["logit"], abs=1e-4)
+    greedy = server.make_request("POST", "/completion", {
+        "prompt": prompt, "n_predict": 1, "temperature": 0, "cache_prompt": False,
+        "repeat_penalty": 1, "frequency_penalty": 0, "presence_penalty": 0,
+        "dry_multiplier": 0, "mirostat": 0, "top_k": 0, "top_p": 1, "min_p": 0,
+        "typical_p": 1, "xtc_probability": 0, "grammar": "", "logit_bias": [],
+        "return_tokens": True,
+    })
+    assert greedy.status_code == 200
+    assert greedy.body["timings"]["predicted_n"] == 1
+    assert len(greedy.body["tokens"]) == 1
+    token = greedy.body["tokens"][0]
+    assert token in [c["token_id"] for c in direct.body["choices"]], "Greedy token is outside this fixture's candidates"
+    assert token == max(direct.body["choices"], key=lambda c: c["logit"])["token_id"]
+
 @pytest.fixture(autouse=True)
 def create_server():
     global server

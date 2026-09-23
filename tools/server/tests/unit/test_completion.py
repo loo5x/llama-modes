@@ -2,6 +2,7 @@ import pytest
 import requests
 import time
 import random
+import math
 
 from openai import OpenAI
 from utils import *
@@ -10,6 +11,69 @@ server = ServerPreset.tinyllama2()
 
 JSON_MULTIMODAL_KEY = "multimodal_data"
 JSON_PROMPT_STRING_KEY = "prompt_string"
+
+
+def test_decision_raw():
+    server.start()
+    request = {"prompt": "Answer yes or no: Is water wet?\nAnswer:", "choices": ["yes", "no"]}
+    response = server.make_request("POST", "/decision", request)
+    assert response.status_code == 200
+    assert set(response.body) == {"choices"}
+    choices = response.body["choices"]
+    assert len(choices) == 2
+    weights = [math.exp(c["logit"] - max(c["logit"] for c in choices)) for c in choices]
+    for text, choice, weight in zip(request["choices"], choices, weights):
+        assert set(choice) == {"text", "token_id", "logit", "probability"}
+        assert choice["text"] == text
+        tokens = server.make_request("POST", "/tokenize", {
+            "content": text, "add_special": False, "parse_special": False,
+        })
+        assert tokens.status_code == 200
+        assert tokens.body["tokens"] == [choice["token_id"]]
+        assert choice["probability"] == pytest.approx(weight / sum(weights))
+    repeated = server.make_request("POST", "/v1/decision", request)
+    assert repeated.status_code == 200
+    assert len(repeated.body["choices"]) == 2
+    for first, second in zip(choices, repeated.body["choices"]):
+        assert first["token_id"] == second["token_id"]
+        assert first["logit"] == pytest.approx(second["logit"], abs=1e-4)
+
+
+def test_decision_invalid_requests():
+    server.start()
+    messages = [{"role": "user", "content": "Hello"}]
+    valid = server.make_request("POST", "/decision", {"prompt": "Hello", "choices": ["yes", "no"]})
+    assert valid.status_code == 200
+    assert len(valid.body["choices"]) == 2
+    invalid = [
+        {"prompt": "Hello", "messages": messages},
+        {},
+        {"prompt": ""},
+        {"prompt": 12},
+        {"messages": []},
+        {"messages": "Hello"},
+        {"messages": [{"role": "assistant", "content": "Hello"}]},
+        {"messages": [{"role": "system", "content": "Hello"}]},
+        {"messages": [{"role": "tool", "content": "Hello"}]},
+        {"messages": [None]},
+        {"messages": [{"role": "user", "content": None}]},
+        {"messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "invalid"}}]}]},
+        {"messages": [{"role": "assistant", "content": "", "tool_calls": []}] + messages},
+        {"messages": [{"role": "assistant", "content": "Hello", "reasoning_content": "Thinking"}] + messages},
+    ]
+    for extra in ({"tools": []}, {"stream": False}, {"reasoning_effort": "none"},
+                  {"chat_template_kwargs": {}}, {"continue_final_message": False},
+                  {"grammar": ""}, {"response_format": {"type": "text"}}):
+        invalid.append({"messages": messages, **extra})
+    for request in invalid:
+        response = server.make_request("POST", "/decision", {**request, "choices": ["yes", "no"]})
+        assert response.status_code == 400, request
+    for source in ({"prompt": "Hello"}, {"messages": messages}):
+        missing = server.make_request("POST", "/decision", source)
+        assert missing.status_code == 400
+        for choices in ([], [""], [12], ["yes", "yes"], ["this choice has many tokens"]):
+            response = server.make_request("POST", "/decision", {**source, "choices": choices})
+            assert response.status_code == 400, choices
 
 @pytest.fixture(autouse=True)
 def create_server():

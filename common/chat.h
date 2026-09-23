@@ -324,6 +324,10 @@ std::string common_chat_templates_source(const struct common_chat_templates * tm
 struct common_chat_params common_chat_templates_apply(const struct common_chat_templates *        tmpls,
                                                       const struct common_chat_templates_inputs & inputs);
 
+// Render up to the start of a new assistant content response. Throw if the boundary is ambiguous.
+std::string common_chat_templates_content_prompt(const struct common_chat_templates * tmpls,
+                                                const struct common_chat_templates_inputs & inputs);
+
 // Format single message, while taking into account the position of that message in chat history
 std::string common_chat_format_single(const struct common_chat_templates * tmpls,
                                       const std::vector<common_chat_msg> & past_msg,

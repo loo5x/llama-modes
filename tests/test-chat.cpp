@@ -6913,6 +6913,84 @@ static void test_template_output_peg_parsers(bool detailed_debug) {
     }
 }
 
+static void test_template_content_prompt() {
+    common_chat_templates_inputs inputs;
+    common_chat_msg user;
+    user.role = "user";
+    user.content = "Is Paris the capital of France?";
+    inputs.messages = { user };
+
+    const std::vector<std::pair<std::string, std::string>> cases = {
+        { "models/templates/openai-gpt-oss-120b.jinja", "<|start|>assistant<|channel|>final<|message|>" },
+        { "models/templates/meta-llama-Llama-3.1-8B-Instruct.jinja", "<|start_header_id|>assistant<|end_header_id|>\n\n" },
+        { "models/templates/Qwen-Qwen3-0.6B.jinja", "<|im_start|>assistant\n<think>\n\n</think>\n\n" },
+    };
+    for (const auto & entry : cases) {
+        auto tmpls = read_templates(entry.first);
+        const auto prompt = common_chat_templates_content_prompt(tmpls.get(), inputs);
+        assert_ends_with(prompt, entry.second);
+        assert_contains(prompt, user.content);
+        GGML_ASSERT(prompt.find("ContentProbe_") == std::string::npos);
+        if (entry.first.find("gpt-oss") != std::string::npos) {
+            const auto normal = common_chat_templates_apply(tmpls.get(), inputs).prompt;
+            assert_equals(normal + "<|channel|>final<|message|>", prompt);
+            GGML_ASSERT(prompt.find("<|channel|>analysis<|message|>") == std::string::npos);
+        }
+    }
+
+    auto chatml = common_chat_templates_init(nullptr, "chatml");
+    assert_equals("<|im_start|>user\n" + user.content + "<|im_end|>\n<|im_start|>assistant\n",
+                  common_chat_templates_content_prompt(chatml.get(), inputs));
+    inputs.use_jinja = false;
+    assert_equals("<|im_start|>user\n" + user.content + "<|im_end|>\n<|im_start|>assistant\n",
+                  common_chat_templates_content_prompt(chatml.get(), inputs));
+    inputs.use_jinja = true;
+
+    auto expect_invalid = [](const common_chat_templates * tmpls, const common_chat_templates_inputs & in) {
+        bool rejected = false;
+        try {
+            common_chat_templates_content_prompt(tmpls, in);
+        } catch (const std::invalid_argument &) {
+            rejected = true;
+        }
+        GGML_ASSERT(rejected);
+    };
+    auto invalid = inputs;
+    invalid.messages.clear();
+    expect_invalid(chatml.get(), invalid);
+    invalid = inputs;
+    invalid.messages.back().role = "assistant";
+    expect_invalid(chatml.get(), invalid);
+    invalid = inputs;
+    invalid.continue_final_message = COMMON_CHAT_CONTINUATION_CONTENT;
+    expect_invalid(chatml.get(), invalid);
+
+    const std::vector<std::string> ambiguous_templates = {
+        "{{ 'no content' }}",
+        "{{ messages[-1].content + messages[-1].content }}",
+        "{{ messages[-1].content | upper }}",
+        "{{ messages[-1].content | length }}{{ messages[-1].content }}",
+    };
+    for (const auto & source : ambiguous_templates) {
+        auto tmpls = common_chat_templates_init(nullptr, source);
+        invalid = inputs;
+        invalid.force_pure_content = true;
+        expect_invalid(tmpls.get(), invalid);
+    }
+
+    server_chat_params opt = {};
+    opt.tmpls = read_templates("models/templates/openai-gpt-oss-120b.jinja");
+    opt.use_jinja = true;
+    opt.prefill_assistant = true;
+    json body = {{ "messages", json::array({{{ "role", "user" }, { "content", user.content }}}) }};
+    std::vector<raw_buffer> files;
+    const auto normal = oaicompat_chat_params_parse(body, opt, files);
+    const auto direct = oaicompat_chat_params_parse(body, opt, files, true);
+    assert_equals(normal.at("prompt").get<std::string>() + "<|channel|>final<|message|>",
+                  direct.at("prompt").get<std::string>());
+    GGML_ASSERT(direct.size() == 1 && files.empty());
+}
+
 static void test_template_generation_prompt() {
     common_chat_msg system_msg;
     system_msg.role = "system";
@@ -7637,6 +7715,7 @@ int main(int argc, char ** argv) {
         test_deepseek_v4_thinking_retention();
         test_deepseek_v4_tool_result_ordering();
         test_template_generation_prompt();
+        test_template_content_prompt();
         test_reasoning_effort_caps();
         test_reasoning_budget_tokens_per_request();
         test_reasoning_budget_message_per_request();

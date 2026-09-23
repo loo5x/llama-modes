@@ -1151,7 +1151,8 @@ static void handle_media(
 json oaicompat_chat_params_parse(
     json & body, /* openai api json semantics */
     const server_chat_params & opt,
-    std::vector<raw_buffer> & out_files)
+    std::vector<raw_buffer> & out_files,
+    bool content_entry)
 {
     json llama_params;
 
@@ -1210,6 +1211,29 @@ json oaicompat_chat_params_parse(
     json & messages = body.at("messages");
     if (!messages.is_array()) {
         throw std::invalid_argument("Expected 'messages' to be an array");
+    }
+    if (content_entry) {
+        if (messages.empty()) {
+            throw std::invalid_argument("Decision messages must not be empty");
+        }
+        for (const auto & msg : messages) {
+            if (!msg.is_object() || !msg.contains("role") || !msg.at("role").is_string() ||
+                !msg.contains("content") || !msg.at("content").is_string()) {
+                throw std::invalid_argument("Decision messages require a role and string content");
+            }
+            for (const auto & field : msg.items()) {
+                if (field.key() != "role" && field.key() != "content") {
+                    throw std::invalid_argument("Unsupported decision message field: " + field.key());
+                }
+            }
+            const auto role = msg.at("role").get<std::string>();
+            if (role != "system" && role != "developer" && role != "user" && role != "assistant") {
+                throw std::invalid_argument("Unsupported decision message role: " + role);
+            }
+        }
+        if (messages.back().at("role") != "user") {
+            throw std::invalid_argument("Decision messages must end with a user message");
+        }
     }
     for (auto & msg : messages) {
         std::string role = json_value(msg, "role", std::string());
@@ -1355,6 +1379,10 @@ json oaicompat_chat_params_parse(
     }
 
     inputs.force_pure_content = opt.force_pure_content;
+
+    if (content_entry) {
+        return {{ "prompt", common_chat_templates_content_prompt(opt.tmpls.get(), inputs) }};
+    }
 
     // Apply chat template to the list of messages
     auto chat_params = common_chat_templates_apply(opt.tmpls.get(), inputs);

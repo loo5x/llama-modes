@@ -1438,6 +1438,54 @@ common_chat_params common_chat_templates_apply(const struct common_chat_template
                               common_chat_templates_apply_legacy(tmpls, inputs);
 }
 
+std::string common_chat_templates_content_prompt(const common_chat_templates * tmpls,
+                                                const common_chat_templates_inputs & inputs) {
+    if (inputs.messages.empty() || inputs.messages.back().role != "user") {
+        throw std::invalid_argument("Content entry requires a non-empty conversation ending with a user message");
+    }
+    if (!inputs.tools.empty() || !inputs.grammar.empty() || !inputs.json_schema.empty() ||
+        inputs.continue_final_message != COMMON_CHAT_CONTINUATION_NONE) {
+        throw std::invalid_argument("Content entry does not support tools, grammars, or continuation");
+    }
+    for (const auto & msg : inputs.messages) {
+        if ((msg.role != "system" && msg.role != "developer" && msg.role != "user" && msg.role != "assistant") ||
+            !msg.content_parts.empty() || !msg.tool_calls.empty() || !msg.reasoning_content.empty() ||
+            !msg.tool_name.empty() || !msg.tool_call_id.empty()) {
+            throw std::invalid_argument("Content entry requires text-only messages without reasoning or tool calls");
+        }
+    }
+
+    auto probe_inputs = inputs;
+    probe_inputs.add_generation_prompt = false;
+    probe_inputs.continue_final_message = COMMON_CHAT_CONTINUATION_NONE;
+    common_chat_msg assistant;
+    assistant.role = "assistant";
+    probe_inputs.messages.push_back(assistant);
+
+    const std::string probes[] = { "DecisionContentProbe_A7f3", "OtherContentProbe_B9e2" };
+    std::string prefix;
+    for (size_t i = 0; i < 2; ++i) {
+        probe_inputs.messages.back().content = probes[i];
+        const auto rendered = common_chat_templates_apply(tmpls, probe_inputs).prompt;
+        const auto pos = rendered.find(probes[i]);
+        if (pos == std::string::npos || rendered.find(probes[i], pos + 1) != std::string::npos) {
+            throw std::invalid_argument("Cannot determine assistant content entry: probe must appear exactly once");
+        }
+        const auto candidate = rendered.substr(0, pos);
+        if (i == 0) {
+            prefix = candidate;
+        } else if (prefix != candidate) {
+            throw std::invalid_argument("Cannot determine assistant content entry: probe prefixes differ");
+        }
+    }
+    for (const auto & probe : probes) {
+        if (prefix.find(probe) != std::string::npos) {
+            throw std::invalid_argument("Cannot determine assistant content entry: probe occurs in conversation");
+        }
+    }
+    return prefix;
+}
+
 common_chat_msg common_chat_parse(const std::string &               input,
                                   bool                              is_partial,
                                   const common_chat_parser_params & params) {

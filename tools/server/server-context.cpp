@@ -4929,14 +4929,19 @@ void server_routes::init_routes() {
     this->post_decision = [this](const server_http_req & req) {
         auto res = create_response();
         const json body = json::parse_no_throw(req.body);
-        if (!body.is_object() || !body.contains("prompt") || !body.at("prompt").is_string() ||
-                body.at("prompt").get<std::string>().empty() || !body.contains("choices") ||
+        if (body.is_object() && body.contains("messages") && body.contains("prompt")) {
+            res->error(format_error_response("Expected exactly one of prompt or messages", ERROR_TYPE_INVALID_REQUEST));
+            return res;
+        }
+        if (!body.is_object() || (!body.contains("messages") && (!body.contains("prompt") ||
+                !body.at("prompt").is_string() || body.at("prompt").get<std::string>().empty())) ||
+                !body.contains("choices") ||
                 !body.at("choices").is_array() || body.at("choices").empty()) {
             res->error(format_error_response("Expected a non-empty prompt string and a non-empty choices array", ERROR_TYPE_INVALID_REQUEST));
             return res;
         }
         for (const auto & item : body.items()) {
-            if (item.key() != "prompt" && item.key() != "choices" && item.key() != "model") {
+            if (item.key() != "prompt" && item.key() != "messages" && item.key() != "choices" && item.key() != "model") {
                 res->error(format_error_response("Unsupported decision field: " + item.key(), ERROR_TYPE_INVALID_REQUEST));
                 return res;
             }
@@ -4966,7 +4971,19 @@ void server_routes::init_routes() {
             task.decision_choices.push_back(text);
             task.decision_tokens.push_back(tokens[0]);
         }
-        task.tokens = server_tokens(common_tokenize(ctx_server.vocab, body.at("prompt").get<std::string>(), true, true), false);
+        if (body.contains("prompt")) {
+            task.tokens = server_tokens(common_tokenize(ctx_server.vocab, body.at("prompt").get<std::string>(), true, true), false);
+        } else {
+            try {
+                json chat_body = {{ "messages", body.at("messages") }};
+                std::vector<raw_buffer> files;
+                const auto prepared = oaicompat_chat_params_parse(chat_body, meta->chat_params, files, /* content_entry= */ true);
+                task.tokens = std::move(tokenize_input_prompts(ctx_server.vocab, nullptr, prepared.at("prompt"), true, true, ctx_server.init_opt)[0]);
+            } catch (const std::exception & e) {
+                res->error(format_error_response(e.what(), ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+        }
         if (task.tokens.empty()) {
             res->error(format_error_response("Prompt must tokenize to at least one token", ERROR_TYPE_INVALID_REQUEST));
             return res;
