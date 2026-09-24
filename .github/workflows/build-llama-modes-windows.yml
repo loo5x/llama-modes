@@ -39,11 +39,11 @@ jobs:
             -DLLAMA_BUILD_BORINGSSL=ON ^
             -DCMAKE_CUDA_ARCHITECTURES=120
 
-      - name: Build llama-server
+      - name: Build llama-server and decision oracle
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          cmake --build build --config Release --target llama-server
+          cmake --build build --config Release --target llama-server test-save-load-state
 
       - name: Package
         shell: powershell
@@ -89,6 +89,7 @@ jobs:
           # Fail the workflow instead of producing an incomplete artifact.
           $requiredPatterns = @(
             "llama-server.exe",
+            "test-save-load-state.exe",
             "ggml-cuda.dll",
             "cudart64_*.dll",
             "cublas64_*.dll",
