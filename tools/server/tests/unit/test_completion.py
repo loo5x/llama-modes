@@ -122,12 +122,20 @@ def test_decision_teacher_forced_oracle(tmp_path, batch_size):
     }), encoding="utf-8")
     props = server.make_request("GET", "/props")
     assert props.status_code == 200
-    subprocess.run([
-        executable, "-m", props.body["model_path"], "-c", str(server.n_ctx),
-        "-b", "32", "-ub", "7", "-ngl", str(server.n_gpu_layer), "-fa", "off",
-        "--decision-oracle", str(request_path),
-    ], check=True, timeout=180)
-    oracle = json.loads(output_path.read_text(encoding="utf-8"))
+    large_batch = max(100, len(prompt_tokens) + max(map(len, tokens)) + 8)
+    oracle_runs = []
+    for oracle_batch in [len(prompt_tokens), large_batch]:
+        subprocess.run([
+            executable, "-m", props.body["model_path"], "-c", str(server.n_ctx),
+            "-b", str(oracle_batch), "-ub", str(large_batch), "-ngl", str(server.n_gpu_layer), "-fa", "off",
+            "--decision-oracle", str(request_path),
+        ], check=True, timeout=180)
+        oracle_runs.append(json.loads(output_path.read_text(encoding="utf-8")))
+    oracle = oracle_runs[0]
+    assert len(oracle) == len(oracle_runs[1]) == len(tokens)
+    for ids, exact_batch, oversized_batch in zip(tokens, oracle, oracle_runs[1]):
+        assert len(exact_batch) == len(oversized_batch) == len(ids)
+        assert oversized_batch == pytest.approx(exact_batch, rel=0, abs=2e-4)
 
     before = decision_metrics()
     actual = server.make_request("POST", "/decision", {"prompt": prompt, "choices": texts})

@@ -674,7 +674,7 @@ static bool run_save_load_tests_for_model(const std::string & model_path, const 
 }
 
 
-// Fresh contexts and a single concatenated token stream provide an independent likelihood oracle.
+// Fresh contexts and ordinary teacher-forced decoding provide an independent likelihood oracle.
 static bool decision_oracle(const common_params & params, const std::string & path) {
     try {
         common_params oracle_params = params;
@@ -702,36 +702,46 @@ static bool decision_oracle(const common_params & params, const std::string & pa
             if (!ctx || prompt.size() + choice.size() - 1 > llama_n_ctx(ctx.get())) {
                 return false;
             }
-            llama_tokens stream = prompt;
-            stream.insert(stream.end(), choice.begin(), choice.end() - 1);
             llama_batch_ptr batch(llama_n_batch(ctx.get()), 0, 1);
-            std::vector<double> scores;
-            for (size_t off = 0; off < stream.size();) {
+            for (size_t off = 0; off < prompt.size();) {
                 common_batch_clear(batch.get());
-                const size_t end = std::min(stream.size(), off + llama_n_batch(ctx.get()));
+                const size_t end = std::min(prompt.size(), off + llama_n_batch(ctx.get()));
                 for (size_t i = off; i < end; ++i) {
-                    common_batch_add(batch.get(), stream[i], i, {0}, i + 1 >= prompt.size());
+                    common_batch_add(batch.get(), prompt[i], i, {0}, i + 1 == prompt.size());
                 }
                 if (llama_decode(ctx.get(), batch.get()) != 0) {
                     return false;
                 }
-                for (size_t i = std::max(off, prompt.size() - 1); i < end; ++i) {
-                    const float * row = llama_get_logits_ith(ctx.get(), i - off);
-                    if (!row) {
-                        return false;
-                    }
-                    const double maximum = *std::max_element(row, row + n_vocab);
-                    double denominator = 0.0;
-                    for (int32_t v = 0; v < n_vocab; ++v) {
-                        denominator += std::exp(double(row[v]) - maximum);
-                    }
-                    const double score = double(row[choice[i + 1 - prompt.size()]]) - maximum - std::log(denominator);
-                    if (!std::isfinite(score)) {
-                        return false;
-                    }
-                    scores.push_back(score);
-                }
                 off = end;
+            }
+
+            std::vector<double> scores;
+            auto score_token = [&](llama_token token) {
+                const float * row = llama_get_logits_ith(ctx.get(), -1);
+                if (!row) {
+                    return false;
+                }
+                const double maximum = *std::max_element(row, row + n_vocab);
+                double denominator = 0.0;
+                for (int32_t v = 0; v < n_vocab; ++v) {
+                    denominator += std::exp(double(row[v]) - maximum);
+                }
+                const double score = double(row[token]) - maximum - std::log(denominator);
+                if (!std::isfinite(score)) {
+                    return false;
+                }
+                scores.push_back(score);
+                return true;
+            };
+            if (!score_token(choice[0])) {
+                return false;
+            }
+            for (size_t i = 0; i + 1 < choice.size(); ++i) {
+                common_batch_clear(batch.get());
+                common_batch_add(batch.get(), choice[i], prompt.size() + i, {0}, true);
+                if (llama_decode(ctx.get(), batch.get()) != 0 || !score_token(choice[i + 1])) {
+                    return false;
+                }
             }
             results.push_back(scores);
         }
