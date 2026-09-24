@@ -1466,6 +1466,20 @@ json server_task_result_cmpl_partial::to_json_anthropic() {
 // server_task_result_decision
 //
 json server_task_result_decision::to_json() {
+    if (!sequences.empty()) {
+        json result = json::array();
+        for (size_t i = 0; i < choices.size(); ++i) {
+            result.push_back({
+                {"text", choices[i]},
+                {"token_ids", sequences[i]},
+                {"token_count", sequences[i].size()},
+                {"sum_log_probability", sum_log_probabilities[i]},
+                {"mean_log_probability", sum_log_probabilities[i] / sequences[i].size()},
+            });
+        }
+        return {{"choices", result}};
+    }
+
     const double max_logit = *std::max_element(logits.begin(), logits.end());
     double sum = 0.0;
     for (float logit : logits) {

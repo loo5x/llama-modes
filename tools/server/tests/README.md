@@ -65,6 +65,21 @@ cmake --build build -j --target llama-server && ./tools/server/tests/tests.sh
 
 To see all available arguments, please refer to [pytest documentation](https://docs.pytest.org/en/stable/how-to/usage.html)
 
+### Decision sequence validation
+
+Build `llama-server` and `test-save-load-state` from the same revision. The decision oracle tests require the latter next to the server executable, or at `LLAMA_TEST_STATE_BIN_PATH`. Its `--decision-oracle FILE` mode reads token IDs from a JSON fixture and computes ordinary teacher-forced likelihoods in a fresh context per candidate, without snapshots or sampling. The Python tests compare these results with `/decision` and verify prompt reuse, ordering, limits, cancellation, messages mode, and chat isolation.
+
+For the native Windows CUDA build, use the configuration in `.github/workflows/build-llama-modes-windows.yml`, then build both targets:
+
+```powershell
+cmake --build build --config Release --target llama-server test-save-load-state
+cd tools/server/tests
+python -m pytest unit/test_completion.py unit/test_chat_completion.py -k decision -v
+python -m pytest unit/test_completion.py unit/test_chat_completion.py -m "not slow" -v
+```
+
+These commands require the existing server-test Python dependencies and model fixtures. Set `N_GPU_LAYERS` to test GPU offload. The oracle defaults to CPU when this variable is absent and compares CPU/CUDA results with an absolute tolerance of 0.0002 nats. Existing tests require additional models. The Windows CUDA workflow currently builds and packages only the server; it does not run these tests or build the oracle target.
+
 ### Debugging external llama-server
 It can sometimes be useful to run the server in a debugger when invesigating test
 failures. To do this, the environment variable `DEBUG_EXTERNAL=1` can be set

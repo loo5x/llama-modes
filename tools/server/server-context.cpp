@@ -25,6 +25,7 @@
 #include <memory>
 #include <filesystem>
 #include <random>
+#include <set>
 #include <utility>
 #include <fstream>
 
@@ -104,6 +105,7 @@ enum slot_state {
     SLOT_STATE_STARTED,    // after assigning a task and about to process prompt
     SLOT_STATE_PROCESSING_PROMPT,
     SLOT_STATE_DONE_PROMPT,
+    SLOT_STATE_SCORING_DECISION,
     SLOT_STATE_GENERATING,
 };
 
@@ -297,6 +299,11 @@ struct server_slot {
 
     server_prompt prompt;
 
+    std::vector<uint8_t> decision_snapshot;
+    std::vector<double> decision_scores;
+    size_t decision_candidate = 0;
+    size_t decision_token = 0;
+
     bool prompt_save(server_prompt_cache & prompt_cache) const {
         if (prompt.tokens.size() == 0) {
             return false;
@@ -372,6 +379,11 @@ struct server_slot {
 
         spec_is_replay = false;
 
+        std::vector<uint8_t>().swap(decision_snapshot);
+        decision_scores.clear();
+        decision_candidate = 0;
+        decision_token = 0;
+
         last_nl_pos    = 0;
         generated_text = "";
         has_new_line   = false;
@@ -408,11 +420,11 @@ struct server_slot {
     }
 
     void init_sampler() const {
-        common_sampler_reset(smpl.get());
-
         if (!task->need_sampling()) {
             return;
         }
+
+        common_sampler_reset(smpl.get());
 
         const int64_t t_start = ggml_time_us();
 
@@ -451,6 +463,7 @@ struct server_slot {
         GGML_ASSERT(task);
 
         return task->type == other_slot.task->type
+            && task->decision_multitoken == other_slot.task->decision_multitoken
             && inp_embd.size() == other_slot.inp_embd.size()
             && are_lora_equal(lora, other_slot.lora);
     }
@@ -552,9 +565,12 @@ struct server_slot {
 
             state = SLOT_STATE_IDLE;
 
-            // do not keep context of the child slots - the parent's context is enough
-            if (task->is_child()) {
+            // do not keep child or decision contexts
+            if (task->is_child() || task->decision_multitoken) {
                 prompt_clear();
+            }
+            if (task->decision_multitoken) {
+                i_batch = -1;
             }
 
             callback_on_reset(*this);
@@ -1776,6 +1792,15 @@ private:
             return false;
         }
 
+        if (task.decision_multitoken) {
+            for (const auto & tokens : task.decision_sequences) {
+                if (int64_t(task.n_tokens()) + int64_t(tokens.size()) - 1 > slot.n_ctx) {
+                    send_error(task, "Decision prompt and choice exceed the slot context size", ERROR_TYPE_EXCEED_CONTEXT_SIZE);
+                    return false;
+                }
+            }
+        }
+
         SLT_DBG(slot, "launching slot : %s\n", safe_json_to_str(slot.to_json()).c_str());
 
         // initialize samplers
@@ -2869,6 +2894,7 @@ private:
         llama_batch batch_view;
         int32_t off_next = 0;
         int32_t n_batch = llama_n_batch(ctx_tgt);
+        const bool decision_batch = batch.slot_batched && batch.slot_batched->task->decision_multitoken;
         for (int32_t off = 0; off < batch.size(); off = off_next) {
             const int32_t n_tokens = std::min(n_batch, batch.size() - off);
             try {
@@ -2876,7 +2902,7 @@ private:
                 // TODO @ngxson : maybe handle n_batch == 1 here instead of inside decode()
 
                 batch_view = batch.get_view(off, n_tokens);
-                bool ok = decode(n_batch, off, batch_view);
+                bool ok = decode(n_batch, off, batch_view, decision_batch);
 #ifdef DEBUG_TIMINGS
                 llama_synchronize(ctx_tgt);
 #endif
@@ -3130,6 +3156,16 @@ private:
                 // check if this is a child slot
                 if (slot.state == SLOT_STATE_WAIT_OTHER) {
                     SLT_DBG(slot, "%s", "waiting for parent slot to complete\n");
+                    return;
+                }
+
+                if (slot.state == SLOT_STATE_SCORING_DECISION) {
+                    const auto & tokens = slot.task->decision_sequences[slot.decision_candidate];
+                    slot.i_batch = batch.size();
+                    add_ok = batch.add(slot.id, tokens[slot.decision_token], slot.task->n_tokens() + slot.decision_token, true, false);
+                    if (!slot_batched) {
+                        slot_batched = &slot;
+                    }
                     return;
                 }
 
@@ -3646,7 +3682,7 @@ private:
 
     // returns true = success ; false = retry with smaller batch size
     // throw std::runtime_error on fatal error
-    bool decode(int32_t & n_batch, int32_t off, llama_batch & batch_view) {
+    bool decode(int32_t & n_batch, int32_t off, llama_batch & batch_view, bool decision_batch) {
         SRV_DBG("n_batch (effective) = %d, off = %d\n", n_batch, off);
 
         metrics_pre_decode();
@@ -3707,6 +3743,9 @@ private:
                 }
 
                 // TODO: handle ret == 2 (abort) when we start aborting
+                if (ret == 2 && decision_batch) {
+                    err = "Decision evaluation aborted.";
+                }
 
                 if (!err.empty()) {
                     SRV_ERR("%s off = %d, n_batch = %d, ret = %d\n", err.c_str(), off, n_batch, ret);
@@ -3743,7 +3782,7 @@ private:
         // TODO: avoid restoring the draft context and re-evaluating the drafted tokens when not needed [TAG_SPEC_AVOID_DRAFT_REEVAL]
         //       for now, always re-evaluate for simplicity
         //       ref: https://github.com/ggml-org/llama.cpp/pull/22728#issuecomment-4400925384
-        if (spec) {
+        if (spec && !decision_batch) {
             bool ok = true;
             queue_tasks.yield_to_queue([&]() {
                 ok = common_speculative_process(spec.get(), batch_view);
@@ -3783,6 +3822,82 @@ private:
         return true;
     }
 
+    void score_decision(server_slot & slot, const float * logits) {
+        GGML_ASSERT(!slot.smpl && slot.stats.n_gen == 0);
+        try {
+            if (!logits) {
+                throw std::runtime_error("Decision logits are unavailable");
+            }
+            const int32_t n_vocab = llama_vocab_n_tokens(vocab);
+            double max_logit = -INFINITY;
+            for (int32_t i = 0; i < n_vocab; ++i) {
+                if (std::isnan(logits[i]) || logits[i] == INFINITY) {
+                    throw std::runtime_error("Decision logits contain NaN or positive infinity");
+                }
+                max_logit = std::max(max_logit, double(logits[i]));
+            }
+            if (!std::isfinite(max_logit)) {
+                throw std::runtime_error("Decision logits have no finite normalization");
+            }
+            double sum = 0.0;
+            for (int32_t i = 0; i < n_vocab; ++i) {
+                sum += std::exp(double(logits[i]) - max_logit);
+            }
+            const double log_sum = std::log(sum);
+            auto log_probability = [&](llama_token token) {
+                if (!std::isfinite(logits[token])) {
+                    throw std::runtime_error("Decision target logit is non-finite");
+                }
+                return (double(logits[token]) - max_logit) - log_sum;
+            };
+
+            const auto & sequences = slot.task->decision_sequences;
+            if (slot.state == SLOT_STATE_DONE_PROMPT) {
+                for (const auto & tokens : sequences) {
+                    slot.decision_scores.push_back(log_probability(tokens[0]));
+                }
+                const size_t size = llama_state_seq_get_size(slot.ctx_tgt, slot.id);
+                if (size == 0 || size > size_t(1024) * 1024 * 1024) {
+                    throw std::runtime_error("Decision prompt snapshot is empty or exceeds 1 GiB");
+                }
+                slot.decision_snapshot.resize(size);
+                if (llama_state_seq_get_data(slot.ctx_tgt, slot.decision_snapshot.data(), size, slot.id) != size) {
+                    throw std::runtime_error("Failed to save decision prompt state");
+                }
+                slot.state = SLOT_STATE_SCORING_DECISION;
+            } else {
+                slot.decision_token++;
+                slot.decision_scores[slot.decision_candidate] += log_probability(sequences[slot.decision_candidate][slot.decision_token]);
+            }
+
+            bool restore = false;
+            while (slot.decision_candidate < sequences.size() && slot.decision_token + 1 == sequences[slot.decision_candidate].size()) {
+                restore |= slot.decision_token > 0;
+                slot.decision_candidate++;
+                slot.decision_token = 0;
+            }
+
+            if (slot.decision_candidate == sequences.size()) {
+                auto res = std::make_unique<server_task_result_decision>();
+                res->id = slot.task->id;
+                res->choices = slot.task->decision_choices;
+                res->sequences = sequences;
+                res->sum_log_probabilities = slot.decision_scores;
+                queue_results.send(std::move(res));
+                slot.release();
+            } else if (restore) {
+                const auto & snapshot = slot.decision_snapshot;
+                if (llama_state_seq_set_data(slot.ctx_tgt, snapshot.data(), snapshot.size(), slot.id) != snapshot.size()) {
+                    throw std::runtime_error("Failed to restore decision prompt state");
+                }
+            }
+        } catch (const std::exception & e) {
+            send_error(slot, e.what(), ERROR_TYPE_SERVER);
+            slot.release();
+        }
+        slot.i_batch = -1;
+    }
+
     void post_decode(int32_t n_batch_tokens, int32_t off, llama_batch & batch_view) {
         // for checking if a given batch index is inside batch_view
         auto is_inside_view = [&](int32_t idx) {
@@ -3814,6 +3929,11 @@ private:
 
             if (!is_inside_view(slot.i_batch)) {
                 // the required token not in this sub-batch, skip
+                return;
+            }
+
+            if (slot.task && slot.task->decision_multitoken && (slot.state == SLOT_STATE_DONE_PROMPT || slot.state == SLOT_STATE_SCORING_DECISION)) {
+                score_decision(slot, llama_get_logits_ith(slot.ctx_tgt, slot.i_batch - off));
                 return;
             }
 
@@ -4952,24 +5072,38 @@ void server_routes::init_routes() {
         }
 
         server_task task(SERVER_TASK_TYPE_DECISION);
-        std::unordered_set<llama_token> seen;
+        if (body.at("choices").size() > 256) {
+            res->error(format_error_response("Decision supports at most 256 choices", ERROR_TYPE_INVALID_REQUEST));
+            return res;
+        }
+        std::set<llama_tokens> seen;
+        size_t total_bytes = 0;
+        size_t total_tokens = 0;
         for (const auto & choice : body.at("choices")) {
             if (!choice.is_string() || choice.get<std::string>().empty()) {
                 res->error(format_error_response("Each choice must be a non-empty string", ERROR_TYPE_INVALID_REQUEST));
                 return res;
             }
             const auto text = choice.get<std::string>();
-            const auto tokens = common_tokenize(ctx_server.vocab, text, false, false);
-            if (tokens.size() != 1) {
-                res->error(format_error_response("Each choice must tokenize to exactly one token", ERROR_TYPE_INVALID_REQUEST));
+            if (text.size() > 1024 * 1024 - total_bytes) {
+                res->error(format_error_response("Decision choices exceed 1 MiB of text", ERROR_TYPE_INVALID_REQUEST));
                 return res;
             }
-            if (!seen.insert(tokens[0]).second) {
-                res->error(format_error_response("Choices must have distinct token IDs", ERROR_TYPE_INVALID_REQUEST));
+            total_bytes += text.size();
+            const auto tokens = common_tokenize(ctx_server.vocab, text, false, false);
+            if (tokens.empty() || tokens.size() > 32768 - total_tokens) {
+                res->error(format_error_response("Choices must tokenize to non-empty sequences totaling at most 32768 tokens", ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+            total_tokens += tokens.size();
+            if (!seen.insert(tokens).second) {
+                res->error(format_error_response("Choices must have distinct token sequences", ERROR_TYPE_INVALID_REQUEST));
                 return res;
             }
             task.decision_choices.push_back(text);
             task.decision_tokens.push_back(tokens[0]);
+            task.decision_sequences.push_back(tokens);
+            task.decision_multitoken |= tokens.size() > 1;
         }
         if (body.contains("prompt")) {
             task.tokens = server_tokens(common_tokenize(ctx_server.vocab, body.at("prompt").get<std::string>(), true, true), false);

@@ -3,6 +3,8 @@ import requests
 import time
 import random
 import math
+import socket
+from pathlib import Path
 
 from openai import OpenAI
 from utils import *
@@ -71,9 +73,177 @@ def test_decision_invalid_requests():
     for source in ({"prompt": "Hello"}, {"messages": messages}):
         missing = server.make_request("POST", "/decision", source)
         assert missing.status_code == 400
-        for choices in ([], [""], [12], ["yes", "yes"], ["this choice has many tokens"]):
+        for choices in ([], [""], [12], ["yes", "yes"]):
             response = server.make_request("POST", "/decision", {**source, "choices": choices})
             assert response.status_code == 400, choices
+
+
+def decision_tokens(text, prompt=False):
+    response = server.make_request("POST", "/tokenize", {
+        "content": text, "add_special": prompt, "parse_special": prompt,
+    })
+    assert response.status_code == 200
+    return response.body["tokens"]
+
+
+def decision_metrics():
+    response = requests.get(server.make_url("/metrics"), timeout=10)
+    assert response.status_code == 200
+    return {line.split()[0]: float(line.split()[1]) for line in response.text.splitlines()
+            if line.startswith("llamacpp:")}
+
+
+@pytest.mark.parametrize("batch_size", [1, 7, 32])
+def test_decision_teacher_forced_oracle(tmp_path, batch_size):
+    server.n_slots = 1
+    server.n_batch = batch_size
+    server.n_ubatch = batch_size
+    server.n_gpu_layer = int(os.environ.get("N_GPU_LAYERS", "0"))
+    server.fa = "off"
+    server.server_metrics = True
+    server.start()
+    executable = os.environ.get("LLAMA_TEST_STATE_BIN_PATH")
+    if not executable:
+        suffix = ".exe" if os.name == "nt" else ""
+        executable = str(Path(server.process.args[0]).with_name("test-save-load-state" + suffix))
+    assert Path(executable).is_file(), "Build test-save-load-state or set LLAMA_TEST_STATE_BIN_PATH"
+
+    prompt = "Once upon a time there was a"
+    texts = ["yes", "yes indeed", "yes indeed my friend", " big dog", "\nhello", "caf\u00e9", "<|im_end|>"]
+    tokens = [decision_tokens(text) for text in texts]
+    assert len(tokens[0]) == 1
+    assert tokens[1][:len(tokens[0])] == tokens[0]
+    assert tokens[2][:len(tokens[1])] == tokens[1]
+    prompt_tokens = decision_tokens(prompt, prompt=True)
+    request_path = tmp_path / "oracle.json"
+    output_path = tmp_path / "scores.json"
+    request_path.write_text(json.dumps({
+        "prompt_tokens": prompt_tokens, "choices": tokens, "output": str(output_path),
+    }), encoding="utf-8")
+    props = server.make_request("GET", "/props")
+    assert props.status_code == 200
+    subprocess.run([
+        executable, "-m", props.body["model_path"], "-c", str(server.n_ctx),
+        "-b", "32", "-ub", "7", "-ngl", str(server.n_gpu_layer), "-fa", "off",
+        "--decision-oracle", str(request_path),
+    ], check=True, timeout=180)
+    oracle = json.loads(output_path.read_text(encoding="utf-8"))
+
+    before = decision_metrics()
+    actual = server.make_request("POST", "/decision", {"prompt": prompt, "choices": texts})
+    assert actual.status_code == 200
+    assert len(actual.body["choices"]) == len(texts) == len(oracle)
+    for result, text, ids, per_token in zip(actual.body["choices"], texts, tokens, oracle):
+        assert set(result) == {"text", "token_ids", "token_count", "sum_log_probability", "mean_log_probability"}
+        assert result["text"] == text
+        assert result["token_ids"] == ids
+        assert result["token_count"] == len(ids) == len(per_token)
+        assert result["sum_log_probability"] == pytest.approx(math.fsum(per_token), abs=2e-4)
+        assert result["mean_log_probability"] == pytest.approx(math.fsum(per_token) / len(ids), abs=2e-4)
+    after = decision_metrics()
+    assert after["llamacpp:prompt_tokens_total"] - before["llamacpp:prompt_tokens_total"] == len(prompt_tokens)
+    assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+    assert after["llamacpp:spec_decode_num_draft_tokens_total"] == before["llamacpp:spec_decode_num_draft_tokens_total"]
+
+    reversed_result = server.make_request("POST", "/decision", {"prompt": prompt, "choices": texts[::-1]})
+    assert reversed_result.status_code == 200
+    for first, second in zip(actual.body["choices"], reversed_result.body["choices"][::-1]):
+        assert first["token_ids"] == second["token_ids"]
+        assert first["sum_log_probability"] == pytest.approx(second["sum_log_probability"], abs=2e-4)
+
+
+def test_decision_context_and_resource_limits():
+    server.n_slots = 1
+    server.n_ctx = 128
+    server.enable_ctx_shift = True
+    server.server_slots = True
+    server.start()
+    prompt = "Once upon a time"
+    prompt_length = len(decision_tokens(prompt, prompt=True))
+    n_ctx = server.make_request("GET", "/slots").body[0]["n_ctx"]
+    choice = " yes" * (n_ctx - prompt_length + 1)
+    ids = decision_tokens(choice)
+    assert prompt_length + len(ids) - 1 == n_ctx
+    accepted = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice]})
+    assert accepted.status_code == 200
+    assert accepted.body["choices"][0]["token_count"] == len(ids)
+    rejected = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice + " yes"]})
+    assert rejected.status_code == 400
+    for choices in (["x"] * 257, ["x" * (1024 * 1024 + 1)], [" yes" * 32769]):
+        rejected = server.make_request("POST", "/decision", {"prompt": prompt, "choices": choices})
+        assert rejected.status_code == 400
+    repeated = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice]})
+    assert repeated.status_code == 200
+    assert repeated.body["choices"][0]["sum_log_probability"] == pytest.approx(accepted.body["choices"][0]["sum_log_probability"], abs=2e-4)
+
+
+@pytest.mark.parametrize("spec_type", [None, "ngram-simple"])
+def test_decision_cleanup_and_chat_regression(spec_type):
+    server.n_slots = 1
+    server.spec_type = spec_type
+    server.server_metrics = True
+    server.chat_template = "chatml"
+    server.start()
+    chat = {"messages": [{"role": "user", "content": "Tell me a short story."}],
+            "temperature": 0, "max_tokens": 8, "cache_prompt": False}
+    first = server.make_request("POST", "/v1/chat/completions", chat)
+    assert first.status_code == 200
+    legacy_request = {"prompt": "Answer yes or no:", "choices": ["yes", "no"]}
+    legacy_before = server.make_request("POST", "/decision", legacy_request)
+    assert legacy_before.status_code == 200
+    before = decision_metrics()
+    request = {"prompt": "Once upon a time", "choices": [" little girl", " big dog"]}
+    for _ in range(2):
+        result = server.make_request("POST", "/decision", request)
+        assert result.status_code == 200
+    after = decision_metrics()
+    assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+    assert after["llamacpp:spec_decode_num_draft_tokens_total"] == before["llamacpp:spec_decode_num_draft_tokens_total"]
+    legacy_after = server.make_request("POST", "/decision", legacy_request)
+    assert legacy_after.status_code == 200
+    for a, b in zip(legacy_before.body["choices"], legacy_after.body["choices"]):
+        assert set(b) == {"text", "token_id", "logit", "probability"}
+        assert a["token_id"] == b["token_id"]
+        assert a["logit"] == pytest.approx(b["logit"], abs=2e-4)
+        assert a["probability"] == pytest.approx(b["probability"], abs=2e-4)
+    second = server.make_request("POST", "/v1/chat/completions", chat)
+    assert second.status_code == 200
+    assert first.body["choices"] == second.body["choices"]
+    assert first.body["usage"] == second.body["usage"]
+
+
+def test_decision_cancel_cleanup():
+    server.n_slots = 1
+    server.n_ctx = 1024
+    server.server_slots = True
+    server.server_metrics = True
+    server.start()
+    before = decision_metrics()
+    body = json.dumps({"prompt": "Once upon a time", "choices": [" yes" * 900 + str(i) for i in range(32)]}).encode()
+    with socket.create_connection((server.server_host, server.server_port), timeout=10) as connection:
+        connection.sendall((f"POST /decision HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {len(body)}\r\n\r\n").encode() + body)
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            slots = server.make_request("GET", "/slots")
+            if slots.body[0]["is_processing"] and decision_metrics()["llamacpp:n_decode_total"] > before["llamacpp:n_decode_total"] + 5:
+                break
+            time.sleep(0.01)
+        else:
+            pytest.fail("Decision did not enter forced scoring before cancellation")
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        if not server.make_request("GET", "/slots").body[0]["is_processing"]:
+            break
+        time.sleep(0.01)
+    else:
+        pytest.fail("Cancelled decision did not release its slot")
+    assert decision_metrics()["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+    request = {"prompt": "Once upon a time", "choices": [" little girl", " big dog"]}
+    first = server.make_request("POST", "/decision", request)
+    second = server.make_request("POST", "/decision", request)
+    assert first.status_code == second.status_code == 200
+    for a, b in zip(first.body["choices"], second.body["choices"]):
+        assert a["sum_log_probability"] == pytest.approx(b["sum_log_probability"], abs=2e-4)
 
 @pytest.fixture(autouse=True)
 def create_server():

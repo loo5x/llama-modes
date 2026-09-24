@@ -5,13 +5,14 @@ from utils import *
 server: ServerProcess
 
 
+@pytest.mark.parametrize("choices", [["yes", "no"], ["yes", "yes indeed", "no thank you"]])
 @pytest.mark.parametrize("template,suffix", [
     ("chatml", ""),
     ("meta-llama-Llama-3.1-8B-Instruct.jinja", ""),
     ("Qwen-Qwen3-0.6B.jinja", "<think>\n\n</think>\n\n"),
     ("openai-gpt-oss-120b.jinja", "<|channel|>final<|message|>"),
 ])
-def test_decision_messages_match_raw(template, suffix):
+def test_decision_messages_match_raw(template, suffix, choices):
     server.jinja = True
     server.reasoning = "on"
     server.n_ctx = 2048
@@ -24,16 +25,20 @@ def test_decision_messages_match_raw(template, suffix):
     messages = [{"role": "user", "content": "Is Paris the capital of France?"}]
     rendered = server.make_request("POST", "/apply-template", {"messages": messages})
     assert rendered.status_code == 200
-    choices = ["yes", "no"]
     raw = server.make_request("POST", "/decision", {"prompt": rendered.body["prompt"] + suffix, "choices": choices})
     direct = server.make_request("POST", "/v1/decision", {"messages": messages, "choices": choices})
     assert raw.status_code == direct.status_code == 200
     assert set(direct.body) == {"choices"}
-    assert len(raw.body["choices"]) == len(direct.body["choices"]) == 2
+    assert len(raw.body["choices"]) == len(direct.body["choices"]) == len(choices)
     for expected, actual in zip(raw.body["choices"], direct.body["choices"]):
-        assert expected["token_id"] == actual["token_id"]
-        assert expected["logit"] == pytest.approx(actual["logit"], abs=1e-4)
-        assert expected["probability"] == pytest.approx(actual["probability"], abs=1e-5)
+        if "token_ids" in expected:
+            assert expected["token_ids"] == actual["token_ids"]
+            assert expected["sum_log_probability"] == pytest.approx(actual["sum_log_probability"], abs=2e-4)
+            assert expected["mean_log_probability"] == pytest.approx(actual["mean_log_probability"], abs=2e-4)
+        else:
+            assert expected["token_id"] == actual["token_id"]
+            assert expected["logit"] == pytest.approx(actual["logit"], abs=1e-4)
+            assert expected["probability"] == pytest.approx(actual["probability"], abs=1e-5)
 
 
 @pytest.mark.slow

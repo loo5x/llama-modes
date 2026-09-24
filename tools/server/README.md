@@ -674,9 +674,9 @@ These words will not be included in the completion, so make sure to add them to 
 - `truncated`: Boolean indicating if the context size was exceeded during generation, i.e. the number of tokens provided in the prompt (`tokens_evaluated`) plus tokens generated (`tokens predicted`) exceeded the context size (`n_ctx`)
 
 
-### POST `/decision` and `/v1/decision`: Score single-token choices
+### POST `/decision` and `/v1/decision`: Score text choices
 
-Evaluate the prompt with the loaded model, then return the last prompt token's raw logits for the supplied choices. No tokens are sampled or generated. The prompt is processed once, in batches if needed, without prompt cache reuse.
+Evaluate the prompt with the loaded model, then score the supplied choices. No tokens are sampled or freely generated. The prompt is processed once, in batches if needed, without cross-request prompt cache reuse.
 
 ```json
 {"prompt": "Answer yes or no: Is water wet?\nAnswer:", "choices": [" yes", " no"]}
@@ -692,9 +692,21 @@ Alternatively, supply a conversation:
 
 Message mode uses the model's native chat template to enter a new assistant content response directly, then evaluates the complete prompt once and generates zero tokens. It requires a non-empty conversation ending with a user message. Each message must contain only `role` and string `content`; supported roles are `system`, `developer`, `user`, and `assistant`. Tools, reasoning fields, multimodal content, and assistant continuation are unsupported. Templates whose assistant content boundary cannot be determined unambiguously are rejected. The complete rendered prompt uses the same special-token tokenization settings as normal text chat/completion.
 
-Each choice must tokenize independently to exactly one token, without adding or parsing special tokens. Whitespace matters; valid choices depend on the tokenizer. Empty choices and duplicate token IDs are rejected. Only `prompt` or `messages`, `choices`, and the optional router `model` field are accepted; request-level chat/template and sampling options are unsupported.
+Each choice is tokenized independently, with `add_special=false` and `parse_special=false`. Whitespace and tokenizer normalization matter. The scored token stream is the prompt tokens followed by the independently tokenized choice; this can differ from tokenizing the concatenated text. Special-token spellings are passed through this tokenizer configuration, not interpreted as an instruction to stop scoring. No EOS, EOT, or template closing tokens are appended. Empty choices, empty token sequences, and duplicate complete token sequences are rejected; choices may share prefixes. Only `prompt` or `messages`, `choices`, and the optional router `model` field are accepted; request-level chat/template and sampling options are unsupported.
 
-The response is `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms; they are relative to those choices, not calibrated confidence. Invalid input returns HTTP 400. Embedding-only servers are unsupported.
+When all choices have exactly one token, the v0.2 fast path and response are unchanged: `{"choices": [{"text": "...", "token_id": 123, "logit": 2.0, "probability": 0.75}, ...]}`, in request order. Probabilities use softmax over only the supplied choice tokens, without temperature, penalties, or other sampling transforms; they are relative to those choices, not calibrated confidence.
+
+If any choice has multiple tokens, every choice uses the following response fields:
+
+```json
+{"choices": [{"text": "some answer", "token_ids": [123, 456], "token_count": 2, "sum_log_probability": -5.0, "mean_log_probability": -2.5}]}
+```
+
+The numbers above illustrate the response format. Each token's log probability is computed from raw logits normalized over the full vocabulary. `sum_log_probability` is the sum of these natural-log probabilities; `mean_log_probability` divides that sum by `token_count`. Accumulation uses double precision. Neither score is calibrated confidence. The sum measures the likelihood of this token continuation without requiring it to stop there; the mean measures average token predictability. Strict-prefix choices describe overlapping continuations, not mutually exclusive complete answers. There is no multi-token `logit` or `probability` field.
+
+Multi-token requests use one task and one slot. Candidates are evaluated sequentially, one forced input token per scheduler step, with full host sequence snapshot/restore between candidates. An M-token choice needs M-1 additional token evaluations; the final token is scored without decoding it. No sampler or speculative decoding is used. Forced scoring does not increment generated-token counters; `n_decode_total` includes its decode calls, while `prompt_tokens_total` counts the prompt prefill only.
+
+Limits are 256 choices, 1 MiB of total choice text (UTF-8 bytes), and 32768 total choice tokens per request. The prompt must pass the existing prompt context check, and `prompt_token_count + max_choice_token_count - 1` must fit the assigned slot's context. Decision requests are never shifted or truncated, even if context shifting is enabled. Full prompt snapshots are limited to 1 GiB per active request. Invalid input and context overflow return HTTP 400; snapshot failure, non-finite target logits, or an invalid normalization row return HTTP 500. Other vocabulary entries may have negative-infinity logits (zero mass). Embedding-only servers are unsupported. Cancellation or evaluation failure clears multi-token decision state before the slot is reused.
 
 #### v0.2 runtime validation
 

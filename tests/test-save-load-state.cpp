@@ -2,11 +2,14 @@
 #include "common.h"
 #include "log.h"
 #include "llama-cpp.h"
+#include <nlohmann/json.hpp>
 
 #include <algorithm>
 #include <clocale>
+#include <cmath>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <random>
 #include <string>
 #include <vector>
@@ -671,6 +674,75 @@ static bool run_save_load_tests_for_model(const std::string & model_path, const 
 }
 
 
+// Fresh contexts and a single concatenated token stream provide an independent likelihood oracle.
+static bool decision_oracle(const common_params & params, const std::string & path) {
+    try {
+        std::ifstream input(path);
+        const auto request = nlohmann::ordered_json::parse(input);
+        const auto prompt = request.at("prompt_tokens").get<llama_tokens>();
+        const auto choices = request.at("choices").get<std::vector<llama_tokens>>();
+        auto init = common_init_from_params(params, true);
+        auto * model = init->model();
+        if (!model || prompt.empty()) {
+            return false;
+        }
+        const int32_t n_vocab = llama_vocab_n_tokens(llama_model_get_vocab(model));
+        nlohmann::ordered_json results = nlohmann::ordered_json::array();
+        for (const auto & choice : choices) {
+            if (choice.empty()) {
+                return false;
+            }
+            for (llama_token token : choice) {
+                if (token < 0 || token >= n_vocab) {
+                    return false;
+                }
+            }
+            auto ctx = llama_context_ptr(llama_init_from_model(model, common_context_params_to_llama(params)));
+            if (!ctx || prompt.size() + choice.size() - 1 > llama_n_ctx(ctx.get())) {
+                return false;
+            }
+            llama_tokens stream = prompt;
+            stream.insert(stream.end(), choice.begin(), choice.end() - 1);
+            llama_batch_ptr batch(llama_n_batch(ctx.get()), 0, 1);
+            std::vector<double> scores;
+            for (size_t off = 0; off < stream.size();) {
+                common_batch_clear(batch.get());
+                const size_t end = std::min(stream.size(), off + llama_n_batch(ctx.get()));
+                for (size_t i = off; i < end; ++i) {
+                    common_batch_add(batch.get(), stream[i], i, {0}, i + 1 >= prompt.size());
+                }
+                if (llama_decode(ctx.get(), batch.get()) != 0) {
+                    return false;
+                }
+                for (size_t i = std::max(off, prompt.size() - 1); i < end; ++i) {
+                    const float * row = llama_get_logits_ith(ctx.get(), i - off);
+                    if (!row) {
+                        return false;
+                    }
+                    const double maximum = *std::max_element(row, row + n_vocab);
+                    double denominator = 0.0;
+                    for (int32_t v = 0; v < n_vocab; ++v) {
+                        denominator += std::exp(double(row[v]) - maximum);
+                    }
+                    const double score = double(row[choice[i + 1 - prompt.size()]]) - maximum - std::log(denominator);
+                    if (!std::isfinite(score)) {
+                        return false;
+                    }
+                    scores.push_back(score);
+                }
+                off = end;
+            }
+            results.push_back(scores);
+        }
+        std::ofstream output(request.at("output").get<std::string>());
+        output << results.dump(2) << '\n';
+        return output.good();
+    } catch (const std::exception & e) {
+        LOG_ERR("decision oracle: %s\n", e.what());
+        return false;
+    }
+}
+
 int main(int argc, char ** argv) {
     std::setlocale(LC_NUMERIC, "C");
 
@@ -682,12 +754,19 @@ int main(int argc, char ** argv) {
 
     common_init();
 
-    // extract our own --models DIR option before handing the rest to the common arg parser
+    // extract test options before handing the rest to the common arg parser
     std::string models_dir;
+    std::string oracle_path;
     std::vector<char *> filtered_argv;
     filtered_argv.push_back(argv[0]);
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--models") == 0) {
+        if (strcmp(argv[i], "--decision-oracle") == 0) {
+            if (i + 1 >= argc) {
+                LOG_ERR("--decision-oracle requires a JSON request file\n");
+                return 1;
+            }
+            oracle_path = argv[++i];
+        } else if (strcmp(argv[i], "--models") == 0) {
             if (i + 1 >= argc) {
                 LOG_ERR("%s: --models requires a directory argument\n", __func__);
                 return 1;
@@ -721,6 +800,10 @@ int main(int argc, char ** argv) {
     }
 
     ggml_backend_load_all();
+
+    if (!oracle_path.empty()) {
+        return decision_oracle(params, oracle_path) ? 0 : 1;
+    }
 
     if (!models_dir.empty()) {
         // run the suite over every dummy model in the directory

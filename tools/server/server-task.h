@@ -157,6 +157,8 @@ struct server_task {
     // used by SERVER_TASK_TYPE_DECISION
     std::vector<std::string> decision_choices;
     llama_tokens decision_tokens;
+    std::vector<llama_tokens> decision_sequences;
+    bool decision_multitoken = false;
 
     // only used by CLI, this allow tokenizing CLI inputs on server side
     // we need this because mtmd_context and vocab are not accessible outside of server_context
@@ -461,6 +463,8 @@ struct server_task_result_decision : server_task_result {
     std::vector<std::string> choices;
     llama_tokens tokens;
     std::vector<float> logits;
+    std::vector<llama_tokens> sequences;
+    std::vector<double> sum_log_probabilities;
 
     virtual json to_json() override;
 };

@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 from utils import *
 
 # We use a F16 MOE gguf as main model, and q4_0 as draft model
@@ -203,3 +204,115 @@ def test_multi_requests_parallel(n_slots: int, n_requests: int):
     for res in results:
         assert res.status_code == 200
         assert match_regex("(wise|kind|owl|answer)+", res.body["content"])
+
+
+@pytest.mark.parametrize("multitoken_first", [False, True])
+def test_mixed_decision_modes_with_draft(tmp_path, monkeypatch, multitoken_first):
+    monkeypatch.setenv("LLAMA_BATCH_DEBUG", "1")
+    server.n_slots = 2
+    server.n_ctx = 4096
+    server.n_batch = 32
+    server.n_ubatch = 32
+    server.server_slots = True
+    server.server_continuous_batching = True
+    server.debug = True
+    server.log_path = str(tmp_path / "mixed-decision.log")
+    server.start()
+
+    prompt = "Once upon a time " * 256 + "Answer:"
+    tokenized = server.make_request("POST", "/tokenize", {"content": prompt, "add_special": True, "parse_special": True})
+    assert tokenized.status_code == 200
+    if len(tokenized.body["tokens"]) % server.n_batch == 0:
+        prompt += " yes"
+        tokenized = server.make_request("POST", "/tokenize", {"content": prompt, "add_special": True, "parse_special": True})
+        assert tokenized.status_code == 200
+    # Leave room in the final prefill batch to expose mixing in either slot order.
+    assert len(tokenized.body["tokens"]) % server.n_batch != 0
+    requests_by_mode = {
+        False: {"prompt": prompt, "choices": ["yes", "no"]},
+        True: {"prompt": prompt, "choices": [" yes" * 128, " no" * 128]},
+    }
+    completion = {"prompt": prompt, "temperature": 0, "n_predict": 16, "return_tokens": True}
+    baseline = server.make_request("POST", "/completion", {**completion, "cache_prompt": False})
+    assert baseline.status_code == 200
+    assert baseline.body["timings"]["draft_n"] > 0
+    expected = {}
+    for mode, request in requests_by_mode.items():
+        response = server.make_request("POST", "/decision", request)
+        assert response.status_code == 200
+        expected[mode] = response.body["choices"]
+    assert "token_id" in expected[False][0]
+    assert "token_ids" in expected[True][0]
+
+    # Restart so admission order is independent of the reference requests' cached prompts.
+    server.stop()
+    server.start()
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        first = pool.submit(server.make_request, "POST", "/decision", requests_by_mode[multitoken_first])
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            slots = server.make_request("GET", "/slots")
+            assert slots.status_code == 200
+            active = [slot for slot in slots.body if slot["is_processing"]]
+            if active:
+                assert len(active) == 1
+                first_slot = active[0]["id"]
+                break
+            assert not first.done(), "First decision finished before overlap could be established"
+            time.sleep(0.001)
+        else:
+            pytest.fail("First decision was not admitted")
+
+        second = pool.submit(server.make_request, "POST", "/decision", requests_by_mode[not multitoken_first])
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            slots = server.make_request("GET", "/slots")
+            assert slots.status_code == 200
+            active = [slot for slot in slots.body if slot["is_processing"]]
+            if len(active) == 2:
+                second_slot = next(slot["id"] for slot in active if slot["id"] != first_slot)
+                break
+            assert not first.done() and not second.done(), "Decision requests did not overlap"
+            time.sleep(0.001)
+        else:
+            pytest.fail("Both decisions were not active concurrently")
+
+        for mode, future in [(multitoken_first, first), (not multitoken_first, second)]:
+            response = future.result(timeout=180)
+            assert response.status_code == 200
+            assert len(response.body["choices"]) == len(expected[mode])
+            for actual, reference in zip(response.body["choices"], expected[mode]):
+                assert actual["text"] == reference["text"]
+                if mode:
+                    assert actual["token_ids"] == reference["token_ids"]
+                    assert actual["sum_log_probability"] == pytest.approx(reference["sum_log_probability"], abs=2e-4)
+                    assert actual["mean_log_probability"] == pytest.approx(reference["mean_log_probability"], abs=2e-4)
+                else:
+                    assert actual["token_id"] == reference["token_id"]
+                    assert actual["logit"] == pytest.approx(reference["logit"], abs=2e-4)
+                    assert actual["probability"] == pytest.approx(reference["probability"], abs=2e-4)
+
+    deadline = time.monotonic() + 10
+    while time.monotonic() < deadline:
+        trace = Path(server.log_path).read_text(encoding="utf-8", errors="replace")
+        if trace.count("stop processing:") >= 2:
+            break
+        time.sleep(0.01)
+    else:
+        pytest.fail("Decision batch trace was not flushed")
+    trace = trace[trace.index("processing task, is_child = 0"):]
+    sequences = [set(map(int, ids.split())) for ids in re.findall(r"seq_id_unq\s*=\s*\[([\d ]+)\]", trace)]
+    assert sequences, "LLAMA_BATCH_DEBUG did not record batch sequence IDs"
+    assert set.union(*sequences) == {first_slot, second_slot}
+    assert all(len(ids) == 1 for ids in sequences), "Legacy and multi-token decisions shared a batch"
+
+    # Reuse the legacy prompt cache and also check the cleared multi-token slot.
+    legacy_slot = second_slot if multitoken_first else first_slot
+    multi_slot = first_slot if multitoken_first else second_slot
+    for slot_id in [legacy_slot, multi_slot]:
+        response = server.make_request("POST", "/completion", {**completion, "cache_prompt": True, "id_slot": slot_id})
+        assert response.status_code == 200
+        assert response.body["tokens"] == baseline.body["tokens"]
+        assert response.body["timings"]["draft_n"] > 0
+        if slot_id == legacy_slot:
+            assert response.body["timings"]["cache_n"] > 0
