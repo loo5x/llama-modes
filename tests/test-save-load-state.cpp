@@ -677,11 +677,12 @@ static bool run_save_load_tests_for_model(const std::string & model_path, const 
 // Fresh contexts and a single concatenated token stream provide an independent likelihood oracle.
 static bool decision_oracle(const common_params & params, const std::string & path) {
     try {
+        common_params oracle_params = params;
         std::ifstream input(path);
         const auto request = nlohmann::ordered_json::parse(input);
         const auto prompt = request.at("prompt_tokens").get<llama_tokens>();
         const auto choices = request.at("choices").get<std::vector<llama_tokens>>();
-        auto init = common_init_from_params(params, true);
+        auto init = common_init_from_params(oracle_params, true);
         auto * model = init->model();
         if (!model || prompt.empty()) {
             return false;
@@ -697,7 +698,7 @@ static bool decision_oracle(const common_params & params, const std::string & pa
                     return false;
                 }
             }
-            auto ctx = llama_context_ptr(llama_init_from_model(model, common_context_params_to_llama(params)));
+            auto ctx = llama_context_ptr(llama_init_from_model(model, common_context_params_to_llama(oracle_params)));
             if (!ctx || prompt.size() + choice.size() - 1 > llama_n_ctx(ctx.get())) {
                 return false;
             }
