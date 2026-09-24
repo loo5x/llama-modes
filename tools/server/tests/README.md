@@ -78,7 +78,7 @@ python -m pytest unit/test_completion.py unit/test_chat_completion.py -k decisio
 python -m pytest unit/test_completion.py unit/test_chat_completion.py -m "not slow" -v
 ```
 
-These commands require the existing server-test Python dependencies and model fixtures. Set `N_GPU_LAYERS` to test GPU offload. The oracle defaults to CPU when this variable is absent and compares CPU/CUDA results with an absolute tolerance of 0.0002 nats. Existing tests require additional models. The Windows CUDA workflow currently builds and packages only the server; it does not run these tests or build the oracle target.
+These commands require the existing server-test Python dependencies and model fixtures. Set `N_GPU_LAYERS` to test GPU offload. The oracle defaults to CPU when this variable is absent and compares CPU/CUDA results with an absolute tolerance of 0.0002 nats. Existing tests require additional models. The Windows CUDA workflow builds both targets but does not run these tests. Its user-facing runtime ZIP includes the server and runtime DLLs, excluding the validation-only `test-save-load-state.exe`.
 
 ### Debugging external llama-server
 It can sometimes be useful to run the server in a debugger when invesigating test

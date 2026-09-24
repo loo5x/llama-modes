@@ -55,8 +55,9 @@ jobs:
 
           New-Item -ItemType Directory -Force -Path $dst | Out-Null
 
-          # Copy llama.cpp binaries and runtime DLLs
-          Copy-Item "$src\*" $dst -Recurse -Force
+          # Package the server and runtime DLLs; the oracle is a validation tool only.
+          Copy-Item "$src\llama-server.exe" $dst -Force
+          Copy-Item "$src\*.dll" $dst -Force
 
           Write-Host "CUDA_PATH = $env:CUDA_PATH"
 
@@ -89,7 +90,6 @@ jobs:
           # Fail the workflow instead of producing an incomplete artifact.
           $requiredPatterns = @(
             "llama-server.exe",
-            "test-save-load-state.exe",
             "ggml-cuda.dll",
             "cudart64_*.dll",
             "cublas64_*.dll",

@@ -708,6 +708,36 @@ Multi-token requests use one task and one slot. Candidates are evaluated sequent
 
 Limits are 256 choices, 1 MiB of total choice text (UTF-8 bytes), and 32768 total choice tokens per request. The prompt must pass the existing prompt context check, and `prompt_token_count + max_choice_token_count - 1` must fit the assigned slot's context. Decision requests are never shifted or truncated, even if context shifting is enabled. Full prompt snapshots are limited to 1 GiB per active request. Invalid input and context overflow return HTTP 400; snapshot failure, non-finite target logits, or an invalid normalization row return HTTP 500. Other vocabulary entries may have negative-infinity logits (zero mass). Embedding-only servers are unsupported. Cancellation or evaluation failure clears multi-token decision state before the slot is reused.
 
+#### v0.3 runtime validation
+
+The completed v0.3 milestone on branch `feature/decision-multitoken-v03` adds arbitrary multi-token text choices to `/decision`, subject to the limits above. Scoring uses teacher-forced sequence log likelihood: the prompt is prefilled once, and each m-token candidate requires m-1 forced token evaluations. There is no sampling or free autoregressive generation. The v0.2 single-token fast path and response format remain preserved. Multi-token responses expose `text`, `token_ids`, `token_count`, `sum_log_probability`, and `mean_log_probability`. The sum and mean are likelihood scores, not calibrated confidence.
+
+The Windows CUDA build succeeded using the existing **Build llama-modes Windows CUDA** workflow with CUDA 13.4 and `sm_120`. Manual runtime validation ran on an NVIDIA RTX 5080:
+
+| Model | Multi-token and shared-prefix choices | Reversed candidate order | Independent oracle comparison |
+| --- | --- | --- | --- |
+| GPT-OSS 20B MXFP4 | Passed | Exactly identical scores; delta = 0 in the tested shared-prefix cases | Matched `/decision` exactly |
+| Qwen3.8-27B-Ridge-3.7bpw | Passed | Exactly identical scores; delta = 0 in the tested shared-prefix cases | Matched `/decision` to floating-point precision |
+
+Recorded reference choices were `Paris`, `London`, and `New York`. These are the reported sequence scores for the tested inputs:
+
+| Model | Choice | `/decision` sum_log_probability | Independent oracle token scores | Independent oracle sum |
+| --- | --- | --- | --- | --- |
+| GPT-OSS 20B MXFP4 | Paris | -1.2498656087583528 | -1.2498656087583528 | -1.2498656087583528 |
+| GPT-OSS 20B MXFP4 | London | -8.354334908074758 | -8.354334908074758 | -8.354334908074758 |
+| GPT-OSS 20B MXFP4 | New York | -10.197192479563096 | -9.139708595818899, -1.0574838837441967 | -10.197192479563096 |
+| Qwen3.8-27B-Ridge-3.7bpw | Paris | -1.640189516715422 | -1.640189516715422 | -1.640189516715422 |
+| Qwen3.8-27B-Ridge-3.7bpw | London | -10.265054094962492 | -10.265054094962492 | -10.265054094962492 |
+| Qwen3.8-27B-Ridge-3.7bpw | New York | -14.088956287276046 | -13.591123926810637, -0.49783236046540946 | -14.088956287276046... |
+
+The independent `test-save-load-state --decision-oracle` tool creates a fresh context for each candidate. It does not use the server's snapshot/restore logic or scoring helpers. The oracle was corrected to decode the complete prompt separately, score the first candidate token from the final prompt output, and then decode the forced candidate prefix. This prevents `n_batch` from accidentally merging prompt and candidate tokens into one decode call. In the Qwen reference case, merging these phases had changed the second `New York` token score by approximately 0.019 nats; the separate phases produced the matching scores above.
+
+For GPT-OSS, exact raw/message equivalence was also validated using the native template plus `<|channel|>final<|message|>` to enter assistant content.
+
+These results cover the tested models and Windows CUDA runtime, not every model, backend, or memory type. Broader recurrent, hybrid, sliding-window, and quantized-KV coverage remains future validation work.
+
+The Windows CUDA workflow builds both `llama-server` and the independent oracle. The user-facing `llama-modes-win-cuda.zip` contains the server and runtime DLLs; `test-save-load-state.exe` is a validation tool and is excluded from that package.
+
 #### v0.2 runtime validation
 
 Commit `62fdc214c70db7d4fbe663a866f6efdfaac11a98` was validated on Windows with an NVIDIA RTX 5080 and GPT-OSS 20B MXFP4 GGUF. GitHub Actions workflow **Build llama-modes Windows CUDA**, run **#5**, completed successfully and produced artifact `llama-modes-win-cuda` (artifact ID `10773398723`).
