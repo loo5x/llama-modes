@@ -1,0 +1,7 @@
+{
+  "prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nRubric (ordered categories; numeric distances are not assumed):\n-2: The service did nothing useful and left the entire problem unresolved.\n-1: The service made very little progress and left major problems unresolved.\n0: The service solved about half of the problem and left about half unresolved.\n1: The service solved the main problem with only small gaps remaining.\n2: The service completely solved the problem with no gaps remaining.\nTask: Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+  "choices": [
+    "-2",
+    "-1"
+  ]
+}

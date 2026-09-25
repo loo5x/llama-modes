@@ -1,0 +1,26 @@
+{
+  "checked": [
+    {
+      "run": "gptoss-validated-full",
+      "rows": 399,
+      "source_hash_verified": true
+    },
+    {
+      "run": "gptoss-paraphrases",
+      "rows": 210,
+      "source_hash_verified": true
+    },
+    {
+      "run": "qwen-validated-full",
+      "rows": 399,
+      "source_hash_verified": true
+    },
+    {
+      "run": "qwen-paraphrases",
+      "rows": 210,
+      "source_hash_verified": true
+    }
+  ],
+  "total_rows": 1218,
+  "status": "passed"
+}

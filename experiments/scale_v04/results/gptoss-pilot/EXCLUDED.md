@@ -1,0 +1,1 @@
+This development pilot used an invalid raw prompt renderer. The /apply-template assistant probe introduced an empty analysis turn through assistant-prefill handling. Raw/messages comparisons and recorded prepared prompt token streams do not represent the same context. Exclude this run from final findings. The raw HTTP evidence is retained.

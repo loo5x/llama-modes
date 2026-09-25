@@ -1,0 +1,124 @@
+{
+  "model": {
+    "path": "C:\\Users\\lucia\\.cache\\huggingface\\hub\\models--ggml-org--gpt-oss-20b-GGUF\\snapshots\\ef9b12f2ff56c69cf32153a02784e7a3c88bf524\\gpt-oss-20b-MXFP4.gguf",
+    "bytes": 12109566624,
+    "sha256": "27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901"
+  },
+  "runtime_files": [
+    {
+      "path": "C:\\AI\\llama-modes-v03\\cublas64_13.dll",
+      "bytes": 54942320,
+      "sha256": "1119dbca0a808e0c8850bb4221e330daf0b5ddb348d62d37b6ac533854723df9"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\cublasLt64_13.dll",
+      "bytes": 492752496,
+      "sha256": "0f5bc315fef706b5626248ebd74e8a48a9e82fa2f0cad38330f5f70984913107"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\cudart64_13.dll",
+      "bytes": 551024,
+      "sha256": "05bfafcb97bd53b0089568a96e1e5bd6921637bd0853ff7f5342bd31a6a16890"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\ggml-base.dll",
+      "bytes": 672768,
+      "sha256": "5a74cae8879c16e27dbe12d60445f76fd463908034699d224a124e49489a4fd3"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\ggml-cpu.dll",
+      "bytes": 976896,
+      "sha256": "f2eb7dce4d4bd2a76003a124a1da23b8f5c42b0defa558822c24e2856473694d"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\ggml-cuda.dll",
+      "bytes": 54008832,
+      "sha256": "d9ebc39d96b396294dae28865cbc4314fd9d8b965e997b118d859da6c4301e69"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\ggml.dll",
+      "bytes": 61952,
+      "sha256": "5670ef24089aa7f4f360b0ea074eda7de808aef3c49c075d27b2e02d8f64262e"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\llama-common.dll",
+      "bytes": 9423872,
+      "sha256": "965eab9febc782aec076b5ef8a29bbac0de4adc946c105e01e5f9ec99e590928"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\llama-server-impl.dll",
+      "bytes": 7609856,
+      "sha256": "8f6efb09e7888e6e2b5a7db9dae62c1442e4141e3559e03f05a6338a770dc086"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\llama-server.exe",
+      "bytes": 10752,
+      "sha256": "90e8c26ffb03f4e74608bf0db221c7bc5334db52d1d79c8cf0662eb508f5ab2f"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\llama.dll",
+      "bytes": 2635776,
+      "sha256": "41af4b14b2775d6c2005476d57aef8527fb18c5e58576e32e5ed29c9ed1bf7c5"
+    },
+    {
+      "path": "C:\\AI\\llama-modes-v03\\mtmd.dll",
+      "bytes": 2402304,
+      "sha256": "a67405aa4cf573744f2e698eec60cde7ce852e75592201865a82e7c89ec94c18"
+    }
+  ],
+  "runtime_matches_stage2_hashes": true,
+  "oracle": {
+    "path": "C:\\AI\\llama-modes-v03\\test-save-load-state.exe",
+    "bytes": 226304,
+    "sha256": "94e6acf33ecef4cb0f56c220c27ba0c26904bec08f3581fde03a5a9dc5acffc8"
+  },
+  "oracle_version": "version: 0.4.1-dev (build 1, commit 65f4875)\nbuilt with MSVC 19.44.35228.0 for Windows AMD64\n",
+  "default_server_arguments": [
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "8094",
+    "-c",
+    "4096",
+    "-np",
+    "1",
+    "-ngl",
+    "99",
+    "-b",
+    "512",
+    "-ub",
+    "512",
+    "--jinja",
+    "--metrics",
+    "--no-warmup"
+  ],
+  "profiles": {
+    "live-baseline": {},
+    "live-fa-off": {
+      "flash_attn": "off"
+    },
+    "live-graphs-off": {
+      "GGML_CUDA_DISABLE_GRAPHS": "1"
+    },
+    "live-cpu": {
+      "gpu_layers": 0
+    },
+    "live-restart": {
+      "LLAMA_KV_CACHE_DEBUG": "1",
+      "verbosity": 4
+    },
+    "live-layout": {
+      "LLAMA_KV_CACHE_DEBUG": "1",
+      "verbosity": 5
+    },
+    "live-batch64": {
+      "batch": 64,
+      "ubatch": 64
+    },
+    "live-batch1": {
+      "batch": 1,
+      "ubatch": 1,
+      "status": "server_initialization_assertion"
+    }
+  }
+}

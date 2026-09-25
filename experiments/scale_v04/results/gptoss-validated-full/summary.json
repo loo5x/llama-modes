@@ -1,0 +1,579 @@
+{
+  "completed": 399,
+  "successful": 399,
+  "errors": [],
+  "prefix_overlap_rows": 9,
+  "duplicate_rows": 0,
+  "controls": {
+    "numeric_api_reverse": {
+      "pairs": 39,
+      "max_absolute_sum_score_delta": 0.016796328707505026
+    },
+    "numeric_raw": {
+      "pairs": 39,
+      "max_absolute_sum_score_delta": 0.0
+    }
+  },
+  "comparisons": {
+    "numeric:sum -> numeric:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.018902702953058105,
+      "max_total_variation": 0.19757340616644747,
+      "max_absolute_expected_value_shift": 0.3843493625513892
+    },
+    "fixed:sum -> fixed:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.019495293219407295,
+      "max_total_variation": 0.18508653207848003,
+      "max_absolute_expected_value_shift": 0.4116543632187317
+    },
+    "numeric:sum -> fixed:sum": {
+      "pairs": 39,
+      "modal_changes": 2,
+      "median_changes": 2,
+      "mean_total_variation": 0.06546538579536663,
+      "max_total_variation": 0.6142454619243046,
+      "max_absolute_expected_value_shift": 0.9864289431124027
+    },
+    "numeric:mean -> fixed:mean": {
+      "pairs": 39,
+      "modal_changes": 2,
+      "median_changes": 2,
+      "mean_total_variation": 0.06442296745803934,
+      "max_total_variation": 0.5090978366681661,
+      "max_absolute_expected_value_shift": 0.9864289431124027
+    },
+    "symbol:sum -> symbol:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> symbol:sum": {
+      "pairs": 39,
+      "modal_changes": 3,
+      "median_changes": 4,
+      "mean_total_variation": 0.13437121280279463,
+      "max_total_variation": 0.9355295633885418,
+      "max_absolute_expected_value_shift": 0.8754109099528433
+    },
+    "numeric:mean -> symbol:mean": {
+      "pairs": 39,
+      "modal_changes": 3,
+      "median_changes": 4,
+      "mean_total_variation": 0.13957969659099412,
+      "max_total_variation": 0.9355295633885418,
+      "max_absolute_expected_value_shift": 0.885155294495672
+    },
+    "anchor:sum -> anchor:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> anchor:sum": {
+      "pairs": 39,
+      "modal_changes": 3,
+      "median_changes": 4,
+      "mean_total_variation": 0.1232250857671063,
+      "max_total_variation": 0.9151145192881676,
+      "max_absolute_expected_value_shift": 1.2063588707874087
+    },
+    "numeric:mean -> anchor:mean": {
+      "pairs": 39,
+      "modal_changes": 3,
+      "median_changes": 4,
+      "mean_total_variation": 0.13770468352728235,
+      "max_total_variation": 0.9151145192881676,
+      "max_absolute_expected_value_shift": 1.2063588707874087
+    },
+    "numeric_ended:sum -> numeric_ended:mean": {
+      "pairs": 39,
+      "modal_changes": 6,
+      "median_changes": 12,
+      "mean_total_variation": 0.3105040752785056,
+      "max_total_variation": 0.7079570458778649,
+      "max_absolute_expected_value_shift": 2.591793451081015
+    },
+    "numeric:sum -> numeric_ended:sum": {
+      "pairs": 39,
+      "modal_changes": 6,
+      "median_changes": 5,
+      "mean_total_variation": 0.1263024260195653,
+      "max_total_variation": 0.6938489045165127,
+      "max_absolute_expected_value_shift": 4.487995040551984
+    },
+    "numeric:mean -> numeric_ended:mean": {
+      "pairs": 39,
+      "modal_changes": 10,
+      "median_changes": 13,
+      "mean_total_variation": 0.3631952945997121,
+      "max_total_variation": 0.815351260060877,
+      "max_absolute_expected_value_shift": 3.7092053288203415
+    },
+    "numeric_space:sum -> numeric_space:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 4,
+      "mean_total_variation": 0.21039377559750644,
+      "max_total_variation": 0.4048431384716896,
+      "max_absolute_expected_value_shift": 2.035980876318882
+    },
+    "numeric:sum -> numeric_space:sum": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 1,
+      "mean_total_variation": 0.04995570915560573,
+      "max_total_variation": 0.3030755242375247,
+      "max_absolute_expected_value_shift": 0.5435208710562842
+    },
+    "numeric:mean -> numeric_space:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 3,
+      "mean_total_variation": 0.19902770419885066,
+      "max_total_variation": 0.44654077404476666,
+      "max_absolute_expected_value_shift": 2.426219302013129
+    },
+    "numeric_api_reverse:sum -> numeric_api_reverse:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.018906219004536085,
+      "max_total_variation": 0.19771053217408868,
+      "max_absolute_expected_value_shift": 0.3843493625513892
+    },
+    "numeric:sum -> numeric_api_reverse:sum": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 3.1899688214108756e-05,
+      "max_total_variation": 0.0012440878403502415,
+      "max_absolute_expected_value_shift": 0.0019507876723999784
+    },
+    "numeric:mean -> numeric_api_reverse:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 3.5415739692088206e-05,
+      "max_total_variation": 0.0013812138479914401,
+      "max_absolute_expected_value_shift": 0.002401960493641636
+    },
+    "symbol_rotate:sum -> symbol_rotate:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "symbol:sum -> symbol_rotate:sum": {
+      "pairs": 39,
+      "modal_changes": 8,
+      "median_changes": 10,
+      "mean_total_variation": 0.18812643271850135,
+      "max_total_variation": 0.8639006087371478,
+      "max_absolute_expected_value_shift": 0.9517845265140794
+    },
+    "symbol:mean -> symbol_rotate:mean": {
+      "pairs": 39,
+      "modal_changes": 8,
+      "median_changes": 10,
+      "mean_total_variation": 0.18812643271850135,
+      "max_total_variation": 0.8639006087371478,
+      "max_absolute_expected_value_shift": 0.9517845265140794
+    },
+    "symbol_list_reverse:sum -> symbol_list_reverse:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "symbol:sum -> symbol_list_reverse:sum": {
+      "pairs": 39,
+      "modal_changes": 6,
+      "median_changes": 6,
+      "mean_total_variation": 0.15305018003854215,
+      "max_total_variation": 0.8206098995412185,
+      "max_absolute_expected_value_shift": 0.9409160695345316
+    },
+    "symbol:mean -> symbol_list_reverse:mean": {
+      "pairs": 39,
+      "modal_changes": 6,
+      "median_changes": 6,
+      "mean_total_variation": 0.15305018003854215,
+      "max_total_variation": 0.8206098995412185,
+      "max_absolute_expected_value_shift": 0.9409160695345316
+    },
+    "numeric_raw:sum -> numeric_raw:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.018902702953058105,
+      "max_total_variation": 0.19757340616644747,
+      "max_absolute_expected_value_shift": 0.3843493625513892
+    },
+    "numeric:sum -> numeric_raw:sum": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:mean -> numeric_raw:mean": {
+      "pairs": 39,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric_fine:sum -> numeric_fine:mean": {
+      "pairs": 9,
+      "modal_changes": 3,
+      "median_changes": 2,
+      "mean_total_variation": 0.3831589251007531,
+      "max_total_variation": 0.4727168926725404,
+      "max_absolute_expected_value_shift": 1.9661229856688767
+    },
+    "numeric:sum -> numeric_fine:sum": {
+      "pairs": 9,
+      "modal_changes": 0,
+      "median_changes": 4,
+      "mean_total_variation": 0.23918521789023092,
+      "max_total_variation": 0.4255497301901983,
+      "max_absolute_expected_value_shift": 0.7752530034365538
+    },
+    "numeric:mean -> numeric_fine:mean": {
+      "pairs": 9,
+      "modal_changes": 3,
+      "median_changes": 4,
+      "mean_total_variation": 0.5508503688399652,
+      "max_total_variation": 0.7617167607041794,
+      "max_absolute_expected_value_shift": 1.5576858519588423
+    }
+  },
+  "synthetic_mapping_accuracy": {
+    "numeric:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "fixed:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "fixed:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "anchor:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "anchor:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_ended:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_ended:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 7,
+      "median_correct": 7
+    },
+    "numeric_space:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_space:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_api_reverse:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_api_reverse:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol_rotate:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol_rotate:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol_list_reverse:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "symbol_list_reverse:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_raw:sum:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_raw:mean:instructed": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "numeric:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "fixed:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 7,
+      "median_correct": 8
+    },
+    "fixed:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 7,
+      "median_correct": 8
+    },
+    "symbol:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "symbol:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "anchor:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "anchor:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "numeric_ended:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 3,
+      "median_correct": 3
+    },
+    "numeric_ended:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 3,
+      "median_correct": 1
+    },
+    "numeric_space:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 9
+    },
+    "numeric_space:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 5
+    },
+    "numeric_api_reverse:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "numeric_api_reverse:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "symbol_rotate:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 6,
+      "median_correct": 5
+    },
+    "symbol_rotate:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 6,
+      "median_correct": 5
+    },
+    "symbol_list_reverse:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "symbol_list_reverse:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "numeric_raw:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "numeric_raw:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 8
+    },
+    "numeric_fine:sum:objective": {
+      "n": 9,
+      "unique_mode_correct": 9,
+      "median_correct": 6
+    },
+    "numeric_fine:mean:objective": {
+      "n": 9,
+      "unique_mode_correct": 6,
+      "median_correct": 5
+    },
+    "numeric:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "fixed:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "fixed:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "symbol:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "symbol:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "anchor:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "anchor:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "numeric_ended:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric_ended:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 18
+    },
+    "numeric_space:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric_space:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric_api_reverse:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric_api_reverse:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "symbol_rotate:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 15
+    },
+    "symbol_rotate:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 15
+    },
+    "symbol_list_reverse:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 15,
+      "median_correct": 16
+    },
+    "symbol_list_reverse:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 15,
+      "median_correct": 16
+    },
+    "numeric_raw:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    },
+    "numeric_raw:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 21,
+      "median_correct": 21
+    }
+  }
+}

@@ -1,0 +1,345 @@
+{
+  "completed": 10,
+  "successful": 10,
+  "errors": [],
+  "prefix_overlap_rows": 0,
+  "duplicate_rows": 0,
+  "controls": {
+    "numeric_api_reverse": {
+      "pairs": 1,
+      "max_absolute_sum_score_delta": 0.0
+    },
+    "numeric_raw": {
+      "pairs": 1,
+      "max_absolute_sum_score_delta": 0.7977620146800248
+    }
+  },
+  "comparisons": {
+    "numeric:sum -> numeric:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "fixed:sum -> fixed:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> fixed:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00022900605979408353,
+      "max_total_variation": 0.00022900605979408353,
+      "max_absolute_expected_value_shift": 0.0013239429356503689
+    },
+    "numeric:mean -> fixed:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00022900605979408353,
+      "max_total_variation": 0.00022900605979408353,
+      "max_absolute_expected_value_shift": 0.0013239429356503689
+    },
+    "symbol:sum -> symbol:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> symbol:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00015329512518115707,
+      "max_total_variation": 0.00015329512518115707,
+      "max_absolute_expected_value_shift": 0.0006880098220327474
+    },
+    "numeric:mean -> symbol:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00015329512518115707,
+      "max_total_variation": 0.00015329512518115707,
+      "max_absolute_expected_value_shift": 0.0006880098220327474
+    },
+    "anchor:sum -> anchor:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> anchor:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00032968030809689896,
+      "max_total_variation": 0.00032968030809689896,
+      "max_absolute_expected_value_shift": 0.001623199879021583
+    },
+    "numeric:mean -> anchor:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00032968030809689896,
+      "max_total_variation": 0.00032968030809689896,
+      "max_absolute_expected_value_shift": 0.001623199879021583
+    },
+    "numeric_ended:sum -> numeric_ended:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.27941802294896767,
+      "max_total_variation": 0.27941802294896767,
+      "max_absolute_expected_value_shift": 1.115165029377485
+    },
+    "numeric:sum -> numeric_ended:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.028439954668104003,
+      "max_total_variation": 0.028439954668104003,
+      "max_absolute_expected_value_shift": 0.06867268342298881
+    },
+    "numeric:mean -> numeric_ended:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.3078579776170717,
+      "max_total_variation": 0.3078579776170717,
+      "max_absolute_expected_value_shift": 1.1838377128004738
+    },
+    "numeric_space:sum -> numeric_space:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.10020802516403081,
+      "max_total_variation": 0.10020802516403081,
+      "max_absolute_expected_value_shift": 0.6334600618188799
+    },
+    "numeric:sum -> numeric_space:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0014950074042889545,
+      "max_total_variation": 0.0014950074042889545,
+      "max_absolute_expected_value_shift": 0.011838458429799872
+    },
+    "numeric:mean -> numeric_space:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.1016880413943485,
+      "max_total_variation": 0.1016880413943485,
+      "max_absolute_expected_value_shift": 0.6452985202486798
+    },
+    "numeric_api_reverse:sum -> numeric_api_reverse:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> numeric_api_reverse:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:mean -> numeric_api_reverse:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "symbol_rotate:sum -> symbol_rotate:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "symbol:sum -> symbol_rotate:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0001801324418908812,
+      "max_total_variation": 0.0001801324418908812,
+      "max_absolute_expected_value_shift": 0.0008694810436432113
+    },
+    "symbol:mean -> symbol_rotate:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0001801324418908812,
+      "max_total_variation": 0.0001801324418908812,
+      "max_absolute_expected_value_shift": 0.0008694810436432113
+    },
+    "symbol_list_reverse:sum -> symbol_list_reverse:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "symbol:sum -> symbol_list_reverse:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 7.075645987856752e-05,
+      "max_total_variation": 7.075645987856752e-05,
+      "max_absolute_expected_value_shift": 0.00011407274598657926
+    },
+    "symbol:mean -> symbol_list_reverse:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 7.075645987856752e-05,
+      "max_total_variation": 7.075645987856752e-05,
+      "max_absolute_expected_value_shift": 0.00011407274598657926
+    },
+    "numeric_raw:sum -> numeric_raw:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": 0.0
+    },
+    "numeric:sum -> numeric_raw:sum": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00010263518274771276,
+      "max_total_variation": 0.00010263518274771276,
+      "max_absolute_expected_value_shift": 0.0005422061460169112
+    },
+    "numeric:mean -> numeric_raw:mean": {
+      "pairs": 1,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.00010263518274771276,
+      "max_total_variation": 0.00010263518274771276,
+      "max_absolute_expected_value_shift": 0.0005422061460169112
+    }
+  },
+  "synthetic_mapping_accuracy": {
+    "numeric:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "fixed:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "fixed:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "anchor:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "anchor:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_ended:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_ended:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_space:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_space:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_api_reverse:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_api_reverse:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol_rotate:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol_rotate:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol_list_reverse:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "symbol_list_reverse:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_raw:sum:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    },
+    "numeric_raw:mean:instructed": {
+      "n": 1,
+      "unique_mode_correct": 1,
+      "median_correct": 1
+    }
+  }
+}

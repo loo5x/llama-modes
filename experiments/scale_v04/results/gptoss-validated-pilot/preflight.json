@@ -1,0 +1,1877 @@
+[
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        702
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": []
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+    "prompt_tokens": [
+      200006,
+      17360,
+      200008,
+      3575,
+      553,
+      17554,
+      162016,
+      11,
+      261,
+      4410,
+      6439,
+      2359,
+      22203,
+      656,
+      7788,
+      17527,
+      558,
+      87447,
+      100594,
+      25,
+      220,
+      1323,
+      19,
+      12,
+      3218,
+      198,
+      6576,
+      3521,
+      25,
+      220,
+      1323,
+      21,
+      12,
+      3114,
+      12,
+      1161,
+      279,
+      30377,
+      289,
+      25,
+      14093,
+      279,
+      2,
+      13888,
+      18403,
+      25,
+      8450,
+      11,
+      49159,
+      11,
+      1721,
+      13,
+      21030,
+      2804,
+      413,
+      7360,
+      395,
+      1753,
+      3176,
+      13,
+      200007,
+      200006,
+      1428,
+      200008,
+      8470,
+      290,
+      9318,
+      591,
+      220,
+      15,
+      316,
+      220,
+      702,
+      558,
+      3186,
+      4208,
+      22573,
+      350,
+      136724,
+      553,
+      150761,
+      409,
+      11,
+      625,
+      997,
+      328,
+      290,
+      4208,
+      1883,
+      1,
+      15,
+      1,
+      314,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      314,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      314,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      314,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      314,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      314,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      314,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      314,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      314,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      314,
+      220,
+      24,
+      198,
+      1,
+      702,
+      1,
+      314,
+      220,
+      702,
+      198,
+      5927,
+      25,
+      623,
+      17222,
+      9318,
+      1432,
+      382,
+      9707,
+      220,
+      15,
+      13,
+      6318,
+      1617,
+      47205,
+      3322,
+      4208,
+      558,
+      8191,
+      1606,
+      290,
+      47205,
+      3322,
+      4208,
+      11,
+      2935,
+      22661,
+      503,
+      30547,
+      13,
+      200007,
+      200006,
+      173781,
+      200005,
+      17196,
+      200008
+    ],
+    "first_http_id": 16,
+    "original_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_id": 15,
+          "logit": 24.94525146484375,
+          "probability": 0.999668877627744
+        },
+        {
+          "text": "1",
+          "token_id": 16,
+          "logit": 15.290740013122559,
+          "probability": 6.411433212564248e-05
+        },
+        {
+          "text": "2",
+          "token_id": 17,
+          "logit": 15.162412643432617,
+          "probability": 5.639274747393213e-05
+        },
+        {
+          "text": "3",
+          "token_id": 18,
+          "logit": 14.609498977661133,
+          "probability": 3.244112453032551e-05
+        },
+        {
+          "text": "4",
+          "token_id": 19,
+          "logit": 14.102100372314453,
+          "probability": 1.9531494948663502e-05
+        },
+        {
+          "text": "5",
+          "token_id": 20,
+          "logit": 14.278421401977539,
+          "probability": 2.329757593168558e-05
+        },
+        {
+          "text": "6",
+          "token_id": 21,
+          "logit": 13.443254470825195,
+          "probability": 1.010653643940952e-05
+        },
+        {
+          "text": "7",
+          "token_id": 22,
+          "logit": 14.637103080749512,
+          "probability": 3.334910704246087e-05
+        },
+        {
+          "text": "8",
+          "token_id": 23,
+          "logit": 14.106891632080078,
+          "probability": 1.9625299957204917e-05
+        },
+        {
+          "text": "9",
+          "token_id": 24,
+          "logit": 13.65264892578125,
+          "probability": 1.246066448879807e-05
+        },
+        {
+          "text": "10",
+          "token_id": 702,
+          "logit": 15.221136093139648,
+          "probability": 5.9803489318069695e-05
+        }
+      ]
+    },
+    "diagnostic_candidate": {
+      "label": "Diagnostic candidate excluded from the scale statistics.",
+      "token_ids": [
+        105505,
+        17098,
+        52015,
+        591,
+        290,
+        9318,
+        21729,
+        13
+      ]
+    },
+    "augmented_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.000565738150198248,
+          "mean_log_probability": -0.000565738150198248
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.65507718987139,
+          "mean_log_probability": -9.65507718987139
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.783404559561331,
+          "mean_log_probability": -9.783404559561331
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.336318225332816,
+          "mean_log_probability": -10.336318225332816
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.843716830679496,
+          "mean_log_probability": -10.843716830679496
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.66739580101641,
+          "mean_log_probability": -10.66739580101641
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.502562732168753,
+          "mean_log_probability": -11.502562732168753
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.308714122244437,
+          "mean_log_probability": -10.308714122244437
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.83892557091387,
+          "mean_log_probability": -10.83892557091387
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.293168277212699,
+          "mean_log_probability": -11.293168277212699
+        },
+        {
+          "text": "10",
+          "token_ids": [
+            702
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.7246811098543,
+          "mean_log_probability": -9.7246811098543
+        },
+        {
+          "text": "Diagnostic candidate excluded from the scale statistics.",
+          "token_ids": [
+            105505,
+            17098,
+            52015,
+            591,
+            290,
+            9318,
+            21729,
+            13
+          ],
+          "token_count": 8,
+          "sum_log_probability": -65.0252866661912,
+          "mean_log_probability": -8.1281608332739
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "mean_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      },
+      "mean": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      }
+    },
+    "single_token_weight_max_delta": 2.220446049250313e-16,
+    "status": "ok",
+    "last_http_id": 18
+  },
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric_raw",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        702
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": []
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+    "prompt_tokens": [
+      200006,
+      17360,
+      200008,
+      3575,
+      553,
+      17554,
+      162016,
+      11,
+      261,
+      4410,
+      6439,
+      2359,
+      22203,
+      656,
+      7788,
+      17527,
+      558,
+      87447,
+      100594,
+      25,
+      220,
+      1323,
+      19,
+      12,
+      3218,
+      198,
+      6576,
+      3521,
+      25,
+      220,
+      1323,
+      21,
+      12,
+      3114,
+      12,
+      1161,
+      279,
+      30377,
+      289,
+      25,
+      14093,
+      279,
+      2,
+      13888,
+      18403,
+      25,
+      8450,
+      11,
+      49159,
+      11,
+      1721,
+      13,
+      21030,
+      2804,
+      413,
+      7360,
+      395,
+      1753,
+      3176,
+      13,
+      200007,
+      200006,
+      1428,
+      200008,
+      8470,
+      290,
+      9318,
+      591,
+      220,
+      15,
+      316,
+      220,
+      702,
+      558,
+      3186,
+      4208,
+      22573,
+      350,
+      136724,
+      553,
+      150761,
+      409,
+      11,
+      625,
+      997,
+      328,
+      290,
+      4208,
+      1883,
+      1,
+      15,
+      1,
+      314,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      314,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      314,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      314,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      314,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      314,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      314,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      314,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      314,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      314,
+      220,
+      24,
+      198,
+      1,
+      702,
+      1,
+      314,
+      220,
+      702,
+      198,
+      5927,
+      25,
+      623,
+      17222,
+      9318,
+      1432,
+      382,
+      9707,
+      220,
+      15,
+      13,
+      6318,
+      1617,
+      47205,
+      3322,
+      4208,
+      558,
+      8191,
+      1606,
+      290,
+      47205,
+      3322,
+      4208,
+      11,
+      2935,
+      22661,
+      503,
+      30547,
+      13,
+      200007,
+      200006,
+      173781,
+      200005,
+      17196,
+      200008
+    ],
+    "first_http_id": 19,
+    "original_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_id": 15,
+          "logit": 24.94525146484375,
+          "probability": 0.999668877627744
+        },
+        {
+          "text": "1",
+          "token_id": 16,
+          "logit": 15.290740013122559,
+          "probability": 6.411433212564248e-05
+        },
+        {
+          "text": "2",
+          "token_id": 17,
+          "logit": 15.162412643432617,
+          "probability": 5.639274747393213e-05
+        },
+        {
+          "text": "3",
+          "token_id": 18,
+          "logit": 14.609498977661133,
+          "probability": 3.244112453032551e-05
+        },
+        {
+          "text": "4",
+          "token_id": 19,
+          "logit": 14.102100372314453,
+          "probability": 1.9531494948663502e-05
+        },
+        {
+          "text": "5",
+          "token_id": 20,
+          "logit": 14.278421401977539,
+          "probability": 2.329757593168558e-05
+        },
+        {
+          "text": "6",
+          "token_id": 21,
+          "logit": 13.443254470825195,
+          "probability": 1.010653643940952e-05
+        },
+        {
+          "text": "7",
+          "token_id": 22,
+          "logit": 14.637103080749512,
+          "probability": 3.334910704246087e-05
+        },
+        {
+          "text": "8",
+          "token_id": 23,
+          "logit": 14.106891632080078,
+          "probability": 1.9625299957204917e-05
+        },
+        {
+          "text": "9",
+          "token_id": 24,
+          "logit": 13.65264892578125,
+          "probability": 1.246066448879807e-05
+        },
+        {
+          "text": "10",
+          "token_id": 702,
+          "logit": 15.221136093139648,
+          "probability": 5.9803489318069695e-05
+        }
+      ]
+    },
+    "diagnostic_candidate": {
+      "label": "Diagnostic candidate excluded from the scale statistics.",
+      "token_ids": [
+        105505,
+        17098,
+        52015,
+        591,
+        290,
+        9318,
+        21729,
+        13
+      ]
+    },
+    "augmented_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.000565738150198248,
+          "mean_log_probability": -0.000565738150198248
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.65507718987139,
+          "mean_log_probability": -9.65507718987139
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.783404559561331,
+          "mean_log_probability": -9.783404559561331
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.336318225332816,
+          "mean_log_probability": -10.336318225332816
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.843716830679496,
+          "mean_log_probability": -10.843716830679496
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.66739580101641,
+          "mean_log_probability": -10.66739580101641
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.502562732168753,
+          "mean_log_probability": -11.502562732168753
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.308714122244437,
+          "mean_log_probability": -10.308714122244437
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.83892557091387,
+          "mean_log_probability": -10.83892557091387
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.293168277212699,
+          "mean_log_probability": -11.293168277212699
+        },
+        {
+          "text": "10",
+          "token_ids": [
+            702
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.7246811098543,
+          "mean_log_probability": -9.7246811098543
+        },
+        {
+          "text": "Diagnostic candidate excluded from the scale statistics.",
+          "token_ids": [
+            105505,
+            17098,
+            52015,
+            591,
+            290,
+            9318,
+            21729,
+            13
+          ],
+          "token_count": 8,
+          "sum_log_probability": -65.0252866661912,
+          "mean_log_probability": -8.1281608332739
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "mean_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      },
+      "mean": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      }
+    },
+    "single_token_weight_max_delta": 2.220446049250313e-16,
+    "status": "ok",
+    "last_http_id": 20
+  },
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric_api_reverse",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        702
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": []
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+    "prompt_tokens": [
+      200006,
+      17360,
+      200008,
+      3575,
+      553,
+      17554,
+      162016,
+      11,
+      261,
+      4410,
+      6439,
+      2359,
+      22203,
+      656,
+      7788,
+      17527,
+      558,
+      87447,
+      100594,
+      25,
+      220,
+      1323,
+      19,
+      12,
+      3218,
+      198,
+      6576,
+      3521,
+      25,
+      220,
+      1323,
+      21,
+      12,
+      3114,
+      12,
+      1161,
+      279,
+      30377,
+      289,
+      25,
+      14093,
+      279,
+      2,
+      13888,
+      18403,
+      25,
+      8450,
+      11,
+      49159,
+      11,
+      1721,
+      13,
+      21030,
+      2804,
+      413,
+      7360,
+      395,
+      1753,
+      3176,
+      13,
+      200007,
+      200006,
+      1428,
+      200008,
+      8470,
+      290,
+      9318,
+      591,
+      220,
+      15,
+      316,
+      220,
+      702,
+      558,
+      3186,
+      4208,
+      22573,
+      350,
+      136724,
+      553,
+      150761,
+      409,
+      11,
+      625,
+      997,
+      328,
+      290,
+      4208,
+      1883,
+      1,
+      15,
+      1,
+      314,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      314,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      314,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      314,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      314,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      314,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      314,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      314,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      314,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      314,
+      220,
+      24,
+      198,
+      1,
+      702,
+      1,
+      314,
+      220,
+      702,
+      198,
+      5927,
+      25,
+      623,
+      17222,
+      9318,
+      1432,
+      382,
+      9707,
+      220,
+      15,
+      13,
+      6318,
+      1617,
+      47205,
+      3322,
+      4208,
+      558,
+      8191,
+      1606,
+      290,
+      47205,
+      3322,
+      4208,
+      11,
+      2935,
+      22661,
+      503,
+      30547,
+      13,
+      200007,
+      200006,
+      173781,
+      200005,
+      17196,
+      200008
+    ],
+    "first_http_id": 21,
+    "original_response": {
+      "choices": [
+        {
+          "text": "10",
+          "token_id": 702,
+          "logit": 15.221136093139648,
+          "probability": 5.980348931806968e-05
+        },
+        {
+          "text": "9",
+          "token_id": 24,
+          "logit": 13.65264892578125,
+          "probability": 1.2460664488798068e-05
+        },
+        {
+          "text": "8",
+          "token_id": 23,
+          "logit": 14.106891632080078,
+          "probability": 1.9625299957204914e-05
+        },
+        {
+          "text": "7",
+          "token_id": 22,
+          "logit": 14.637103080749512,
+          "probability": 3.334910704246086e-05
+        },
+        {
+          "text": "6",
+          "token_id": 21,
+          "logit": 13.443254470825195,
+          "probability": 1.0106536439409518e-05
+        },
+        {
+          "text": "5",
+          "token_id": 20,
+          "logit": 14.278421401977539,
+          "probability": 2.3297575931685576e-05
+        },
+        {
+          "text": "4",
+          "token_id": 19,
+          "logit": 14.102100372314453,
+          "probability": 1.95314949486635e-05
+        },
+        {
+          "text": "3",
+          "token_id": 18,
+          "logit": 14.609498977661133,
+          "probability": 3.24411245303255e-05
+        },
+        {
+          "text": "2",
+          "token_id": 17,
+          "logit": 15.162412643432617,
+          "probability": 5.6392747473932113e-05
+        },
+        {
+          "text": "1",
+          "token_id": 16,
+          "logit": 15.290740013122559,
+          "probability": 6.411433212564246e-05
+        },
+        {
+          "text": "0",
+          "token_id": 15,
+          "logit": 24.94525146484375,
+          "probability": 0.9996688776277438
+        }
+      ]
+    },
+    "diagnostic_candidate": {
+      "label": "Diagnostic candidate excluded from the scale statistics.",
+      "token_ids": [
+        105505,
+        17098,
+        52015,
+        591,
+        290,
+        9318,
+        21729,
+        13
+      ]
+    },
+    "augmented_response": {
+      "choices": [
+        {
+          "text": "10",
+          "token_ids": [
+            702
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.7246811098543,
+          "mean_log_probability": -9.7246811098543
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.293168277212699,
+          "mean_log_probability": -11.293168277212699
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.83892557091387,
+          "mean_log_probability": -10.83892557091387
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.308714122244437,
+          "mean_log_probability": -10.308714122244437
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -11.502562732168753,
+          "mean_log_probability": -11.502562732168753
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.66739580101641,
+          "mean_log_probability": -10.66739580101641
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.843716830679496,
+          "mean_log_probability": -10.843716830679496
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.336318225332816,
+          "mean_log_probability": -10.336318225332816
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.783404559561331,
+          "mean_log_probability": -9.783404559561331
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.65507718987139,
+          "mean_log_probability": -9.65507718987139
+        },
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.000565738150198248,
+          "mean_log_probability": -0.000565738150198248
+        },
+        {
+          "text": "Diagnostic candidate excluded from the scale statistics.",
+          "token_ids": [
+            105505,
+            17098,
+            52015,
+            591,
+            290,
+            9318,
+            21729,
+            13
+          ],
+          "token_count": 8,
+          "sum_log_probability": -65.0252866661912,
+          "mean_log_probability": -8.1281608332739
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "mean_log_probability": [
+      -0.000565738150198248,
+      -9.65507718987139,
+      -9.783404559561331,
+      -10.336318225332816,
+      -10.843716830679496,
+      -10.66739580101641,
+      -11.502562732168753,
+      -10.308714122244437,
+      -10.83892557091387,
+      -11.293168277212699,
+      -9.7246811098543
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      },
+      "mean": {
+        "relative_weights": [
+          0.9996688776277438,
+          6.411433212564246e-05,
+          5.6392747473932113e-05,
+          3.24411245303255e-05,
+          1.95314949486635e-05,
+          2.3297575931685576e-05,
+          1.0106536439409518e-05,
+          3.334910704246086e-05,
+          1.9625299957204914e-05,
+          1.2460664488798068e-05,
+          5.980348931806968e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9996688776277438,
+            0.9997329919598694,
+            0.9997893847073434,
+            0.9998218258318737,
+            0.9998413573268223,
+            0.9998646549027541,
+            0.9998747614391935,
+            0.999908110546236,
+            0.9999277358461931,
+            0.9999401965106819,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.0016301033012887669,
+          "standard_deviation": 0.10824770220680084
+        },
+        "token_count_score_pearson": null,
+        "token_count_weight_pearson": null
+      }
+    },
+    "single_token_weight_max_delta": 0.0,
+    "status": "ok",
+    "last_http_id": 22
+  }
+]

@@ -1,0 +1,17 @@
+[
+  "C:\\AI\\llama-modes-v03\\test-save-load-state.exe",
+  "-m",
+  "C:\\Users\\lucia\\.cache\\huggingface\\hub\\models--ggml-org--gpt-oss-20b-GGUF\\snapshots\\ef9b12f2ff56c69cf32153a02784e7a3c88bf524\\gpt-oss-20b-MXFP4.gguf",
+  "-c",
+  "4096",
+  "-b",
+  "512",
+  "-ub",
+  "512",
+  "-ngl",
+  "99",
+  "-fa",
+  "auto",
+  "--decision-oracle",
+  "C:\\AI\\llama-modes\\Github_dev\\experiments\\scale_v04\\stage2c\\oracle-confirmation\\paraphrase_2-reverse-request.json"
+]

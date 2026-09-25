@@ -1,0 +1,1568 @@
+[
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        16,
+        15
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.<|im_end|>\n<|im_start|>user\nUse the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "prompt_tokens": [
+      248045,
+      8678,
+      198,
+      24342,
+      286,
+      4879,
+      369,
+      716,
+      310,
+      830,
+      11553,
+      13,
+      5044,
+      1683,
+      15060,
+      1472,
+      279,
+      3274,
+      11,
+      9307,
+      1328,
+      30800,
+      11,
+      2814,
+      47675,
+      25605,
+      11,
+      321,
+      60445,
+      55404,
+      11,
+      27224,
+      11,
+      321,
+      30246,
+      303,
+      279,
+      1534,
+      4087,
+      13,
+      248046,
+      198,
+      248045,
+      846,
+      198,
+      9947,
+      279,
+      5281,
+      494,
+      220,
+      15,
+      310,
+      220,
+      16,
+      15,
+      13,
+      198,
+      2497,
+      2306,
+      12366,
+      318,
+      51492,
+      513,
+      1538,
+      65363,
+      11,
+      524,
+      919,
+      314,
+      279,
+      2306,
+      1590,
+      198,
+      1,
+      15,
+      1,
+      283,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      283,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      283,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      283,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      283,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      283,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      283,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      283,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      283,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      283,
+      220,
+      24,
+      198,
+      1,
+      16,
+      15,
+      1,
+      283,
+      220,
+      16,
+      15,
+      198,
+      6065,
+      25,
+      561,
+      10897,
+      5281,
+      869,
+      369,
+      6681,
+      220,
+      15,
+      13,
+      3301,
+      1141,
+      23098,
+      1965,
+      2306,
+      13,
+      198,
+      5423,
+      1132,
+      279,
+      23098,
+      1965,
+      2306,
+      11,
+      1973,
+      16687,
+      466,
+      15673,
+      13,
+      248046,
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "first_http_id": 17,
+    "original_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.013041318618307651,
+          "mean_log_probability": -0.013041318618307651
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -6.297039807998191,
+          "mean_log_probability": -6.297039807998191
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.410315335952292,
+          "mean_log_probability": -9.410315335952292
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.38182336207534,
+          "mean_log_probability": -10.38182336207534
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.27736264582778,
+          "mean_log_probability": -9.27736264582778
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.421321691237937,
+          "mean_log_probability": -9.421321691237937
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.840382398330222,
+          "mean_log_probability": -10.840382398330222
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.926153005324851,
+          "mean_log_probability": -9.926153005324851
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.595322431289206,
+          "mean_log_probability": -10.595322431289206
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.607401670180808,
+          "mean_log_probability": -10.607401670180808
+        },
+        {
+          "text": "10",
+          "token_ids": [
+            16,
+            15
+          ],
+          "token_count": 2,
+          "sum_log_probability": -10.135439378497045,
+          "mean_log_probability": -5.067719689248523
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -10.135439378497045
+    ],
+    "mean_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -5.067719689248523
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9976883386251255,
+          0.0018616113915514575,
+          8.275812553736061e-05,
+          3.13249272113179e-05,
+          9.452599663799989e-05,
+          8.185225451879774e-05,
+          1.980342971963835e-05,
+          4.940662546220451e-05,
+          2.530280117298667e-05,
+          2.4999001123573662e-05,
+          4.0076821939122206e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9976883386251255,
+            0.999549950016677,
+            0.9996327081422144,
+            0.9996640330694256,
+            0.9997585590660637,
+            0.9998404113205824,
+            0.9998602147503021,
+            0.9999096213757643,
+            0.9999349241769373,
+            0.9999599231780608,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.004201316278846661,
+          "standard_deviation": 0.12962047742102184
+        },
+        "token_count_score_pearson": -0.1385932769183944,
+        "token_count_weight_pearson": -0.10021057011051503
+      },
+      "mean": {
+        "relative_weights": [
+          0.9914180217921362,
+          0.001849911452008197,
+          8.223800352376802e-05,
+          3.1128054890793466e-05,
+          9.39319153754173e-05,
+          8.133782576438871e-05,
+          1.9678968228093716e-05,
+          4.909611246600795e-05,
+          2.5143776982791765e-05,
+          2.4841886269681438e-05,
+          0.006324670212354638
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9914180217921362,
+            0.9932679332441444,
+            0.9933501712476682,
+            0.993381299302559,
+            0.9934752312179344,
+            0.9935565690436988,
+            0.9935762480119269,
+            0.9936253441243929,
+            0.9936504879013757,
+            0.9936753297876454,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.06702336432651819,
+          "standard_deviation": 0.8004410090705274
+        },
+        "token_count_score_pearson": 0.3272610114760624,
+        "token_count_weight_pearson": -0.09392767460067772
+      }
+    },
+    "status": "ok",
+    "last_http_id": 17
+  },
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric_raw",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        16,
+        15
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.<|im_end|>\n<|im_start|>user\nUse the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "prompt_tokens": [
+      248045,
+      8678,
+      198,
+      24342,
+      286,
+      4879,
+      369,
+      716,
+      310,
+      830,
+      11553,
+      13,
+      5044,
+      1683,
+      15060,
+      1472,
+      279,
+      3274,
+      11,
+      9307,
+      1328,
+      30800,
+      11,
+      2814,
+      47675,
+      25605,
+      11,
+      321,
+      60445,
+      55404,
+      11,
+      27224,
+      11,
+      321,
+      30246,
+      303,
+      279,
+      1534,
+      4087,
+      13,
+      248046,
+      198,
+      248045,
+      846,
+      198,
+      9947,
+      279,
+      5281,
+      494,
+      220,
+      15,
+      310,
+      220,
+      16,
+      15,
+      13,
+      198,
+      2497,
+      2306,
+      12366,
+      318,
+      51492,
+      513,
+      1538,
+      65363,
+      11,
+      524,
+      919,
+      314,
+      279,
+      2306,
+      1590,
+      198,
+      1,
+      15,
+      1,
+      283,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      283,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      283,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      283,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      283,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      283,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      283,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      283,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      283,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      283,
+      220,
+      24,
+      198,
+      1,
+      16,
+      15,
+      1,
+      283,
+      220,
+      16,
+      15,
+      198,
+      6065,
+      25,
+      561,
+      10897,
+      5281,
+      869,
+      369,
+      6681,
+      220,
+      15,
+      13,
+      3301,
+      1141,
+      23098,
+      1965,
+      2306,
+      13,
+      198,
+      5423,
+      1132,
+      279,
+      23098,
+      1965,
+      2306,
+      11,
+      1973,
+      16687,
+      466,
+      15673,
+      13,
+      248046,
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "first_http_id": 18,
+    "original_response": {
+      "choices": [
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.013041318618307651,
+          "mean_log_probability": -0.013041318618307651
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -6.297039807998191,
+          "mean_log_probability": -6.297039807998191
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.410315335952292,
+          "mean_log_probability": -9.410315335952292
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.38182336207534,
+          "mean_log_probability": -10.38182336207534
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.27736264582778,
+          "mean_log_probability": -9.27736264582778
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.421321691237937,
+          "mean_log_probability": -9.421321691237937
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.840382398330222,
+          "mean_log_probability": -10.840382398330222
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.926153005324851,
+          "mean_log_probability": -9.926153005324851
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.595322431289206,
+          "mean_log_probability": -10.595322431289206
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.607401670180808,
+          "mean_log_probability": -10.607401670180808
+        },
+        {
+          "text": "10",
+          "token_ids": [
+            16,
+            15
+          ],
+          "token_count": 2,
+          "sum_log_probability": -10.135439378497045,
+          "mean_log_probability": -5.067719689248523
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -10.135439378497045
+    ],
+    "mean_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -5.067719689248523
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9976883386251255,
+          0.0018616113915514575,
+          8.275812553736061e-05,
+          3.13249272113179e-05,
+          9.452599663799989e-05,
+          8.185225451879774e-05,
+          1.980342971963835e-05,
+          4.940662546220451e-05,
+          2.530280117298667e-05,
+          2.4999001123573662e-05,
+          4.0076821939122206e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9976883386251255,
+            0.999549950016677,
+            0.9996327081422144,
+            0.9996640330694256,
+            0.9997585590660637,
+            0.9998404113205824,
+            0.9998602147503021,
+            0.9999096213757643,
+            0.9999349241769373,
+            0.9999599231780608,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.004201316278846661,
+          "standard_deviation": 0.12962047742102184
+        },
+        "token_count_score_pearson": -0.1385932769183944,
+        "token_count_weight_pearson": -0.10021057011051503
+      },
+      "mean": {
+        "relative_weights": [
+          0.9914180217921362,
+          0.001849911452008197,
+          8.223800352376802e-05,
+          3.1128054890793466e-05,
+          9.39319153754173e-05,
+          8.133782576438871e-05,
+          1.9678968228093716e-05,
+          4.909611246600795e-05,
+          2.5143776982791765e-05,
+          2.4841886269681438e-05,
+          0.006324670212354638
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9914180217921362,
+            0.9932679332441444,
+            0.9933501712476682,
+            0.993381299302559,
+            0.9934752312179344,
+            0.9935565690436988,
+            0.9935762480119269,
+            0.9936253441243929,
+            0.9936504879013757,
+            0.9936753297876454,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.06702336432651819,
+          "standard_deviation": 0.8004410090705274
+        },
+        "token_count_score_pearson": 0.3272610114760624,
+        "token_count_weight_pearson": -0.09392767460067772
+      }
+    },
+    "status": "ok",
+    "last_http_id": 18
+  },
+  {
+    "case": "target_0",
+    "family": "instructed",
+    "measurement": "interval",
+    "expected": 0,
+    "task": "The requested scale value is exactly 0. Return its mapped response label.",
+    "scale": "0_10",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "variant": "numeric_api_reverse",
+    "labels": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10"
+    ],
+    "token_ids": [
+      [
+        15
+      ],
+      [
+        16
+      ],
+      [
+        17
+      ],
+      [
+        18
+      ],
+      [
+        19
+      ],
+      [
+        20
+      ],
+      [
+        21
+      ],
+      [
+        22
+      ],
+      [
+        23
+      ],
+      [
+        24
+      ],
+      [
+        16,
+        15
+      ]
+    ],
+    "token_counts": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2
+    ],
+    "token_issues": {
+      "duplicates": [],
+      "strict_prefixes": [
+        [
+          1,
+          10
+        ]
+      ]
+    },
+    "messages": [
+      {
+        "role": "user",
+        "content": "Use the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation."
+      }
+    ],
+    "prepared_prompt": "<|im_start|>system\nReasoning effort is set to xhigh. Please think carefully through the task, validate key assumptions, consider plausible alternatives, and prioritize correctness, consistency, and clarity in the final answer.<|im_end|>\n<|im_start|>user\nUse the scale from 0 to 10.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\n\"3\" = 3\n\"4\" = 4\n\"5\" = 5\n\"6\" = 6\n\"7\" = 7\n\"8\" = 8\n\"9\" = 9\n\"10\" = 10\nTask: The requested scale value is exactly 0. Return its mapped response label.\nReturn only the mapped response label, without quotes or explanation.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "prompt_tokens": [
+      248045,
+      8678,
+      198,
+      24342,
+      286,
+      4879,
+      369,
+      716,
+      310,
+      830,
+      11553,
+      13,
+      5044,
+      1683,
+      15060,
+      1472,
+      279,
+      3274,
+      11,
+      9307,
+      1328,
+      30800,
+      11,
+      2814,
+      47675,
+      25605,
+      11,
+      321,
+      60445,
+      55404,
+      11,
+      27224,
+      11,
+      321,
+      30246,
+      303,
+      279,
+      1534,
+      4087,
+      13,
+      248046,
+      198,
+      248045,
+      846,
+      198,
+      9947,
+      279,
+      5281,
+      494,
+      220,
+      15,
+      310,
+      220,
+      16,
+      15,
+      13,
+      198,
+      2497,
+      2306,
+      12366,
+      318,
+      51492,
+      513,
+      1538,
+      65363,
+      11,
+      524,
+      919,
+      314,
+      279,
+      2306,
+      1590,
+      198,
+      1,
+      15,
+      1,
+      283,
+      220,
+      15,
+      198,
+      1,
+      16,
+      1,
+      283,
+      220,
+      16,
+      198,
+      1,
+      17,
+      1,
+      283,
+      220,
+      17,
+      198,
+      1,
+      18,
+      1,
+      283,
+      220,
+      18,
+      198,
+      1,
+      19,
+      1,
+      283,
+      220,
+      19,
+      198,
+      1,
+      20,
+      1,
+      283,
+      220,
+      20,
+      198,
+      1,
+      21,
+      1,
+      283,
+      220,
+      21,
+      198,
+      1,
+      22,
+      1,
+      283,
+      220,
+      22,
+      198,
+      1,
+      23,
+      1,
+      283,
+      220,
+      23,
+      198,
+      1,
+      24,
+      1,
+      283,
+      220,
+      24,
+      198,
+      1,
+      16,
+      15,
+      1,
+      283,
+      220,
+      16,
+      15,
+      198,
+      6065,
+      25,
+      561,
+      10897,
+      5281,
+      869,
+      369,
+      6681,
+      220,
+      15,
+      13,
+      3301,
+      1141,
+      23098,
+      1965,
+      2306,
+      13,
+      198,
+      5423,
+      1132,
+      279,
+      23098,
+      1965,
+      2306,
+      11,
+      1973,
+      16687,
+      466,
+      15673,
+      13,
+      248046,
+      198,
+      248045,
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "first_http_id": 19,
+    "original_response": {
+      "choices": [
+        {
+          "text": "10",
+          "token_ids": [
+            16,
+            15
+          ],
+          "token_count": 2,
+          "sum_log_probability": -10.135439378497045,
+          "mean_log_probability": -5.067719689248523
+        },
+        {
+          "text": "9",
+          "token_ids": [
+            24
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.607401670180808,
+          "mean_log_probability": -10.607401670180808
+        },
+        {
+          "text": "8",
+          "token_ids": [
+            23
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.595322431289206,
+          "mean_log_probability": -10.595322431289206
+        },
+        {
+          "text": "7",
+          "token_ids": [
+            22
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.926153005324851,
+          "mean_log_probability": -9.926153005324851
+        },
+        {
+          "text": "6",
+          "token_ids": [
+            21
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.840382398330222,
+          "mean_log_probability": -10.840382398330222
+        },
+        {
+          "text": "5",
+          "token_ids": [
+            20
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.421321691237937,
+          "mean_log_probability": -9.421321691237937
+        },
+        {
+          "text": "4",
+          "token_ids": [
+            19
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.27736264582778,
+          "mean_log_probability": -9.27736264582778
+        },
+        {
+          "text": "3",
+          "token_ids": [
+            18
+          ],
+          "token_count": 1,
+          "sum_log_probability": -10.38182336207534,
+          "mean_log_probability": -10.38182336207534
+        },
+        {
+          "text": "2",
+          "token_ids": [
+            17
+          ],
+          "token_count": 1,
+          "sum_log_probability": -9.410315335952292,
+          "mean_log_probability": -9.410315335952292
+        },
+        {
+          "text": "1",
+          "token_ids": [
+            16
+          ],
+          "token_count": 1,
+          "sum_log_probability": -6.297039807998191,
+          "mean_log_probability": -6.297039807998191
+        },
+        {
+          "text": "0",
+          "token_ids": [
+            15
+          ],
+          "token_count": 1,
+          "sum_log_probability": -0.013041318618307651,
+          "mean_log_probability": -0.013041318618307651
+        }
+      ]
+    },
+    "sum_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -10.135439378497045
+    ],
+    "mean_log_probability": [
+      -0.013041318618307651,
+      -6.297039807998191,
+      -9.410315335952292,
+      -10.38182336207534,
+      -9.27736264582778,
+      -9.421321691237937,
+      -10.840382398330222,
+      -9.926153005324851,
+      -10.595322431289206,
+      -10.607401670180808,
+      -5.067719689248523
+    ],
+    "scores": {
+      "sum": {
+        "relative_weights": [
+          0.9976883386251255,
+          0.0018616113915514575,
+          8.275812553736061e-05,
+          3.13249272113179e-05,
+          9.452599663799989e-05,
+          8.185225451879774e-05,
+          1.980342971963835e-05,
+          4.940662546220451e-05,
+          2.530280117298667e-05,
+          2.4999001123573662e-05,
+          4.0076821939122206e-05
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9976883386251255,
+            0.999549950016677,
+            0.9996327081422144,
+            0.9996640330694256,
+            0.9997585590660637,
+            0.9998404113205824,
+            0.9998602147503021,
+            0.9999096213757643,
+            0.9999349241769373,
+            0.9999599231780608,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.004201316278846661,
+          "standard_deviation": 0.12962047742102184
+        },
+        "token_count_score_pearson": -0.1385932769183944,
+        "token_count_weight_pearson": -0.10021057011051503
+      },
+      "mean": {
+        "relative_weights": [
+          0.9914180217921362,
+          0.001849911452008197,
+          8.223800352376802e-05,
+          3.1128054890793466e-05,
+          9.39319153754173e-05,
+          8.133782576438871e-05,
+          1.9678968228093716e-05,
+          4.909611246600795e-05,
+          2.5143776982791765e-05,
+          2.4841886269681438e-05,
+          0.006324670212354638
+        ],
+        "ordinal": {
+          "modes": [
+            0
+          ],
+          "median": 0,
+          "quantiles": {
+            "0.1": 0,
+            "0.25": 0,
+            "0.5": 0,
+            "0.75": 0,
+            "0.9": 0
+          },
+          "cumulative_weights": [
+            0.9914180217921362,
+            0.9932679332441444,
+            0.9933501712476682,
+            0.993381299302559,
+            0.9934752312179344,
+            0.9935565690436988,
+            0.9935762480119269,
+            0.9936253441243929,
+            0.9936504879013757,
+            0.9936753297876454,
+            1.0
+          ]
+        },
+        "interval": {
+          "expected_value": 0.06702336432651819,
+          "standard_deviation": 0.8004410090705274
+        },
+        "token_count_score_pearson": 0.3272610114760624,
+        "token_count_weight_pearson": -0.09392767460067772
+      }
+    },
+    "status": "ok",
+    "last_http_id": 19
+  }
+]

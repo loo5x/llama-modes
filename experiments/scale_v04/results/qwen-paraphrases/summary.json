@@ -1,0 +1,345 @@
+{
+  "completed": 210,
+  "successful": 210,
+  "errors": [],
+  "prefix_overlap_rows": 44,
+  "duplicate_rows": 0,
+  "controls": {
+    "numeric_api_reverse": {
+      "pairs": 21,
+      "max_absolute_sum_score_delta": 0.0
+    },
+    "numeric_raw": {
+      "pairs": 21,
+      "max_absolute_sum_score_delta": 0.0
+    }
+  },
+  "comparisons": {
+    "numeric:sum -> numeric:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.012264437002125346,
+      "max_total_variation": 0.07590560780414948,
+      "max_absolute_expected_value_shift": null
+    },
+    "fixed:sum -> fixed:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.19315236683809614,
+      "max_total_variation": 0.3581740019048924,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> fixed:sum": {
+      "pairs": 21,
+      "modal_changes": 2,
+      "median_changes": 2,
+      "mean_total_variation": 0.07724315277946187,
+      "max_total_variation": 0.514355557232218,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> fixed:mean": {
+      "pairs": 21,
+      "modal_changes": 2,
+      "median_changes": 2,
+      "mean_total_variation": 0.21151651074316236,
+      "max_total_variation": 0.49780629872332527,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol:sum -> symbol:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> symbol:sum": {
+      "pairs": 21,
+      "modal_changes": 7,
+      "median_changes": 7,
+      "mean_total_variation": 0.22799923690289842,
+      "max_total_variation": 0.8019500610870929,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> symbol:mean": {
+      "pairs": 21,
+      "modal_changes": 7,
+      "median_changes": 7,
+      "mean_total_variation": 0.23086634918050974,
+      "max_total_variation": 0.8112534489344062,
+      "max_absolute_expected_value_shift": null
+    },
+    "anchor:sum -> anchor:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.05213330057740601,
+      "max_total_variation": 0.21963416921338186,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> anchor:sum": {
+      "pairs": 21,
+      "modal_changes": 3,
+      "median_changes": 3,
+      "mean_total_variation": 0.14640582129240073,
+      "max_total_variation": 0.8276963823895496,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> anchor:mean": {
+      "pairs": 21,
+      "modal_changes": 3,
+      "median_changes": 3,
+      "mean_total_variation": 0.15736435417152905,
+      "max_total_variation": 0.8318432825632172,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric_ended:sum -> numeric_ended:mean": {
+      "pairs": 21,
+      "modal_changes": 10,
+      "median_changes": 13,
+      "mean_total_variation": 0.44883101631548455,
+      "max_total_variation": 0.8815027146979887,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> numeric_ended:sum": {
+      "pairs": 21,
+      "modal_changes": 13,
+      "median_changes": 13,
+      "mean_total_variation": 0.5984668710670508,
+      "max_total_variation": 0.9744463942213542,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> numeric_ended:mean": {
+      "pairs": 21,
+      "modal_changes": 16,
+      "median_changes": 14,
+      "mean_total_variation": 0.6834984410225612,
+      "max_total_variation": 0.9814830001110587,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric_space:sum -> numeric_space:mean": {
+      "pairs": 21,
+      "modal_changes": 7,
+      "median_changes": 6,
+      "mean_total_variation": 0.34657584663467594,
+      "max_total_variation": 0.6701247630239906,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> numeric_space:sum": {
+      "pairs": 21,
+      "modal_changes": 1,
+      "median_changes": 2,
+      "mean_total_variation": 0.1269596540635166,
+      "max_total_variation": 0.8322165934949606,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> numeric_space:mean": {
+      "pairs": 21,
+      "modal_changes": 8,
+      "median_changes": 7,
+      "mean_total_variation": 0.41365606197290566,
+      "max_total_variation": 0.7526530355946395,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric_api_reverse:sum -> numeric_api_reverse:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.012264437002125346,
+      "max_total_variation": 0.07590560780414948,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> numeric_api_reverse:sum": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> numeric_api_reverse:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol_rotate:sum -> symbol_rotate:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol:sum -> symbol_rotate:sum": {
+      "pairs": 21,
+      "modal_changes": 7,
+      "median_changes": 5,
+      "mean_total_variation": 0.24684225834774684,
+      "max_total_variation": 0.8071699182167191,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol:mean -> symbol_rotate:mean": {
+      "pairs": 21,
+      "modal_changes": 7,
+      "median_changes": 5,
+      "mean_total_variation": 0.24684225834774684,
+      "max_total_variation": 0.8071699182167191,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol_list_reverse:sum -> symbol_list_reverse:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol:sum -> symbol_list_reverse:sum": {
+      "pairs": 21,
+      "modal_changes": 1,
+      "median_changes": 4,
+      "mean_total_variation": 0.12119633650901183,
+      "max_total_variation": 0.4504570611733211,
+      "max_absolute_expected_value_shift": null
+    },
+    "symbol:mean -> symbol_list_reverse:mean": {
+      "pairs": 21,
+      "modal_changes": 1,
+      "median_changes": 4,
+      "mean_total_variation": 0.12119633650901183,
+      "max_total_variation": 0.4504570611733211,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric_raw:sum -> numeric_raw:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.012264437002125346,
+      "max_total_variation": 0.07590560780414948,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:sum -> numeric_raw:sum": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    },
+    "numeric:mean -> numeric_raw:mean": {
+      "pairs": 21,
+      "modal_changes": 0,
+      "median_changes": 0,
+      "mean_total_variation": 0.0,
+      "max_total_variation": 0.0,
+      "max_absolute_expected_value_shift": null
+    }
+  },
+  "synthetic_mapping_accuracy": {
+    "numeric:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "numeric:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "fixed:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "fixed:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "symbol:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 16
+    },
+    "symbol:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 16
+    },
+    "anchor:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 18,
+      "median_correct": 18
+    },
+    "anchor:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 18,
+      "median_correct": 18
+    },
+    "numeric_ended:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 8,
+      "median_correct": 8
+    },
+    "numeric_ended:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 7,
+      "median_correct": 7
+    },
+    "numeric_space:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 18,
+      "median_correct": 17
+    },
+    "numeric_space:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 13,
+      "median_correct": 14
+    },
+    "numeric_api_reverse:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "numeric_api_reverse:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "symbol_rotate:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 15,
+      "median_correct": 13
+    },
+    "symbol_rotate:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 15,
+      "median_correct": 13
+    },
+    "symbol_list_reverse:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 16
+    },
+    "symbol_list_reverse:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 16,
+      "median_correct": 16
+    },
+    "numeric_raw:sum:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    },
+    "numeric_raw:mean:rubric": {
+      "n": 21,
+      "unique_mode_correct": 19,
+      "median_correct": 19
+    }
+  }
+}

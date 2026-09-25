@@ -1,0 +1,8179 @@
+[
+  {
+    "name": "attn_norm-0",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "000-attn_norm-0.bin"
+  },
+  {
+    "name": "Qcur-0",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "001-Qcur-0.bin"
+  },
+  {
+    "name": "Qcur-0",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "002-Qcur-0.bin"
+  },
+  {
+    "name": "Qcur-0",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "003-Qcur-0.bin"
+  },
+  {
+    "name": "Qcur-0",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "004-Qcur-0.bin"
+  },
+  {
+    "name": "Kcur-0",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "005-Kcur-0.bin"
+  },
+  {
+    "name": "Kcur-0",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "006-Kcur-0.bin"
+  },
+  {
+    "name": "Kcur-0",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "007-Kcur-0.bin"
+  },
+  {
+    "name": "Kcur-0",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "008-Kcur-0.bin"
+  },
+  {
+    "name": "Vcur-0",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "009-Vcur-0.bin"
+  },
+  {
+    "name": "Vcur-0",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "010-Vcur-0.bin"
+  },
+  {
+    "name": "Vcur-0",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "011-Vcur-0.bin"
+  },
+  {
+    "name": "Kcur-0 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "012-Kcur-0 (view).bin"
+  },
+  {
+    "name": "Vcur-0 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "013-Vcur-0 (view).bin"
+  },
+  {
+    "name": "Qcur-0 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "014-Qcur-0 (view).bin"
+  },
+  {
+    "name": "Qcur-0 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "015-Qcur-0 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-0",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "016-kqv_out-0.bin"
+  },
+  {
+    "name": "attn_out-0",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "017-attn_out-0.bin"
+  },
+  {
+    "name": "ffn_inp-0",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "018-ffn_inp-0.bin"
+  },
+  {
+    "name": "l_out-0",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "019-l_out-0.bin"
+  },
+  {
+    "name": "attn_norm-1",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "020-attn_norm-1.bin"
+  },
+  {
+    "name": "Qcur-1",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "021-Qcur-1.bin"
+  },
+  {
+    "name": "Qcur-1",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "022-Qcur-1.bin"
+  },
+  {
+    "name": "Qcur-1",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "023-Qcur-1.bin"
+  },
+  {
+    "name": "Qcur-1",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "024-Qcur-1.bin"
+  },
+  {
+    "name": "Kcur-1",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "025-Kcur-1.bin"
+  },
+  {
+    "name": "Kcur-1",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "026-Kcur-1.bin"
+  },
+  {
+    "name": "Kcur-1",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "027-Kcur-1.bin"
+  },
+  {
+    "name": "Kcur-1",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "028-Kcur-1.bin"
+  },
+  {
+    "name": "Vcur-1",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "029-Vcur-1.bin"
+  },
+  {
+    "name": "Vcur-1",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "030-Vcur-1.bin"
+  },
+  {
+    "name": "Vcur-1",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "031-Vcur-1.bin"
+  },
+  {
+    "name": "Kcur-1 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "032-Kcur-1 (view).bin"
+  },
+  {
+    "name": "Vcur-1 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "033-Vcur-1 (view).bin"
+  },
+  {
+    "name": "Qcur-1 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "034-Qcur-1 (view).bin"
+  },
+  {
+    "name": "Qcur-1 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "035-Qcur-1 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-1",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "036-kqv_out-1.bin"
+  },
+  {
+    "name": "attn_out-1",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "037-attn_out-1.bin"
+  },
+  {
+    "name": "ffn_inp-1",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "038-ffn_inp-1.bin"
+  },
+  {
+    "name": "l_out-1",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "039-l_out-1.bin"
+  },
+  {
+    "name": "attn_norm-2",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "040-attn_norm-2.bin"
+  },
+  {
+    "name": "Qcur-2",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "041-Qcur-2.bin"
+  },
+  {
+    "name": "Qcur-2",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "042-Qcur-2.bin"
+  },
+  {
+    "name": "Qcur-2",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "043-Qcur-2.bin"
+  },
+  {
+    "name": "Qcur-2",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "044-Qcur-2.bin"
+  },
+  {
+    "name": "Kcur-2",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "045-Kcur-2.bin"
+  },
+  {
+    "name": "Kcur-2",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "046-Kcur-2.bin"
+  },
+  {
+    "name": "Kcur-2",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "047-Kcur-2.bin"
+  },
+  {
+    "name": "Kcur-2",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "048-Kcur-2.bin"
+  },
+  {
+    "name": "Vcur-2",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "049-Vcur-2.bin"
+  },
+  {
+    "name": "Vcur-2",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "050-Vcur-2.bin"
+  },
+  {
+    "name": "Vcur-2",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "051-Vcur-2.bin"
+  },
+  {
+    "name": "Kcur-2 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "052-Kcur-2 (view).bin"
+  },
+  {
+    "name": "Vcur-2 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "053-Vcur-2 (view).bin"
+  },
+  {
+    "name": "Qcur-2 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "054-Qcur-2 (view).bin"
+  },
+  {
+    "name": "Qcur-2 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "055-Qcur-2 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-2",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "056-kqv_out-2.bin"
+  },
+  {
+    "name": "attn_out-2",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "057-attn_out-2.bin"
+  },
+  {
+    "name": "ffn_inp-2",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "058-ffn_inp-2.bin"
+  },
+  {
+    "name": "l_out-2",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "059-l_out-2.bin"
+  },
+  {
+    "name": "attn_norm-3",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "060-attn_norm-3.bin"
+  },
+  {
+    "name": "Qcur-3",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "061-Qcur-3.bin"
+  },
+  {
+    "name": "Qcur-3",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "062-Qcur-3.bin"
+  },
+  {
+    "name": "Qcur-3",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "063-Qcur-3.bin"
+  },
+  {
+    "name": "Qcur-3",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "064-Qcur-3.bin"
+  },
+  {
+    "name": "Kcur-3",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "065-Kcur-3.bin"
+  },
+  {
+    "name": "Kcur-3",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "066-Kcur-3.bin"
+  },
+  {
+    "name": "Kcur-3",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "067-Kcur-3.bin"
+  },
+  {
+    "name": "Kcur-3",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "068-Kcur-3.bin"
+  },
+  {
+    "name": "Vcur-3",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "069-Vcur-3.bin"
+  },
+  {
+    "name": "Vcur-3",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "070-Vcur-3.bin"
+  },
+  {
+    "name": "Vcur-3",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "071-Vcur-3.bin"
+  },
+  {
+    "name": "Kcur-3 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "072-Kcur-3 (view).bin"
+  },
+  {
+    "name": "Vcur-3 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "073-Vcur-3 (view).bin"
+  },
+  {
+    "name": "Qcur-3 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "074-Qcur-3 (view).bin"
+  },
+  {
+    "name": "Qcur-3 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "075-Qcur-3 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-3",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "076-kqv_out-3.bin"
+  },
+  {
+    "name": "attn_out-3",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "077-attn_out-3.bin"
+  },
+  {
+    "name": "ffn_inp-3",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "078-ffn_inp-3.bin"
+  },
+  {
+    "name": "l_out-3",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "079-l_out-3.bin"
+  },
+  {
+    "name": "attn_norm-4",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "080-attn_norm-4.bin"
+  },
+  {
+    "name": "Qcur-4",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "081-Qcur-4.bin"
+  },
+  {
+    "name": "Qcur-4",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "082-Qcur-4.bin"
+  },
+  {
+    "name": "Qcur-4",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "083-Qcur-4.bin"
+  },
+  {
+    "name": "Qcur-4",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "084-Qcur-4.bin"
+  },
+  {
+    "name": "Kcur-4",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "085-Kcur-4.bin"
+  },
+  {
+    "name": "Kcur-4",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "086-Kcur-4.bin"
+  },
+  {
+    "name": "Kcur-4",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "087-Kcur-4.bin"
+  },
+  {
+    "name": "Kcur-4",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "088-Kcur-4.bin"
+  },
+  {
+    "name": "Vcur-4",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "089-Vcur-4.bin"
+  },
+  {
+    "name": "Vcur-4",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "090-Vcur-4.bin"
+  },
+  {
+    "name": "Vcur-4",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "091-Vcur-4.bin"
+  },
+  {
+    "name": "Kcur-4 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "092-Kcur-4 (view).bin"
+  },
+  {
+    "name": "Vcur-4 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "093-Vcur-4 (view).bin"
+  },
+  {
+    "name": "Qcur-4 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "094-Qcur-4 (view).bin"
+  },
+  {
+    "name": "Qcur-4 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "095-Qcur-4 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-4",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "096-kqv_out-4.bin"
+  },
+  {
+    "name": "attn_out-4",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "097-attn_out-4.bin"
+  },
+  {
+    "name": "ffn_inp-4",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "098-ffn_inp-4.bin"
+  },
+  {
+    "name": "l_out-4",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "099-l_out-4.bin"
+  },
+  {
+    "name": "attn_norm-5",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "100-attn_norm-5.bin"
+  },
+  {
+    "name": "Qcur-5",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "101-Qcur-5.bin"
+  },
+  {
+    "name": "Qcur-5",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "102-Qcur-5.bin"
+  },
+  {
+    "name": "Qcur-5",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "103-Qcur-5.bin"
+  },
+  {
+    "name": "Qcur-5",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "104-Qcur-5.bin"
+  },
+  {
+    "name": "Kcur-5",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "105-Kcur-5.bin"
+  },
+  {
+    "name": "Kcur-5",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "106-Kcur-5.bin"
+  },
+  {
+    "name": "Kcur-5",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "107-Kcur-5.bin"
+  },
+  {
+    "name": "Kcur-5",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "108-Kcur-5.bin"
+  },
+  {
+    "name": "Vcur-5",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "109-Vcur-5.bin"
+  },
+  {
+    "name": "Vcur-5",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "110-Vcur-5.bin"
+  },
+  {
+    "name": "Vcur-5",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "111-Vcur-5.bin"
+  },
+  {
+    "name": "Kcur-5 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "112-Kcur-5 (view).bin"
+  },
+  {
+    "name": "Vcur-5 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "113-Vcur-5 (view).bin"
+  },
+  {
+    "name": "Qcur-5 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "114-Qcur-5 (view).bin"
+  },
+  {
+    "name": "Qcur-5 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "115-Qcur-5 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-5",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "116-kqv_out-5.bin"
+  },
+  {
+    "name": "attn_out-5",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "117-attn_out-5.bin"
+  },
+  {
+    "name": "ffn_inp-5",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "118-ffn_inp-5.bin"
+  },
+  {
+    "name": "l_out-5",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "119-l_out-5.bin"
+  },
+  {
+    "name": "attn_norm-6",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "120-attn_norm-6.bin"
+  },
+  {
+    "name": "Qcur-6",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "121-Qcur-6.bin"
+  },
+  {
+    "name": "Qcur-6",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "122-Qcur-6.bin"
+  },
+  {
+    "name": "Qcur-6",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "123-Qcur-6.bin"
+  },
+  {
+    "name": "Qcur-6",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "124-Qcur-6.bin"
+  },
+  {
+    "name": "Kcur-6",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "125-Kcur-6.bin"
+  },
+  {
+    "name": "Kcur-6",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "126-Kcur-6.bin"
+  },
+  {
+    "name": "Kcur-6",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "127-Kcur-6.bin"
+  },
+  {
+    "name": "Kcur-6",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "128-Kcur-6.bin"
+  },
+  {
+    "name": "Vcur-6",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "129-Vcur-6.bin"
+  },
+  {
+    "name": "Vcur-6",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "130-Vcur-6.bin"
+  },
+  {
+    "name": "Vcur-6",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "131-Vcur-6.bin"
+  },
+  {
+    "name": "Kcur-6 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "132-Kcur-6 (view).bin"
+  },
+  {
+    "name": "Vcur-6 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "133-Vcur-6 (view).bin"
+  },
+  {
+    "name": "Qcur-6 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "134-Qcur-6 (view).bin"
+  },
+  {
+    "name": "Qcur-6 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "135-Qcur-6 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-6",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "136-kqv_out-6.bin"
+  },
+  {
+    "name": "attn_out-6",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "137-attn_out-6.bin"
+  },
+  {
+    "name": "ffn_inp-6",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "138-ffn_inp-6.bin"
+  },
+  {
+    "name": "l_out-6",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "139-l_out-6.bin"
+  },
+  {
+    "name": "attn_norm-7",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "140-attn_norm-7.bin"
+  },
+  {
+    "name": "Qcur-7",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "141-Qcur-7.bin"
+  },
+  {
+    "name": "Qcur-7",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "142-Qcur-7.bin"
+  },
+  {
+    "name": "Qcur-7",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "143-Qcur-7.bin"
+  },
+  {
+    "name": "Qcur-7",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "144-Qcur-7.bin"
+  },
+  {
+    "name": "Kcur-7",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "145-Kcur-7.bin"
+  },
+  {
+    "name": "Kcur-7",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "146-Kcur-7.bin"
+  },
+  {
+    "name": "Kcur-7",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "147-Kcur-7.bin"
+  },
+  {
+    "name": "Kcur-7",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "148-Kcur-7.bin"
+  },
+  {
+    "name": "Vcur-7",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "149-Vcur-7.bin"
+  },
+  {
+    "name": "Vcur-7",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "150-Vcur-7.bin"
+  },
+  {
+    "name": "Vcur-7",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "151-Vcur-7.bin"
+  },
+  {
+    "name": "Kcur-7 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "152-Kcur-7 (view).bin"
+  },
+  {
+    "name": "Vcur-7 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "153-Vcur-7 (view).bin"
+  },
+  {
+    "name": "Qcur-7 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "154-Qcur-7 (view).bin"
+  },
+  {
+    "name": "Qcur-7 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "155-Qcur-7 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-7",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "156-kqv_out-7.bin"
+  },
+  {
+    "name": "attn_out-7",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "157-attn_out-7.bin"
+  },
+  {
+    "name": "ffn_inp-7",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "158-ffn_inp-7.bin"
+  },
+  {
+    "name": "l_out-7",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "159-l_out-7.bin"
+  },
+  {
+    "name": "attn_norm-8",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "160-attn_norm-8.bin"
+  },
+  {
+    "name": "Qcur-8",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "161-Qcur-8.bin"
+  },
+  {
+    "name": "Qcur-8",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "162-Qcur-8.bin"
+  },
+  {
+    "name": "Qcur-8",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "163-Qcur-8.bin"
+  },
+  {
+    "name": "Qcur-8",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "164-Qcur-8.bin"
+  },
+  {
+    "name": "Kcur-8",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "165-Kcur-8.bin"
+  },
+  {
+    "name": "Kcur-8",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "166-Kcur-8.bin"
+  },
+  {
+    "name": "Kcur-8",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "167-Kcur-8.bin"
+  },
+  {
+    "name": "Kcur-8",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "168-Kcur-8.bin"
+  },
+  {
+    "name": "Vcur-8",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "169-Vcur-8.bin"
+  },
+  {
+    "name": "Vcur-8",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "170-Vcur-8.bin"
+  },
+  {
+    "name": "Vcur-8",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "171-Vcur-8.bin"
+  },
+  {
+    "name": "Kcur-8 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "172-Kcur-8 (view).bin"
+  },
+  {
+    "name": "Vcur-8 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "173-Vcur-8 (view).bin"
+  },
+  {
+    "name": "Qcur-8 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "174-Qcur-8 (view).bin"
+  },
+  {
+    "name": "Qcur-8 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "175-Qcur-8 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-8",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "176-kqv_out-8.bin"
+  },
+  {
+    "name": "attn_out-8",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "177-attn_out-8.bin"
+  },
+  {
+    "name": "ffn_inp-8",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "178-ffn_inp-8.bin"
+  },
+  {
+    "name": "l_out-8",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "179-l_out-8.bin"
+  },
+  {
+    "name": "attn_norm-9",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "180-attn_norm-9.bin"
+  },
+  {
+    "name": "Qcur-9",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "181-Qcur-9.bin"
+  },
+  {
+    "name": "Qcur-9",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "182-Qcur-9.bin"
+  },
+  {
+    "name": "Qcur-9",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "183-Qcur-9.bin"
+  },
+  {
+    "name": "Qcur-9",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "184-Qcur-9.bin"
+  },
+  {
+    "name": "Kcur-9",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "185-Kcur-9.bin"
+  },
+  {
+    "name": "Kcur-9",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "186-Kcur-9.bin"
+  },
+  {
+    "name": "Kcur-9",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "187-Kcur-9.bin"
+  },
+  {
+    "name": "Kcur-9",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "188-Kcur-9.bin"
+  },
+  {
+    "name": "Vcur-9",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "189-Vcur-9.bin"
+  },
+  {
+    "name": "Vcur-9",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "190-Vcur-9.bin"
+  },
+  {
+    "name": "Vcur-9",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "191-Vcur-9.bin"
+  },
+  {
+    "name": "Kcur-9 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "192-Kcur-9 (view).bin"
+  },
+  {
+    "name": "Vcur-9 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "193-Vcur-9 (view).bin"
+  },
+  {
+    "name": "Qcur-9 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "194-Qcur-9 (view).bin"
+  },
+  {
+    "name": "Qcur-9 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "195-Qcur-9 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-9",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "196-kqv_out-9.bin"
+  },
+  {
+    "name": "attn_out-9",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "197-attn_out-9.bin"
+  },
+  {
+    "name": "ffn_inp-9",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "198-ffn_inp-9.bin"
+  },
+  {
+    "name": "l_out-9",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "199-l_out-9.bin"
+  },
+  {
+    "name": "attn_norm-10",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "200-attn_norm-10.bin"
+  },
+  {
+    "name": "Qcur-10",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "201-Qcur-10.bin"
+  },
+  {
+    "name": "Qcur-10",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "202-Qcur-10.bin"
+  },
+  {
+    "name": "Qcur-10",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "203-Qcur-10.bin"
+  },
+  {
+    "name": "Qcur-10",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "204-Qcur-10.bin"
+  },
+  {
+    "name": "Kcur-10",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "205-Kcur-10.bin"
+  },
+  {
+    "name": "Kcur-10",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "206-Kcur-10.bin"
+  },
+  {
+    "name": "Kcur-10",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "207-Kcur-10.bin"
+  },
+  {
+    "name": "Kcur-10",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "208-Kcur-10.bin"
+  },
+  {
+    "name": "Vcur-10",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "209-Vcur-10.bin"
+  },
+  {
+    "name": "Vcur-10",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "210-Vcur-10.bin"
+  },
+  {
+    "name": "Vcur-10",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "211-Vcur-10.bin"
+  },
+  {
+    "name": "Kcur-10 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "212-Kcur-10 (view).bin"
+  },
+  {
+    "name": "Vcur-10 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "213-Vcur-10 (view).bin"
+  },
+  {
+    "name": "Qcur-10 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "214-Qcur-10 (view).bin"
+  },
+  {
+    "name": "Qcur-10 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "215-Qcur-10 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-10",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "216-kqv_out-10.bin"
+  },
+  {
+    "name": "attn_out-10",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "217-attn_out-10.bin"
+  },
+  {
+    "name": "ffn_inp-10",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "218-ffn_inp-10.bin"
+  },
+  {
+    "name": "l_out-10",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "219-l_out-10.bin"
+  },
+  {
+    "name": "attn_norm-11",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "220-attn_norm-11.bin"
+  },
+  {
+    "name": "Qcur-11",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "221-Qcur-11.bin"
+  },
+  {
+    "name": "Qcur-11",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "222-Qcur-11.bin"
+  },
+  {
+    "name": "Qcur-11",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "223-Qcur-11.bin"
+  },
+  {
+    "name": "Qcur-11",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "224-Qcur-11.bin"
+  },
+  {
+    "name": "Kcur-11",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "225-Kcur-11.bin"
+  },
+  {
+    "name": "Kcur-11",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "226-Kcur-11.bin"
+  },
+  {
+    "name": "Kcur-11",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "227-Kcur-11.bin"
+  },
+  {
+    "name": "Kcur-11",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "228-Kcur-11.bin"
+  },
+  {
+    "name": "Vcur-11",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "229-Vcur-11.bin"
+  },
+  {
+    "name": "Vcur-11",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "230-Vcur-11.bin"
+  },
+  {
+    "name": "Vcur-11",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "231-Vcur-11.bin"
+  },
+  {
+    "name": "Kcur-11 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "232-Kcur-11 (view).bin"
+  },
+  {
+    "name": "Vcur-11 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "233-Vcur-11 (view).bin"
+  },
+  {
+    "name": "Qcur-11 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "234-Qcur-11 (view).bin"
+  },
+  {
+    "name": "Qcur-11 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "235-Qcur-11 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-11",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "236-kqv_out-11.bin"
+  },
+  {
+    "name": "attn_out-11",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "237-attn_out-11.bin"
+  },
+  {
+    "name": "ffn_inp-11",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "238-ffn_inp-11.bin"
+  },
+  {
+    "name": "l_out-11",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "239-l_out-11.bin"
+  },
+  {
+    "name": "attn_norm-12",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "240-attn_norm-12.bin"
+  },
+  {
+    "name": "Qcur-12",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "241-Qcur-12.bin"
+  },
+  {
+    "name": "Qcur-12",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "242-Qcur-12.bin"
+  },
+  {
+    "name": "Qcur-12",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "243-Qcur-12.bin"
+  },
+  {
+    "name": "Qcur-12",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "244-Qcur-12.bin"
+  },
+  {
+    "name": "Kcur-12",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "245-Kcur-12.bin"
+  },
+  {
+    "name": "Kcur-12",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "246-Kcur-12.bin"
+  },
+  {
+    "name": "Kcur-12",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "247-Kcur-12.bin"
+  },
+  {
+    "name": "Kcur-12",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "248-Kcur-12.bin"
+  },
+  {
+    "name": "Vcur-12",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "249-Vcur-12.bin"
+  },
+  {
+    "name": "Vcur-12",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "250-Vcur-12.bin"
+  },
+  {
+    "name": "Vcur-12",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "251-Vcur-12.bin"
+  },
+  {
+    "name": "Kcur-12 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "252-Kcur-12 (view).bin"
+  },
+  {
+    "name": "Vcur-12 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "253-Vcur-12 (view).bin"
+  },
+  {
+    "name": "Qcur-12 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "254-Qcur-12 (view).bin"
+  },
+  {
+    "name": "Qcur-12 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "255-Qcur-12 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-12",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "256-kqv_out-12.bin"
+  },
+  {
+    "name": "attn_out-12",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "257-attn_out-12.bin"
+  },
+  {
+    "name": "ffn_inp-12",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "258-ffn_inp-12.bin"
+  },
+  {
+    "name": "l_out-12",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "259-l_out-12.bin"
+  },
+  {
+    "name": "attn_norm-13",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "260-attn_norm-13.bin"
+  },
+  {
+    "name": "Qcur-13",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "261-Qcur-13.bin"
+  },
+  {
+    "name": "Qcur-13",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "262-Qcur-13.bin"
+  },
+  {
+    "name": "Qcur-13",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "263-Qcur-13.bin"
+  },
+  {
+    "name": "Qcur-13",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "264-Qcur-13.bin"
+  },
+  {
+    "name": "Kcur-13",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "265-Kcur-13.bin"
+  },
+  {
+    "name": "Kcur-13",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "266-Kcur-13.bin"
+  },
+  {
+    "name": "Kcur-13",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "267-Kcur-13.bin"
+  },
+  {
+    "name": "Kcur-13",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "268-Kcur-13.bin"
+  },
+  {
+    "name": "Vcur-13",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "269-Vcur-13.bin"
+  },
+  {
+    "name": "Vcur-13",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "270-Vcur-13.bin"
+  },
+  {
+    "name": "Vcur-13",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "271-Vcur-13.bin"
+  },
+  {
+    "name": "Kcur-13 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "272-Kcur-13 (view).bin"
+  },
+  {
+    "name": "Vcur-13 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "273-Vcur-13 (view).bin"
+  },
+  {
+    "name": "Qcur-13 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "274-Qcur-13 (view).bin"
+  },
+  {
+    "name": "Qcur-13 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "275-Qcur-13 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-13",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "276-kqv_out-13.bin"
+  },
+  {
+    "name": "attn_out-13",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "277-attn_out-13.bin"
+  },
+  {
+    "name": "ffn_inp-13",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "278-ffn_inp-13.bin"
+  },
+  {
+    "name": "l_out-13",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "279-l_out-13.bin"
+  },
+  {
+    "name": "attn_norm-14",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "280-attn_norm-14.bin"
+  },
+  {
+    "name": "Qcur-14",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "281-Qcur-14.bin"
+  },
+  {
+    "name": "Qcur-14",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "282-Qcur-14.bin"
+  },
+  {
+    "name": "Qcur-14",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "283-Qcur-14.bin"
+  },
+  {
+    "name": "Qcur-14",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "284-Qcur-14.bin"
+  },
+  {
+    "name": "Kcur-14",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "285-Kcur-14.bin"
+  },
+  {
+    "name": "Kcur-14",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "286-Kcur-14.bin"
+  },
+  {
+    "name": "Kcur-14",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "287-Kcur-14.bin"
+  },
+  {
+    "name": "Kcur-14",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "288-Kcur-14.bin"
+  },
+  {
+    "name": "Vcur-14",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "289-Vcur-14.bin"
+  },
+  {
+    "name": "Vcur-14",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "290-Vcur-14.bin"
+  },
+  {
+    "name": "Vcur-14",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "291-Vcur-14.bin"
+  },
+  {
+    "name": "Kcur-14 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "292-Kcur-14 (view).bin"
+  },
+  {
+    "name": "Vcur-14 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "293-Vcur-14 (view).bin"
+  },
+  {
+    "name": "Qcur-14 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "294-Qcur-14 (view).bin"
+  },
+  {
+    "name": "Qcur-14 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "295-Qcur-14 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-14",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "296-kqv_out-14.bin"
+  },
+  {
+    "name": "attn_out-14",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "297-attn_out-14.bin"
+  },
+  {
+    "name": "ffn_inp-14",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "298-ffn_inp-14.bin"
+  },
+  {
+    "name": "l_out-14",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "299-l_out-14.bin"
+  },
+  {
+    "name": "attn_norm-15",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "300-attn_norm-15.bin"
+  },
+  {
+    "name": "Qcur-15",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "301-Qcur-15.bin"
+  },
+  {
+    "name": "Qcur-15",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "302-Qcur-15.bin"
+  },
+  {
+    "name": "Qcur-15",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "303-Qcur-15.bin"
+  },
+  {
+    "name": "Qcur-15",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "304-Qcur-15.bin"
+  },
+  {
+    "name": "Kcur-15",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "305-Kcur-15.bin"
+  },
+  {
+    "name": "Kcur-15",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "306-Kcur-15.bin"
+  },
+  {
+    "name": "Kcur-15",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "307-Kcur-15.bin"
+  },
+  {
+    "name": "Kcur-15",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "308-Kcur-15.bin"
+  },
+  {
+    "name": "Vcur-15",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "309-Vcur-15.bin"
+  },
+  {
+    "name": "Vcur-15",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "310-Vcur-15.bin"
+  },
+  {
+    "name": "Vcur-15",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "311-Vcur-15.bin"
+  },
+  {
+    "name": "Kcur-15 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "312-Kcur-15 (view).bin"
+  },
+  {
+    "name": "Vcur-15 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "313-Vcur-15 (view).bin"
+  },
+  {
+    "name": "Qcur-15 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "314-Qcur-15 (view).bin"
+  },
+  {
+    "name": "Qcur-15 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "315-Qcur-15 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-15",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "316-kqv_out-15.bin"
+  },
+  {
+    "name": "attn_out-15",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "317-attn_out-15.bin"
+  },
+  {
+    "name": "ffn_inp-15",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "318-ffn_inp-15.bin"
+  },
+  {
+    "name": "l_out-15",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "319-l_out-15.bin"
+  },
+  {
+    "name": "attn_norm-16",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "320-attn_norm-16.bin"
+  },
+  {
+    "name": "Qcur-16",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "321-Qcur-16.bin"
+  },
+  {
+    "name": "Qcur-16",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "322-Qcur-16.bin"
+  },
+  {
+    "name": "Qcur-16",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "323-Qcur-16.bin"
+  },
+  {
+    "name": "Qcur-16",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "324-Qcur-16.bin"
+  },
+  {
+    "name": "Kcur-16",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "325-Kcur-16.bin"
+  },
+  {
+    "name": "Kcur-16",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "326-Kcur-16.bin"
+  },
+  {
+    "name": "Kcur-16",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "327-Kcur-16.bin"
+  },
+  {
+    "name": "Kcur-16",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "328-Kcur-16.bin"
+  },
+  {
+    "name": "Vcur-16",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "329-Vcur-16.bin"
+  },
+  {
+    "name": "Vcur-16",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "330-Vcur-16.bin"
+  },
+  {
+    "name": "Vcur-16",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "331-Vcur-16.bin"
+  },
+  {
+    "name": "Kcur-16 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "332-Kcur-16 (view).bin"
+  },
+  {
+    "name": "Vcur-16 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "333-Vcur-16 (view).bin"
+  },
+  {
+    "name": "Qcur-16 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "334-Qcur-16 (view).bin"
+  },
+  {
+    "name": "Qcur-16 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "335-Qcur-16 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-16",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "336-kqv_out-16.bin"
+  },
+  {
+    "name": "attn_out-16",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "337-attn_out-16.bin"
+  },
+  {
+    "name": "ffn_inp-16",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "338-ffn_inp-16.bin"
+  },
+  {
+    "name": "l_out-16",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "339-l_out-16.bin"
+  },
+  {
+    "name": "attn_norm-17",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "340-attn_norm-17.bin"
+  },
+  {
+    "name": "Qcur-17",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "341-Qcur-17.bin"
+  },
+  {
+    "name": "Qcur-17",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "342-Qcur-17.bin"
+  },
+  {
+    "name": "Qcur-17",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "343-Qcur-17.bin"
+  },
+  {
+    "name": "Qcur-17",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "344-Qcur-17.bin"
+  },
+  {
+    "name": "Kcur-17",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "345-Kcur-17.bin"
+  },
+  {
+    "name": "Kcur-17",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "346-Kcur-17.bin"
+  },
+  {
+    "name": "Kcur-17",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "347-Kcur-17.bin"
+  },
+  {
+    "name": "Kcur-17",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "348-Kcur-17.bin"
+  },
+  {
+    "name": "Vcur-17",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "349-Vcur-17.bin"
+  },
+  {
+    "name": "Vcur-17",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "350-Vcur-17.bin"
+  },
+  {
+    "name": "Vcur-17",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "351-Vcur-17.bin"
+  },
+  {
+    "name": "Kcur-17 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "352-Kcur-17 (view).bin"
+  },
+  {
+    "name": "Vcur-17 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "353-Vcur-17 (view).bin"
+  },
+  {
+    "name": "Qcur-17 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "354-Qcur-17 (view).bin"
+  },
+  {
+    "name": "Qcur-17 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "355-Qcur-17 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-17",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "356-kqv_out-17.bin"
+  },
+  {
+    "name": "attn_out-17",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "357-attn_out-17.bin"
+  },
+  {
+    "name": "ffn_inp-17",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "358-ffn_inp-17.bin"
+  },
+  {
+    "name": "l_out-17",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "359-l_out-17.bin"
+  },
+  {
+    "name": "attn_norm-18",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "360-attn_norm-18.bin"
+  },
+  {
+    "name": "Qcur-18",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "361-Qcur-18.bin"
+  },
+  {
+    "name": "Qcur-18",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "362-Qcur-18.bin"
+  },
+  {
+    "name": "Qcur-18",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "363-Qcur-18.bin"
+  },
+  {
+    "name": "Qcur-18",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "364-Qcur-18.bin"
+  },
+  {
+    "name": "Kcur-18",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "365-Kcur-18.bin"
+  },
+  {
+    "name": "Kcur-18",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "366-Kcur-18.bin"
+  },
+  {
+    "name": "Kcur-18",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "367-Kcur-18.bin"
+  },
+  {
+    "name": "Kcur-18",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "368-Kcur-18.bin"
+  },
+  {
+    "name": "Vcur-18",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "369-Vcur-18.bin"
+  },
+  {
+    "name": "Vcur-18",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "370-Vcur-18.bin"
+  },
+  {
+    "name": "Vcur-18",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "371-Vcur-18.bin"
+  },
+  {
+    "name": "Kcur-18 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "372-Kcur-18 (view).bin"
+  },
+  {
+    "name": "Vcur-18 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "373-Vcur-18 (view).bin"
+  },
+  {
+    "name": "Qcur-18 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "374-Qcur-18 (view).bin"
+  },
+  {
+    "name": "Qcur-18 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "375-Qcur-18 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-18",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "376-kqv_out-18.bin"
+  },
+  {
+    "name": "attn_out-18",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "377-attn_out-18.bin"
+  },
+  {
+    "name": "ffn_inp-18",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "378-ffn_inp-18.bin"
+  },
+  {
+    "name": "l_out-18",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "379-l_out-18.bin"
+  },
+  {
+    "name": "attn_norm-19",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "380-attn_norm-19.bin"
+  },
+  {
+    "name": "Qcur-19",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "381-Qcur-19.bin"
+  },
+  {
+    "name": "Qcur-19",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "382-Qcur-19.bin"
+  },
+  {
+    "name": "Qcur-19",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "383-Qcur-19.bin"
+  },
+  {
+    "name": "Qcur-19",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "384-Qcur-19.bin"
+  },
+  {
+    "name": "Kcur-19",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "385-Kcur-19.bin"
+  },
+  {
+    "name": "Kcur-19",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "386-Kcur-19.bin"
+  },
+  {
+    "name": "Kcur-19",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "387-Kcur-19.bin"
+  },
+  {
+    "name": "Kcur-19",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "388-Kcur-19.bin"
+  },
+  {
+    "name": "Vcur-19",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "389-Vcur-19.bin"
+  },
+  {
+    "name": "Vcur-19",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "390-Vcur-19.bin"
+  },
+  {
+    "name": "Vcur-19",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "391-Vcur-19.bin"
+  },
+  {
+    "name": "Kcur-19 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "392-Kcur-19 (view).bin"
+  },
+  {
+    "name": "Vcur-19 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "393-Vcur-19 (view).bin"
+  },
+  {
+    "name": "Qcur-19 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "394-Qcur-19 (view).bin"
+  },
+  {
+    "name": "Qcur-19 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "395-Qcur-19 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-19",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "396-kqv_out-19.bin"
+  },
+  {
+    "name": "attn_out-19",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "397-attn_out-19.bin"
+  },
+  {
+    "name": "ffn_inp-19",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "398-ffn_inp-19.bin"
+  },
+  {
+    "name": "l_out-19",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "399-l_out-19.bin"
+  },
+  {
+    "name": "attn_norm-20",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "400-attn_norm-20.bin"
+  },
+  {
+    "name": "Qcur-20",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "401-Qcur-20.bin"
+  },
+  {
+    "name": "Qcur-20",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "402-Qcur-20.bin"
+  },
+  {
+    "name": "Qcur-20",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "403-Qcur-20.bin"
+  },
+  {
+    "name": "Qcur-20",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "404-Qcur-20.bin"
+  },
+  {
+    "name": "Kcur-20",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "405-Kcur-20.bin"
+  },
+  {
+    "name": "Kcur-20",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "406-Kcur-20.bin"
+  },
+  {
+    "name": "Kcur-20",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "407-Kcur-20.bin"
+  },
+  {
+    "name": "Kcur-20",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "408-Kcur-20.bin"
+  },
+  {
+    "name": "Vcur-20",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "409-Vcur-20.bin"
+  },
+  {
+    "name": "Vcur-20",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "410-Vcur-20.bin"
+  },
+  {
+    "name": "Vcur-20",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "411-Vcur-20.bin"
+  },
+  {
+    "name": "Kcur-20 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "412-Kcur-20 (view).bin"
+  },
+  {
+    "name": "Vcur-20 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "413-Vcur-20 (view).bin"
+  },
+  {
+    "name": "Qcur-20 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "414-Qcur-20 (view).bin"
+  },
+  {
+    "name": "Qcur-20 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "415-Qcur-20 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-20",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "416-kqv_out-20.bin"
+  },
+  {
+    "name": "attn_out-20",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "417-attn_out-20.bin"
+  },
+  {
+    "name": "ffn_inp-20",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "418-ffn_inp-20.bin"
+  },
+  {
+    "name": "l_out-20",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "419-l_out-20.bin"
+  },
+  {
+    "name": "attn_norm-21",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "420-attn_norm-21.bin"
+  },
+  {
+    "name": "Qcur-21",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "421-Qcur-21.bin"
+  },
+  {
+    "name": "Qcur-21",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "422-Qcur-21.bin"
+  },
+  {
+    "name": "Qcur-21",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "423-Qcur-21.bin"
+  },
+  {
+    "name": "Qcur-21",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "424-Qcur-21.bin"
+  },
+  {
+    "name": "Kcur-21",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "425-Kcur-21.bin"
+  },
+  {
+    "name": "Kcur-21",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "426-Kcur-21.bin"
+  },
+  {
+    "name": "Kcur-21",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "427-Kcur-21.bin"
+  },
+  {
+    "name": "Kcur-21",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "428-Kcur-21.bin"
+  },
+  {
+    "name": "Vcur-21",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "429-Vcur-21.bin"
+  },
+  {
+    "name": "Vcur-21",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "430-Vcur-21.bin"
+  },
+  {
+    "name": "Vcur-21",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "431-Vcur-21.bin"
+  },
+  {
+    "name": "Kcur-21 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "432-Kcur-21 (view).bin"
+  },
+  {
+    "name": "Vcur-21 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "433-Vcur-21 (view).bin"
+  },
+  {
+    "name": "Qcur-21 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "434-Qcur-21 (view).bin"
+  },
+  {
+    "name": "Qcur-21 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "435-Qcur-21 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-21",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "436-kqv_out-21.bin"
+  },
+  {
+    "name": "attn_out-21",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "437-attn_out-21.bin"
+  },
+  {
+    "name": "ffn_inp-21",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "438-ffn_inp-21.bin"
+  },
+  {
+    "name": "l_out-21",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "439-l_out-21.bin"
+  },
+  {
+    "name": "attn_norm-22",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "440-attn_norm-22.bin"
+  },
+  {
+    "name": "Qcur-22",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "441-Qcur-22.bin"
+  },
+  {
+    "name": "Qcur-22",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "442-Qcur-22.bin"
+  },
+  {
+    "name": "Qcur-22",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "443-Qcur-22.bin"
+  },
+  {
+    "name": "Qcur-22",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "444-Qcur-22.bin"
+  },
+  {
+    "name": "Kcur-22",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "445-Kcur-22.bin"
+  },
+  {
+    "name": "Kcur-22",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "446-Kcur-22.bin"
+  },
+  {
+    "name": "Kcur-22",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "447-Kcur-22.bin"
+  },
+  {
+    "name": "Kcur-22",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "448-Kcur-22.bin"
+  },
+  {
+    "name": "Vcur-22",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "449-Vcur-22.bin"
+  },
+  {
+    "name": "Vcur-22",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "450-Vcur-22.bin"
+  },
+  {
+    "name": "Vcur-22",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "451-Vcur-22.bin"
+  },
+  {
+    "name": "Kcur-22 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "452-Kcur-22 (view).bin"
+  },
+  {
+    "name": "Vcur-22 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "453-Vcur-22 (view).bin"
+  },
+  {
+    "name": "Qcur-22 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "454-Qcur-22 (view).bin"
+  },
+  {
+    "name": "Qcur-22 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "455-Qcur-22 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-22",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "456-kqv_out-22.bin"
+  },
+  {
+    "name": "attn_out-22",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "457-attn_out-22.bin"
+  },
+  {
+    "name": "ffn_inp-22",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "458-ffn_inp-22.bin"
+  },
+  {
+    "name": "l_out-22",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "459-l_out-22.bin"
+  },
+  {
+    "name": "attn_norm-23",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "460-attn_norm-23.bin"
+  },
+  {
+    "name": "Qcur-23",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "461-Qcur-23.bin"
+  },
+  {
+    "name": "Qcur-23",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "462-Qcur-23.bin"
+  },
+  {
+    "name": "Qcur-23",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "463-Qcur-23.bin"
+  },
+  {
+    "name": "Qcur-23",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "464-Qcur-23.bin"
+  },
+  {
+    "name": "Kcur-23",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "465-Kcur-23.bin"
+  },
+  {
+    "name": "Kcur-23",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "466-Kcur-23.bin"
+  },
+  {
+    "name": "Kcur-23",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "467-Kcur-23.bin"
+  },
+  {
+    "name": "Kcur-23",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "468-Kcur-23.bin"
+  },
+  {
+    "name": "Vcur-23",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "469-Vcur-23.bin"
+  },
+  {
+    "name": "Vcur-23",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "470-Vcur-23.bin"
+  },
+  {
+    "name": "Vcur-23",
+    "type": 0,
+    "shape": [
+      64,
+      8,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      2048,
+      2048
+    ],
+    "file": "471-Vcur-23.bin"
+  },
+  {
+    "name": "Kcur-23 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "472-Kcur-23 (view).bin"
+  },
+  {
+    "name": "Vcur-23 (view)",
+    "type": 0,
+    "shape": [
+      512,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      2048,
+      2048,
+      2048
+    ],
+    "file": "473-Vcur-23 (view).bin"
+  },
+  {
+    "name": "Qcur-23 (view)",
+    "type": 0,
+    "shape": [
+      64,
+      64,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      256,
+      16384,
+      16384
+    ],
+    "file": "474-Qcur-23 (view).bin"
+  },
+  {
+    "name": "Qcur-23 (view) (permuted)",
+    "type": 0,
+    "shape": [
+      64,
+      1,
+      64,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      256,
+      16384
+    ],
+    "file": "475-Qcur-23 (view) (permuted).bin"
+  },
+  {
+    "name": "kqv_out-23",
+    "type": 0,
+    "shape": [
+      4096,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      16384,
+      16384,
+      16384
+    ],
+    "file": "476-kqv_out-23.bin"
+  },
+  {
+    "name": "attn_out-23",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "477-attn_out-23.bin"
+  },
+  {
+    "name": "ffn_inp-23",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "478-ffn_inp-23.bin"
+  },
+  {
+    "name": "l_out-23",
+    "type": 0,
+    "shape": [
+      2880,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      11520,
+      11520,
+      11520
+    ],
+    "file": "479-l_out-23.bin"
+  },
+  {
+    "name": "result_output",
+    "type": 0,
+    "shape": [
+      201088,
+      1,
+      1,
+      1
+    ],
+    "strides": [
+      4,
+      804352,
+      804352,
+      804352
+    ],
+    "file": "480-result_output.bin"
+  }
+]

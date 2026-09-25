@@ -1,0 +1,15 @@
+<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.
+Knowledge cutoff: 2024-06
+Current date: 2026-09-25
+
+Reasoning: medium
+
+# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.
+Response label mapping (quotes are delimiters, not part of the label):
+"-2" = -2
+"-1" = -1
+"0" = 0
+"1" = 1
+"2" = 2
+Task: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.
+Return only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>

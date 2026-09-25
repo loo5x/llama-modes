@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "live_rows_in_checked_profiles": 484,
+  "checks": [
+    "byte/token-identical archived prompt pairs",
+    "fresh oracle order invariance",
+    "singleton/oracle agreement",
+    "CPU signed-candidate oracle agreement",
+    "default CUDA and CPU city control oracle agreement",
+    "model/runtime hashes unchanged from Stage 2",
+    "oracle version matches v0.3.0 commit"
+  ]
+}

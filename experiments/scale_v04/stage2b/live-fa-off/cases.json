@@ -1,0 +1,1682 @@
+[
+  {
+    "name": "objective_2",
+    "source_directory": "C:\\AI\\llama-modes\\Github_dev\\experiments\\scale_v04\\results\\gptoss-validated-full",
+    "original": {
+      "case": "objective_2",
+      "family": "objective",
+      "measurement": "interval",
+      "expected": 0,
+      "task": "A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.",
+      "scale": "minus2_2",
+      "values": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "variant": "numeric",
+      "labels": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
+      "token_ids": [
+        [
+          12,
+          17
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ]
+      ],
+      "token_counts": [
+        2,
+        2,
+        1,
+        1,
+        1
+      ],
+      "token_issues": {
+        "duplicates": [],
+        "strict_prefixes": []
+      },
+      "messages": [
+        {
+          "role": "user",
+          "content": "Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nTask: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.\nReturn only the mapped response label, without quotes or explanation."
+        }
+      ],
+      "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nTask: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+      "prompt_tokens": [
+        200006,
+        17360,
+        200008,
+        3575,
+        553,
+        17554,
+        162016,
+        11,
+        261,
+        4410,
+        6439,
+        2359,
+        22203,
+        656,
+        7788,
+        17527,
+        558,
+        87447,
+        100594,
+        25,
+        220,
+        1323,
+        19,
+        12,
+        3218,
+        198,
+        6576,
+        3521,
+        25,
+        220,
+        1323,
+        21,
+        12,
+        3114,
+        12,
+        1161,
+        279,
+        30377,
+        289,
+        25,
+        14093,
+        279,
+        2,
+        13888,
+        18403,
+        25,
+        8450,
+        11,
+        49159,
+        11,
+        1721,
+        13,
+        21030,
+        2804,
+        413,
+        7360,
+        395,
+        1753,
+        3176,
+        13,
+        200007,
+        200006,
+        1428,
+        200008,
+        8470,
+        290,
+        9318,
+        591,
+        533,
+        17,
+        316,
+        220,
+        17,
+        558,
+        3186,
+        4208,
+        22573,
+        350,
+        136724,
+        553,
+        150761,
+        409,
+        11,
+        625,
+        997,
+        328,
+        290,
+        4208,
+        1883,
+        44470,
+        17,
+        1,
+        314,
+        533,
+        17,
+        198,
+        44470,
+        16,
+        1,
+        314,
+        533,
+        16,
+        198,
+        1,
+        15,
+        1,
+        314,
+        220,
+        15,
+        198,
+        1,
+        16,
+        1,
+        314,
+        220,
+        16,
+        198,
+        1,
+        17,
+        1,
+        314,
+        220,
+        17,
+        198,
+        5927,
+        25,
+        355,
+        5897,
+        10292,
+        220,
+        20,
+        328,
+        220,
+        702,
+        13313,
+        22097,
+        13,
+        45438,
+        290,
+        13632,
+        472,
+        533,
+        17,
+        659,
+        350,
+        17,
+        533,
+        21382,
+        17,
+        915,
+        425,
+        10292,
+        820,
+        220,
+        702,
+        13,
+        6318,
+        290,
+        4208,
+        395,
+        484,
+        13632,
+        558,
+        8191,
+        1606,
+        290,
+        47205,
+        3322,
+        4208,
+        11,
+        2935,
+        22661,
+        503,
+        30547,
+        13,
+        200007,
+        200006,
+        173781,
+        200005,
+        17196,
+        200008
+      ],
+      "first_http_id": 1039,
+      "original_response": {
+        "choices": [
+          {
+            "text": "-2",
+            "token_ids": [
+              12,
+              17
+            ],
+            "token_count": 2,
+            "sum_log_probability": -5.790468879339196,
+            "mean_log_probability": -2.895234439669598
+          },
+          {
+            "text": "-1",
+            "token_ids": [
+              12,
+              16
+            ],
+            "token_count": 2,
+            "sum_log_probability": -2.2660546001922377,
+            "mean_log_probability": -1.1330273000961189
+          },
+          {
+            "text": "0",
+            "token_ids": [
+              15
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.866554684671339,
+            "mean_log_probability": -0.866554684671339
+          },
+          {
+            "text": "1",
+            "token_ids": [
+              16
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.9369224977816906,
+            "mean_log_probability": -0.9369224977816906
+          },
+          {
+            "text": "2",
+            "token_ids": [
+              17
+            ],
+            "token_count": 1,
+            "sum_log_probability": -3.6901592684115734,
+            "mean_log_probability": -3.6901592684115734
+          }
+        ]
+      },
+      "sum_log_probability": [
+        -5.790468879339196,
+        -2.2660546001922377,
+        -0.866554684671339,
+        -0.9369224977816906,
+        -3.6901592684115734
+      ],
+      "mean_log_probability": [
+        -2.895234439669598,
+        -1.1330273000961189,
+        -0.866554684671339,
+        -0.9369224977816906,
+        -3.6901592684115734
+      ],
+      "scores": {
+        "sum": {
+          "relative_weights": [
+            0.003237956938849447,
+            0.10987648108333958,
+            0.44534833495942266,
+            0.4150873325774113,
+            0.026449894440976975
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": 0,
+              "0.5": 0,
+              "0.75": 1,
+              "0.9": 1
+            },
+            "cumulative_weights": [
+              0.003237956938849447,
+              0.11311443802218903,
+              0.5584627729816117,
+              0.973550105559023,
+              1.0
+            ]
+          },
+          "interval": {
+            "expected_value": 0.3516347264983268,
+            "standard_deviation": 0.7211575682889999
+          },
+          "token_count_score_pearson": -0.5805008619384651,
+          "token_count_weight_pearson": -0.6115049633764469
+        },
+        "mean": {
+          "relative_weights": [
+            0.045520158137906164,
+            0.2651676860507304,
+            0.3461371275154001,
+            0.32261743378801605,
+            0.020557594507947342
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": -1,
+              "0.5": 0,
+              "0.75": 1,
+              "0.9": 1
+            },
+            "cumulative_weights": [
+              0.045520158137906164,
+              0.31068784418863654,
+              0.6568249717040366,
+              0.9794424054920527,
+              1.0
+            ]
+          },
+          "interval": {
+            "expected_value": 0.00752462047736803,
+            "standard_deviation": 0.9230598629064272
+          },
+          "token_count_score_pearson": -0.07696106479731517,
+          "token_count_weight_pearson": -0.26218225668876793
+        }
+      },
+      "status": "ok",
+      "last_http_id": 1039
+    },
+    "reversed": {
+      "case": "objective_2",
+      "family": "objective",
+      "measurement": "interval",
+      "expected": 0,
+      "task": "A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.",
+      "scale": "minus2_2",
+      "values": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "variant": "numeric_api_reverse",
+      "labels": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
+      "token_ids": [
+        [
+          12,
+          17
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ]
+      ],
+      "token_counts": [
+        2,
+        2,
+        1,
+        1,
+        1
+      ],
+      "token_issues": {
+        "duplicates": [],
+        "strict_prefixes": []
+      },
+      "messages": [
+        {
+          "role": "user",
+          "content": "Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nTask: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.\nReturn only the mapped response label, without quotes or explanation."
+        }
+      ],
+      "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nTask: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+      "prompt_tokens": [
+        200006,
+        17360,
+        200008,
+        3575,
+        553,
+        17554,
+        162016,
+        11,
+        261,
+        4410,
+        6439,
+        2359,
+        22203,
+        656,
+        7788,
+        17527,
+        558,
+        87447,
+        100594,
+        25,
+        220,
+        1323,
+        19,
+        12,
+        3218,
+        198,
+        6576,
+        3521,
+        25,
+        220,
+        1323,
+        21,
+        12,
+        3114,
+        12,
+        1161,
+        279,
+        30377,
+        289,
+        25,
+        14093,
+        279,
+        2,
+        13888,
+        18403,
+        25,
+        8450,
+        11,
+        49159,
+        11,
+        1721,
+        13,
+        21030,
+        2804,
+        413,
+        7360,
+        395,
+        1753,
+        3176,
+        13,
+        200007,
+        200006,
+        1428,
+        200008,
+        8470,
+        290,
+        9318,
+        591,
+        533,
+        17,
+        316,
+        220,
+        17,
+        558,
+        3186,
+        4208,
+        22573,
+        350,
+        136724,
+        553,
+        150761,
+        409,
+        11,
+        625,
+        997,
+        328,
+        290,
+        4208,
+        1883,
+        44470,
+        17,
+        1,
+        314,
+        533,
+        17,
+        198,
+        44470,
+        16,
+        1,
+        314,
+        533,
+        16,
+        198,
+        1,
+        15,
+        1,
+        314,
+        220,
+        15,
+        198,
+        1,
+        16,
+        1,
+        314,
+        220,
+        16,
+        198,
+        1,
+        17,
+        1,
+        314,
+        220,
+        17,
+        198,
+        5927,
+        25,
+        355,
+        5897,
+        10292,
+        220,
+        20,
+        328,
+        220,
+        702,
+        13313,
+        22097,
+        13,
+        45438,
+        290,
+        13632,
+        472,
+        533,
+        17,
+        659,
+        350,
+        17,
+        533,
+        21382,
+        17,
+        915,
+        425,
+        10292,
+        820,
+        220,
+        702,
+        13,
+        6318,
+        290,
+        4208,
+        395,
+        484,
+        13632,
+        558,
+        8191,
+        1606,
+        290,
+        47205,
+        3322,
+        4208,
+        11,
+        2935,
+        22661,
+        503,
+        30547,
+        13,
+        200007,
+        200006,
+        173781,
+        200005,
+        17196,
+        200008
+      ],
+      "first_http_id": 1053,
+      "original_response": {
+        "choices": [
+          {
+            "text": "2",
+            "token_ids": [
+              17
+            ],
+            "token_count": 1,
+            "sum_log_probability": -3.6901592684115734,
+            "mean_log_probability": -3.6901592684115734
+          },
+          {
+            "text": "1",
+            "token_ids": [
+              16
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.9369224977816906,
+            "mean_log_probability": -0.9369224977816906
+          },
+          {
+            "text": "0",
+            "token_ids": [
+              15
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.866554684671339,
+            "mean_log_probability": -0.866554684671339
+          },
+          {
+            "text": "-1",
+            "token_ids": [
+              12,
+              16
+            ],
+            "token_count": 2,
+            "sum_log_probability": -2.2538439708919307,
+            "mean_log_probability": -1.1269219854459653
+          },
+          {
+            "text": "-2",
+            "token_ids": [
+              12,
+              17
+            ],
+            "token_count": 2,
+            "sum_log_probability": -5.773672550631691,
+            "mean_log_probability": -2.8868362753158454
+          }
+        ]
+      },
+      "sum_log_probability": [
+        -5.773672550631691,
+        -2.2538439708919307,
+        -0.866554684671339,
+        -0.9369224977816906,
+        -3.6901592684115734
+      ],
+      "mean_log_probability": [
+        -2.8868362753158454,
+        -1.1269219854459653,
+        -0.866554684671339,
+        -0.9369224977816906,
+        -3.6901592684115734
+      ],
+      "scores": {
+        "sum": {
+          "relative_weights": [
+            0.0032881830247828213,
+            0.11107034283775646,
+            0.44472361800382393,
+            0.4145050645540247,
+            0.026412791579612106
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": 0,
+              "0.5": 0,
+              "0.75": 1,
+              "0.9": 1
+            },
+            "cumulative_weights": [
+              0.0032881830247828213,
+              0.11435852586253928,
+              0.5590821438663632,
+              0.9735872084203879,
+              1.0
+            ]
+          },
+          "interval": {
+            "expected_value": 0.3496839388259268,
+            "standard_deviation": 0.7225651864963786
+          },
+          "token_count_score_pearson": -0.5782245582706549,
+          "token_count_weight_pearson": -0.6101468052856679
+        },
+        "mean": {
+          "relative_weights": [
+            0.04581207310498013,
+            0.2662569849316478,
+            0.34544355292833145,
+            0.32197098694474663,
+            0.020516402090293907
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": -1,
+              "0.5": 0,
+              "0.75": 1,
+              "0.9": 1
+            },
+            "cumulative_weights": [
+              0.04581207310498013,
+              0.31206905803662793,
+              0.6575126109649594,
+              0.979483597909706,
+              1.0
+            ]
+          },
+          "interval": {
+            "expected_value": 0.005122659983726394,
+            "standard_deviation": 0.9238590969472464
+          },
+          "token_count_score_pearson": -0.07394902866058671,
+          "token_count_weight_pearson": -0.25851888761361513
+        }
+      },
+      "status": "ok",
+      "last_http_id": 1053
+    },
+    "deltas_reverse_minus_original": [
+      0.016796328707505026,
+      0.01221062930030703,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "name": "paraphrase_2",
+    "source_directory": "C:\\AI\\llama-modes\\Github_dev\\experiments\\scale_v04\\results\\gptoss-paraphrases",
+    "original": {
+      "case": "paraphrase_2",
+      "family": "rubric",
+      "measurement": "ordinal",
+      "expected": 0,
+      "task": "Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.",
+      "scale": "minus2_2",
+      "values": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "variant": "numeric",
+      "labels": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
+      "token_ids": [
+        [
+          12,
+          17
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ]
+      ],
+      "token_counts": [
+        2,
+        2,
+        1,
+        1,
+        1
+      ],
+      "token_issues": {
+        "duplicates": [],
+        "strict_prefixes": []
+      },
+      "messages": [
+        {
+          "role": "user",
+          "content": "Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nRubric (ordered categories; numeric distances are not assumed):\n-2: The service did nothing useful and left the entire problem unresolved.\n-1: The service made very little progress and left major problems unresolved.\n0: The service solved about half of the problem and left about half unresolved.\n1: The service solved the main problem with only small gaps remaining.\n2: The service completely solved the problem with no gaps remaining.\nTask: Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.\nReturn only the mapped response label, without quotes or explanation."
+        }
+      ],
+      "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nRubric (ordered categories; numeric distances are not assumed):\n-2: The service did nothing useful and left the entire problem unresolved.\n-1: The service made very little progress and left major problems unresolved.\n0: The service solved about half of the problem and left about half unresolved.\n1: The service solved the main problem with only small gaps remaining.\n2: The service completely solved the problem with no gaps remaining.\nTask: Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+      "prompt_tokens": [
+        200006,
+        17360,
+        200008,
+        3575,
+        553,
+        17554,
+        162016,
+        11,
+        261,
+        4410,
+        6439,
+        2359,
+        22203,
+        656,
+        7788,
+        17527,
+        558,
+        87447,
+        100594,
+        25,
+        220,
+        1323,
+        19,
+        12,
+        3218,
+        198,
+        6576,
+        3521,
+        25,
+        220,
+        1323,
+        21,
+        12,
+        3114,
+        12,
+        1161,
+        279,
+        30377,
+        289,
+        25,
+        14093,
+        279,
+        2,
+        13888,
+        18403,
+        25,
+        8450,
+        11,
+        49159,
+        11,
+        1721,
+        13,
+        21030,
+        2804,
+        413,
+        7360,
+        395,
+        1753,
+        3176,
+        13,
+        200007,
+        200006,
+        1428,
+        200008,
+        8470,
+        290,
+        9318,
+        591,
+        533,
+        17,
+        316,
+        220,
+        17,
+        558,
+        3186,
+        4208,
+        22573,
+        350,
+        136724,
+        553,
+        150761,
+        409,
+        11,
+        625,
+        997,
+        328,
+        290,
+        4208,
+        1883,
+        44470,
+        17,
+        1,
+        314,
+        533,
+        17,
+        198,
+        44470,
+        16,
+        1,
+        314,
+        533,
+        16,
+        198,
+        1,
+        15,
+        1,
+        314,
+        220,
+        15,
+        198,
+        1,
+        16,
+        1,
+        314,
+        220,
+        16,
+        198,
+        1,
+        17,
+        1,
+        314,
+        220,
+        17,
+        198,
+        91264,
+        2740,
+        350,
+        21823,
+        16944,
+        26,
+        52077,
+        48294,
+        553,
+        625,
+        37703,
+        1883,
+        12,
+        17,
+        25,
+        623,
+        2570,
+        2242,
+        6939,
+        8316,
+        326,
+        3561,
+        290,
+        6508,
+        4792,
+        156375,
+        558,
+        12,
+        16,
+        25,
+        623,
+        2570,
+        2452,
+        1869,
+        3389,
+        7408,
+        326,
+        3561,
+        5035,
+        6840,
+        156375,
+        558,
+        15,
+        25,
+        623,
+        2570,
+        47244,
+        1078,
+        6375,
+        328,
+        290,
+        4792,
+        326,
+        3561,
+        1078,
+        6375,
+        156375,
+        558,
+        16,
+        25,
+        623,
+        2570,
+        47244,
+        290,
+        2758,
+        4792,
+        483,
+        1606,
+        3291,
+        52008,
+        15448,
+        558,
+        17,
+        25,
+        623,
+        2570,
+        9141,
+        47244,
+        290,
+        4792,
+        483,
+        860,
+        52008,
+        15448,
+        558,
+        5927,
+        25,
+        30262,
+        495,
+        2570,
+        3019,
+        2360,
+        290,
+        191553,
+        25,
+        33463,
+        328,
+        4325,
+        29293,
+        3378,
+        9822,
+        92346,
+        1504,
+        72677,
+        13,
+        623,
+        1273,
+        6468,
+        12760,
+        558,
+        8191,
+        1606,
+        290,
+        47205,
+        3322,
+        4208,
+        11,
+        2935,
+        22661,
+        503,
+        30547,
+        13,
+        200007,
+        200006,
+        173781,
+        200005,
+        17196,
+        200008
+      ],
+      "first_http_id": 621,
+      "original_response": {
+        "choices": [
+          {
+            "text": "-2",
+            "token_ids": [
+              12,
+              17
+            ],
+            "token_count": 2,
+            "sum_log_probability": -4.80739546799793,
+            "mean_log_probability": -2.403697733998965
+          },
+          {
+            "text": "-1",
+            "token_ids": [
+              12,
+              16
+            ],
+            "token_count": 2,
+            "sum_log_probability": -1.534425715432884,
+            "mean_log_probability": -0.767212857716442
+          },
+          {
+            "text": "0",
+            "token_ids": [
+              15
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.28598889455008736,
+            "mean_log_probability": -0.28598889455008736
+          },
+          {
+            "text": "1",
+            "token_ids": [
+              16
+            ],
+            "token_count": 1,
+            "sum_log_probability": -3.760869113055947,
+            "mean_log_probability": -3.760869113055947
+          },
+          {
+            "text": "2",
+            "token_ids": [
+              17
+            ],
+            "token_count": 1,
+            "sum_log_probability": -7.001351443378212,
+            "mean_log_probability": -7.001351443378212
+          }
+        ]
+      },
+      "sum_log_probability": [
+        -4.80739546799793,
+        -1.534425715432884,
+        -0.28598889455008736,
+        -3.760869113055947,
+        -7.001351443378212
+      ],
+      "mean_log_probability": [
+        -2.403697733998965,
+        -0.767212857716442,
+        -0.28598889455008736,
+        -3.760869113055947,
+        -7.001351443378212
+      ],
+      "scores": {
+        "sum": {
+          "relative_weights": [
+            0.008175700861618626,
+            0.21575342355206972,
+            0.751877204602612,
+            0.02328228568429124,
+            0.0009113852994085169
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": 0,
+              "0.5": 0,
+              "0.75": 0,
+              "0.9": 0
+            },
+            "cumulative_weights": [
+              0.008175700861618626,
+              0.22392912441368834,
+              0.9758063290163004,
+              0.9990886147005916,
+              1.0
+            ]
+          },
+          "token_count_score_pearson": 0.10552974989460795,
+          "token_count_weight_pearson": -0.2502627346500743
+        },
+        "mean": {
+          "relative_weights": [
+            0.06795040899541932,
+            0.3490667050634026,
+            0.564808648799586,
+            0.01748960633174222,
+            0.0006846308098498539
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": -1,
+              "0.5": 0,
+              "0.75": 0,
+              "0.9": 0
+            },
+            "cumulative_weights": [
+              0.06795040899541932,
+              0.4170171140588219,
+              0.981825762858408,
+              0.9993153691901502,
+              1.0
+            ]
+          },
+          "token_count_score_pearson": 0.4253487781695371,
+          "token_count_weight_pearson": 0.03133444651841041
+        }
+      },
+      "status": "ok",
+      "last_http_id": 621
+    },
+    "reversed": {
+      "case": "paraphrase_2",
+      "family": "rubric",
+      "measurement": "ordinal",
+      "expected": 0,
+      "task": "Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.",
+      "scale": "minus2_2",
+      "values": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "variant": "numeric_api_reverse",
+      "labels": [
+        "-2",
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
+      "token_ids": [
+        [
+          12,
+          17
+        ],
+        [
+          12,
+          16
+        ],
+        [
+          15
+        ],
+        [
+          16
+        ],
+        [
+          17
+        ]
+      ],
+      "token_counts": [
+        2,
+        2,
+        1,
+        1,
+        1
+      ],
+      "token_issues": {
+        "duplicates": [],
+        "strict_prefixes": []
+      },
+      "messages": [
+        {
+          "role": "user",
+          "content": "Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nRubric (ordered categories; numeric distances are not assumed):\n-2: The service did nothing useful and left the entire problem unresolved.\n-1: The service made very little progress and left major problems unresolved.\n0: The service solved about half of the problem and left about half unresolved.\n1: The service solved the main problem with only small gaps remaining.\n2: The service completely solved the problem with no gaps remaining.\nTask: Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.\nReturn only the mapped response label, without quotes or explanation."
+        }
+      ],
+      "prepared_prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nRubric (ordered categories; numeric distances are not assumed):\n-2: The service did nothing useful and left the entire problem unresolved.\n-1: The service made very little progress and left major problems unresolved.\n0: The service solved about half of the problem and left about half unresolved.\n1: The service solved the main problem with only small gaps remaining.\n2: The service completely solved the problem with no gaps remaining.\nTask: Rate this service report using the rubric: Five of ten equally important reported faults were repaired. The other five remain.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+      "prompt_tokens": [
+        200006,
+        17360,
+        200008,
+        3575,
+        553,
+        17554,
+        162016,
+        11,
+        261,
+        4410,
+        6439,
+        2359,
+        22203,
+        656,
+        7788,
+        17527,
+        558,
+        87447,
+        100594,
+        25,
+        220,
+        1323,
+        19,
+        12,
+        3218,
+        198,
+        6576,
+        3521,
+        25,
+        220,
+        1323,
+        21,
+        12,
+        3114,
+        12,
+        1161,
+        279,
+        30377,
+        289,
+        25,
+        14093,
+        279,
+        2,
+        13888,
+        18403,
+        25,
+        8450,
+        11,
+        49159,
+        11,
+        1721,
+        13,
+        21030,
+        2804,
+        413,
+        7360,
+        395,
+        1753,
+        3176,
+        13,
+        200007,
+        200006,
+        1428,
+        200008,
+        8470,
+        290,
+        9318,
+        591,
+        533,
+        17,
+        316,
+        220,
+        17,
+        558,
+        3186,
+        4208,
+        22573,
+        350,
+        136724,
+        553,
+        150761,
+        409,
+        11,
+        625,
+        997,
+        328,
+        290,
+        4208,
+        1883,
+        44470,
+        17,
+        1,
+        314,
+        533,
+        17,
+        198,
+        44470,
+        16,
+        1,
+        314,
+        533,
+        16,
+        198,
+        1,
+        15,
+        1,
+        314,
+        220,
+        15,
+        198,
+        1,
+        16,
+        1,
+        314,
+        220,
+        16,
+        198,
+        1,
+        17,
+        1,
+        314,
+        220,
+        17,
+        198,
+        91264,
+        2740,
+        350,
+        21823,
+        16944,
+        26,
+        52077,
+        48294,
+        553,
+        625,
+        37703,
+        1883,
+        12,
+        17,
+        25,
+        623,
+        2570,
+        2242,
+        6939,
+        8316,
+        326,
+        3561,
+        290,
+        6508,
+        4792,
+        156375,
+        558,
+        12,
+        16,
+        25,
+        623,
+        2570,
+        2452,
+        1869,
+        3389,
+        7408,
+        326,
+        3561,
+        5035,
+        6840,
+        156375,
+        558,
+        15,
+        25,
+        623,
+        2570,
+        47244,
+        1078,
+        6375,
+        328,
+        290,
+        4792,
+        326,
+        3561,
+        1078,
+        6375,
+        156375,
+        558,
+        16,
+        25,
+        623,
+        2570,
+        47244,
+        290,
+        2758,
+        4792,
+        483,
+        1606,
+        3291,
+        52008,
+        15448,
+        558,
+        17,
+        25,
+        623,
+        2570,
+        9141,
+        47244,
+        290,
+        4792,
+        483,
+        860,
+        52008,
+        15448,
+        558,
+        5927,
+        25,
+        30262,
+        495,
+        2570,
+        3019,
+        2360,
+        290,
+        191553,
+        25,
+        33463,
+        328,
+        4325,
+        29293,
+        3378,
+        9822,
+        92346,
+        1504,
+        72677,
+        13,
+        623,
+        1273,
+        6468,
+        12760,
+        558,
+        8191,
+        1606,
+        290,
+        47205,
+        3322,
+        4208,
+        11,
+        2935,
+        22661,
+        503,
+        30547,
+        13,
+        200007,
+        200006,
+        173781,
+        200005,
+        17196,
+        200008
+      ],
+      "first_http_id": 635,
+      "original_response": {
+        "choices": [
+          {
+            "text": "2",
+            "token_ids": [
+              17
+            ],
+            "token_count": 1,
+            "sum_log_probability": -7.001351443378212,
+            "mean_log_probability": -7.001351443378212
+          },
+          {
+            "text": "1",
+            "token_ids": [
+              16
+            ],
+            "token_count": 1,
+            "sum_log_probability": -3.760869113055947,
+            "mean_log_probability": -3.760869113055947
+          },
+          {
+            "text": "0",
+            "token_ids": [
+              15
+            ],
+            "token_count": 1,
+            "sum_log_probability": -0.28598889455008736,
+            "mean_log_probability": -0.28598889455008736
+          },
+          {
+            "text": "-1",
+            "token_ids": [
+              12,
+              16
+            ],
+            "token_count": 2,
+            "sum_log_probability": -1.5356078245653129,
+            "mean_log_probability": -0.7678039122826564
+          },
+          {
+            "text": "-2",
+            "token_ids": [
+              12,
+              17
+            ],
+            "token_count": 2,
+            "sum_log_probability": -4.836969355569603,
+            "mean_log_probability": -2.4184846777848015
+          }
+        ]
+      },
+      "sum_log_probability": [
+        -4.836969355569603,
+        -1.5356078245653129,
+        -0.28598889455008736,
+        -3.760869113055947,
+        -7.001351443378212
+      ],
+      "mean_log_probability": [
+        -2.4184846777848015,
+        -0.7678039122826564,
+        -0.28598889455008736,
+        -3.760869113055947,
+        -7.001351443378212
+      ],
+      "scores": {
+        "sum": {
+          "relative_weights": [
+            0.007941370122132793,
+            0.21560485359965778,
+            0.752248168532481,
+            0.023293772783701767,
+            0.0009118349620265931
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": 0,
+              "0.5": 0,
+              "0.75": 0,
+              "0.9": 0
+            },
+            "cumulative_weights": [
+              0.007941370122132793,
+              0.22354622372179056,
+              0.9757943922542716,
+              0.9990881650379734,
+              1.0
+            ]
+          },
+          "token_count_score_pearson": 0.10222385948419209,
+          "token_count_weight_pearson": -0.2506579440239439
+        },
+        "mean": {
+          "relative_weights": [
+            0.06703370709694101,
+            0.34928085803627623,
+            0.5654892960689235,
+            0.01751068294382454,
+            0.0006854558540346748
+          ],
+          "ordinal": {
+            "modes": [
+              0
+            ],
+            "median": 0,
+            "quantiles": {
+              "0.1": -1,
+              "0.25": -1,
+              "0.5": 0,
+              "0.75": 0,
+              "0.9": 0
+            },
+            "cumulative_weights": [
+              0.06703370709694101,
+              0.41631456513321724,
+              0.9818038612021407,
+              0.9993145441459653,
+              1.0
+            ]
+          },
+          "token_count_score_pearson": 0.4239005378890846,
+          "token_count_weight_pearson": 0.029992287391485323
+        }
+      },
+      "status": "ok",
+      "last_http_id": 635
+    },
+    "deltas_reverse_minus_original": [
+      -0.02957388757167312,
+      -0.001182109132428888,
+      0.0,
+      0.0,
+      0.0
+    ]
+  }
+]

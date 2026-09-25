@@ -1,0 +1,7 @@
+{
+  "prompt": "<|start|>system<|message|>You are ChatGPT, a large language model trained by OpenAI.\nKnowledge cutoff: 2024-06\nCurrent date: 2026-09-25\n\nReasoning: medium\n\n# Valid channels: analysis, commentary, final. Channel must be included for every message.<|end|><|start|>user<|message|>Use the scale from -2 to 2.\nResponse label mapping (quotes are delimiters, not part of the label):\n\"-2\" = -2\n\"-1\" = -1\n\"0\" = 0\n\"1\" = 1\n\"2\" = 2\nTask: A device passed 5 of 10 independent checks. Compute the rating as -2 + (2 - (-2)) * passed / 10. Return the label for that rating.\nReturn only the mapped response label, without quotes or explanation.<|end|><|start|>assistant<|channel|>final<|message|>",
+  "choices": [
+    "-1",
+    "-2"
+  ]
+}

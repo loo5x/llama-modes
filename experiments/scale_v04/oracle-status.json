@@ -1,0 +1,11 @@
+{
+  "requested_executable": "C:\\AI\\llama-modes-v03\\test-save-load-state.exe",
+  "status": "not_run_executable_missing",
+  "evidence": [
+    "PowerShell Test-Path returned False",
+    "PowerShell Get-Item returned ObjectNotFound",
+    "Native oracle validation command exited 1 before loading a model"
+  ],
+  "fallback_runtime_used": false,
+  "pending": "Four preserved-token oracle cases per model, once the native executable exists at the requested path"
+}

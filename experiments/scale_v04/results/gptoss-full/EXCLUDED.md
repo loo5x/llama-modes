@@ -1,0 +1,1 @@
+This preliminary matrix was stopped after the pilot exposed an invalid raw prompt renderer. The /apply-template assistant probe introduced an empty analysis turn through assistant-prefill handling. Exclude this incomplete run from final findings. The raw HTTP evidence is retained.
