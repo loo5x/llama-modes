@@ -67,7 +67,7 @@ To see all available arguments, please refer to [pytest documentation](https://d
 
 ### Decision sequence validation
 
-Build `llama-server` and `test-save-load-state` from the same revision. The decision oracle tests require the latter next to the server executable, or at `LLAMA_TEST_STATE_BIN_PATH`. Its `--decision-oracle FILE` mode reads token IDs from a JSON fixture and computes ordinary teacher-forced likelihoods in a fresh context per candidate, without snapshots or sampling. The Python tests compare these results with `/decision` and verify prompt reuse, ordering, limits, cancellation, messages mode, and chat isolation.
+Build `llama-server` and `test-save-load-state` from the same revision. The decision oracle tests require the latter next to the server executable, or at `LLAMA_TEST_STATE_BIN_PATH`. Its `--decision-oracle FILE` mode reads token IDs from a JSON fixture and computes ordinary teacher-forced likelihoods in a fresh context per candidate, without snapshots or sampling. The Python tests compare these results with `/decision` and verify prompt re-prefill, ordering, limits, cancellation, messages mode, and chat isolation. The multi-token oracle regression uses matching server/oracle batch and microbatch sizes and checks exact equality across original, reversed, rotated, and repeated orders. Its single-slot prompt-token and decode counts check one complete prefill per multi-token candidate, M-1 forced decodes per M-token choice, and no extra work for single-token choices. Separate oracle runs retain the prompt/candidate decode-boundary regression.
 
 For the native Windows CUDA build, use the configuration in `.github/workflows/build-llama-modes-windows.yml`, then build both targets:
 

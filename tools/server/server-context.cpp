@@ -299,7 +299,6 @@ struct server_slot {
 
     server_prompt prompt;
 
-    std::vector<uint8_t> decision_snapshot;
     std::vector<double> decision_scores;
     size_t decision_candidate = 0;
     size_t decision_token = 0;
@@ -379,7 +378,6 @@ struct server_slot {
 
         spec_is_replay = false;
 
-        std::vector<uint8_t>().swap(decision_snapshot);
         decision_scores.clear();
         decision_candidate = 0;
         decision_token = 0;
@@ -3853,26 +3851,22 @@ private:
 
             const auto & sequences = slot.task->decision_sequences;
             if (slot.state == SLOT_STATE_DONE_PROMPT) {
-                for (const auto & tokens : sequences) {
-                    slot.decision_scores.push_back(log_probability(tokens[0]));
+                GGML_ASSERT(slot.decision_token == 0);
+                if (slot.decision_scores.empty()) {
+                    for (const auto & tokens : sequences) {
+                        slot.decision_scores.push_back(log_probability(tokens[0]));
+                    }
                 }
-                const size_t size = llama_state_seq_get_size(slot.ctx_tgt, slot.id);
-                if (size == 0 || size > size_t(1024) * 1024 * 1024) {
-                    throw std::runtime_error("Decision prompt snapshot is empty or exceeds 1 GiB");
-                }
-                slot.decision_snapshot.resize(size);
-                if (llama_state_seq_get_data(slot.ctx_tgt, slot.decision_snapshot.data(), size, slot.id) != size) {
-                    throw std::runtime_error("Failed to save decision prompt state");
-                }
+                GGML_ASSERT(slot.decision_scores.size() == sequences.size());
                 slot.state = SLOT_STATE_SCORING_DECISION;
             } else {
                 slot.decision_token++;
                 slot.decision_scores[slot.decision_candidate] += log_probability(sequences[slot.decision_candidate][slot.decision_token]);
             }
 
-            bool restore = false;
+            bool reprefill = false;
             while (slot.decision_candidate < sequences.size() && slot.decision_token + 1 == sequences[slot.decision_candidate].size()) {
-                restore |= slot.decision_token > 0;
+                reprefill |= slot.decision_token > 0;
                 slot.decision_candidate++;
                 slot.decision_token = 0;
             }
@@ -3885,11 +3879,11 @@ private:
                 res->sum_log_probabilities = slot.decision_scores;
                 queue_results.send(std::move(res));
                 slot.release();
-            } else if (restore) {
-                const auto & snapshot = slot.decision_snapshot;
-                if (llama_state_seq_set_data(slot.ctx_tgt, snapshot.data(), snapshot.size(), slot.id) != snapshot.size()) {
-                    throw std::runtime_error("Failed to restore decision prompt state");
-                }
+            } else if (reprefill) {
+                // Recompute the prompt to avoid layout-dependent scores after KV restoration.
+                SLT_DBG(slot, "re-prefilling decision prompt for candidate %zu\n", slot.decision_candidate);
+                slot.prompt_clear();
+                slot.state = SLOT_STATE_PROCESSING_PROMPT;
             }
         } catch (const std::exception & e) {
             send_error(slot, e.what(), ERROR_TYPE_SERVER);

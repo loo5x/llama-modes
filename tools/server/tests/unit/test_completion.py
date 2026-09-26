@@ -109,9 +109,9 @@ def test_decision_teacher_forced_oracle(tmp_path, batch_size):
     assert Path(executable).is_file(), "Build test-save-load-state or set LLAMA_TEST_STATE_BIN_PATH"
 
     prompt = "Once upon a time there was a"
-    texts = ["yes", "yes indeed", "yes indeed my friend", " big dog", "\nhello", "caf\u00e9", "<|im_end|>"]
+    texts = ["yes", "yes indeed", "yes indeed my friend", "no", " big dog", "\nhello", "caf\u00e9", "<|im_end|>"]
     tokens = [decision_tokens(text) for text in texts]
-    assert len(tokens[0]) == 1
+    assert len(tokens[0]) == len(tokens[3]) == 1
     assert tokens[1][:len(tokens[0])] == tokens[0]
     assert tokens[2][:len(tokens[1])] == tokens[1]
     prompt_tokens = decision_tokens(prompt, prompt=True)
@@ -124,40 +124,45 @@ def test_decision_teacher_forced_oracle(tmp_path, batch_size):
     assert props.status_code == 200
     large_batch = max(100, len(prompt_tokens) + max(map(len, tokens)) + 8)
     oracle_runs = []
-    for oracle_batch in [len(prompt_tokens), large_batch]:
+    for oracle_batch, oracle_ubatch in [(batch_size, batch_size), (len(prompt_tokens), large_batch), (large_batch, large_batch)]:
         subprocess.run([
             executable, "-m", props.body["model_path"], "-c", str(server.n_ctx),
-            "-b", str(oracle_batch), "-ub", str(large_batch), "-ngl", str(server.n_gpu_layer), "-fa", "off",
+            "-b", str(oracle_batch), "-ub", str(oracle_ubatch), "-ngl", str(server.n_gpu_layer), "-fa", "off",
             "--decision-oracle", str(request_path),
         ], check=True, timeout=180)
         oracle_runs.append(json.loads(output_path.read_text(encoding="utf-8")))
     oracle = oracle_runs[0]
-    assert len(oracle) == len(oracle_runs[1]) == len(tokens)
-    for ids, exact_batch, oversized_batch in zip(tokens, oracle, oracle_runs[1]):
-        assert len(exact_batch) == len(oversized_batch) == len(ids)
+    assert len(oracle) == len(oracle_runs[1]) == len(oracle_runs[2]) == len(tokens)
+    for ids, matched_batch, exact_batch, oversized_batch in zip(tokens, oracle, oracle_runs[1], oracle_runs[2]):
+        assert len(matched_batch) == len(exact_batch) == len(oversized_batch) == len(ids)
         assert oversized_batch == pytest.approx(exact_batch, rel=0, abs=2e-4)
 
-    before = decision_metrics()
-    actual = server.make_request("POST", "/decision", {"prompt": prompt, "choices": texts})
-    assert actual.status_code == 200
-    assert len(actual.body["choices"]) == len(texts) == len(oracle)
-    for result, text, ids, per_token in zip(actual.body["choices"], texts, tokens, oracle):
-        assert set(result) == {"text", "token_ids", "token_count", "sum_log_probability", "mean_log_probability"}
-        assert result["text"] == text
-        assert result["token_ids"] == ids
-        assert result["token_count"] == len(ids) == len(per_token)
-        assert result["sum_log_probability"] == pytest.approx(math.fsum(per_token), abs=2e-4)
-        assert result["mean_log_probability"] == pytest.approx(math.fsum(per_token) / len(ids), abs=2e-4)
-    after = decision_metrics()
-    assert after["llamacpp:prompt_tokens_total"] - before["llamacpp:prompt_tokens_total"] == len(prompt_tokens)
-    assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
-    assert after["llamacpp:spec_decode_num_draft_tokens_total"] == before["llamacpp:spec_decode_num_draft_tokens_total"]
-
-    reversed_result = server.make_request("POST", "/decision", {"prompt": prompt, "choices": texts[::-1]})
-    assert reversed_result.status_code == 200
-    for first, second in zip(actual.body["choices"], reversed_result.body["choices"][::-1]):
-        assert first["token_ids"] == second["token_ids"]
-        assert first["sum_log_probability"] == pytest.approx(second["sum_log_probability"], abs=2e-4)
+    expected = dict(zip(texts, zip(tokens, oracle)))
+    n_prefills = sum(len(ids) > 1 for ids in tokens)
+    n_forced = sum(len(ids) - 1 for ids in tokens)
+    baseline = None
+    for order in [texts, texts[::-1], texts[1:] + texts[:1], texts]:
+        before = decision_metrics()
+        actual = server.make_request("POST", "/decision", {"prompt": prompt, "choices": order})
+        assert actual.status_code == 200
+        assert len(actual.body["choices"]) == len(order)
+        for result, text in zip(actual.body["choices"], order):
+            ids, per_token = expected[text]
+            assert set(result) == {"text", "token_ids", "token_count", "sum_log_probability", "mean_log_probability"}
+            assert result["text"] == text
+            assert result["token_ids"] == ids
+            assert result["token_count"] == len(ids) == len(per_token)
+            assert result["sum_log_probability"] == pytest.approx(math.fsum(per_token), rel=0, abs=2e-4)
+            assert result["mean_log_probability"] == pytest.approx(math.fsum(per_token) / len(ids), rel=0, abs=2e-4)
+        after = decision_metrics()
+        assert after["llamacpp:prompt_tokens_total"] - before["llamacpp:prompt_tokens_total"] == len(prompt_tokens) * n_prefills
+        assert after["llamacpp:n_decode_total"] - before["llamacpp:n_decode_total"] == math.ceil(len(prompt_tokens) / batch_size) * n_prefills + n_forced
+        assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+        assert after["llamacpp:spec_decode_num_draft_tokens_total"] == before["llamacpp:spec_decode_num_draft_tokens_total"]
+        scores = {c["text"]: c["sum_log_probability"] for c in actual.body["choices"]}
+        if baseline is None:
+            baseline = scores
+        assert scores == baseline
 
 
 def test_decision_context_and_resource_limits():
@@ -172,8 +177,9 @@ def test_decision_context_and_resource_limits():
     choice = " yes" * (n_ctx - prompt_length + 1)
     ids = decision_tokens(choice)
     assert prompt_length + len(ids) - 1 == n_ctx
-    accepted = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice]})
+    accepted = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice, "yes", choice[:-4]]})
     assert accepted.status_code == 200
+    assert len(accepted.body["choices"]) == 3
     assert accepted.body["choices"][0]["token_count"] == len(ids)
     rejected = server.make_request("POST", "/decision", {"prompt": prompt, "choices": [choice + " yes"]})
     assert rejected.status_code == 400
@@ -200,7 +206,7 @@ def test_decision_cleanup_and_chat_regression(spec_type):
     legacy_before = server.make_request("POST", "/decision", legacy_request)
     assert legacy_before.status_code == 200
     before = decision_metrics()
-    request = {"prompt": "Once upon a time", "choices": [" little girl", " big dog"]}
+    request = {"prompt": "Once upon a time", "choices": ["yes", " little girl", "no", " big dog"]}
     for _ in range(2):
         result = server.make_request("POST", "/decision", request)
         assert result.status_code == 200
