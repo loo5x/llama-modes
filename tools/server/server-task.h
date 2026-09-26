@@ -466,6 +466,7 @@ struct server_task_result_decision : server_task_result {
     std::vector<llama_tokens> sequences;
     std::vector<double> sum_log_probabilities;
 
+    json to_json_scale(const json & scale, const std::string & measurement) const;
     virtual json to_json() override;
 };
 

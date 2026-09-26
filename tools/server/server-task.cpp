@@ -1498,6 +1498,120 @@ json server_task_result_decision::to_json() {
     return {{"choices", result}};
 }
 
+json server_task_result_decision::to_json_scale(const json & scale, const std::string & measurement) const {
+    GGML_ASSERT(scale.size() == sequences.size() && scale.size() == sum_log_probabilities.size() && scale.size() >= 2);
+    const auto add = [](double value, double & sum, double & correction) {
+        const double adjusted = value - correction;
+        const double next = sum + adjusted;
+        correction = (next - sum) - adjusted;
+        sum = next;
+    };
+    const double max_score = *std::max_element(sum_log_probabilities.begin(), sum_log_probabilities.end());
+    std::vector<double> weights;
+    double total = 0.0;
+    double correction = 0.0;
+    for (double score : sum_log_probabilities) {
+        if (!std::isfinite(score)) {
+            throw std::runtime_error("Scale score is non-finite");
+        }
+        weights.push_back(std::exp(score - max_score));
+        add(weights.back(), total, correction);
+    }
+    for (double & weight : weights) {
+        weight /= total;
+    }
+    const double max_weight = *std::max_element(weights.begin(), weights.end());
+    json points = json::array();
+    json mode = json::array();
+    double cumulative = 0.0;
+    correction = 0.0;
+    for (size_t i = 0; i < scale.size(); ++i) {
+        add(weights[i], cumulative, correction);
+        points.push_back({
+            {"value", scale[i].at("value")},
+            {"label", scale[i].at("label")},
+            {"token_ids", sequences[i]},
+            {"token_count", sequences[i].size()},
+            {"sum_log_probability", sum_log_probabilities[i]},
+            {"mean_log_probability", sum_log_probabilities[i] / sequences[i].size()},
+            {"relative_weight", weights[i]},
+            {"cumulative_weight", i + 1 == scale.size() ? 1.0 : std::min(1.0, cumulative)},
+        });
+        if (weights[i] == max_weight) {
+            mode.push_back(scale[i].at("value"));
+        }
+    }
+    const auto quantile = [&](double q) -> json {
+        for (const auto & point : points) {
+            if (point.at("cumulative_weight").get<double>() >= q) {
+                return point.at("value");
+            }
+        }
+        return points.back().at("value");
+    };
+    json result = {
+        {"measurement", measurement},
+        {"mode", mode},
+        {"median", quantile(0.5)},
+        {"quantiles", {{"0.25", quantile(0.25)}, {"0.75", quantile(0.75)}}},
+    };
+    if (measurement == "interval") {
+        // Scale values before arithmetic to avoid overflow for finite JSON numbers.
+        double magnitude = 0.0;
+        for (const auto & point : scale) {
+            magnitude = std::max(magnitude, std::abs(point.at("value").get<double>()));
+        }
+        const size_t origin_index = std::max_element(weights.begin(), weights.end()) - weights.begin();
+        const auto & origin = scale[origin_index].at("value");
+        const double origin_value = origin.get<double>();
+        const auto rounding_error = [](const json & value, double rounded) {
+            if (!value.is_number_integer()) {
+                return 0.0;
+            }
+            if (rounded < 0.0) {
+                return double(value.get<int64_t>() - int64_t(rounded));
+            }
+            const uint64_t integer = value.get<uint64_t>();
+            if (rounded >= 18446744073709551616.0) {
+                return -double(UINT64_MAX - integer) - 1.0;
+            }
+            const uint64_t converted = uint64_t(rounded);
+            return integer >= converted ? double(integer - converted) : -double(converted - integer);
+        };
+        const double origin_error = rounding_error(origin, origin_value);
+        std::vector<double> offsets;
+        for (const auto & point : scale) {
+            const auto & value = point.at("value");
+            const double v = value.get<double>();
+            const double error = rounding_error(value, v) - origin_error;
+            // Keep integer rounding errors when subtracting nearby numeric values.
+            const double offset = (origin_value < 0.0) == (v < 0.0)
+                ? ((v - origin_value) + error) / magnitude
+                : v / magnitude - origin_value / magnitude + error / magnitude;
+            offsets.push_back(offset);
+        }
+        double mean_offset = 0.0;
+        correction = 0.0;
+        for (size_t i = 0; i < scale.size(); ++i) {
+            add(offsets[i] * weights[i], mean_offset, correction);
+        }
+        double deviation = 0.0;
+        for (size_t i = 0; i < scale.size(); ++i) {
+            const double delta = offsets[i] - mean_offset;
+            deviation = std::hypot(deviation, std::sqrt(weights[i]) * delta);
+        }
+        double mean = 0.0;
+        correction = 0.0;
+        for (size_t i = 0; i < scale.size(); ++i) {
+            add((scale[i].at("value").get<double>() / magnitude) * weights[i], mean, correction);
+        }
+        result["expected_value"] = std::max(-1.0, std::min(1.0, mean)) * magnitude;
+        result["standard_deviation"] = std::min(1.0, deviation) * magnitude;
+    }
+    result["points"] = std::move(points);
+    return result;
+}
+
 //
 // server_task_result_embd
 //

@@ -40,6 +40,49 @@ def test_decision_messages_match_raw(template, suffix, choices):
             assert expected["logit"] == pytest.approx(actual["logit"], abs=1e-4)
             assert expected["probability"] == pytest.approx(actual["probability"], abs=1e-5)
 
+    scale = [{"value": i, "label": label} for i, label in enumerate(choices[-2:])]
+    payload = {"measurement": "ordinal", "scale": scale}
+    raw_scale = server.make_request("POST", "/scale", {"prompt": rendered.body["prompt"] + suffix, **payload})
+    direct_scale = server.make_request("POST", "/v1/scale", {"messages": messages, **payload})
+    assert raw_scale.status_code == direct_scale.status_code == 200
+    for expected, actual in zip(raw_scale.body["points"], direct_scale.body["points"]):
+        assert expected["token_ids"] == actual["token_ids"]
+        assert expected["sum_log_probability"] == pytest.approx(actual["sum_log_probability"], abs=2e-4)
+        assert expected["relative_weight"] == pytest.approx(actual["relative_weight"], abs=2e-4)
+    for key in ["mode", "median", "quantiles"]:
+        assert raw_scale.body[key] == direct_scale.body[key]
+
+
+@pytest.mark.slow
+def test_scale_qwen_token_prefix():
+    model = os.environ.get("LLAMA_TEST_QWEN_MODEL")
+    if not model:
+        pytest.skip("Set LLAMA_TEST_QWEN_MODEL to a local Qwen GGUF for token-prefix validation")
+    assert os.path.isfile(model)
+    server.model_hf_repo = None
+    server.model_hf_file = None
+    server.model_file = model
+    server.n_slots = 1
+    server.start(timeout_seconds=300)
+    tokens = []
+    for text in ["1", "10"]:
+        response = server.make_request("POST", "/tokenize", {"content": text, "add_special": False, "parse_special": False})
+        assert response.status_code == 200
+        tokens.append(response.body["tokens"])
+    assert len(tokens[0]) < len(tokens[1]) and tokens[1][:len(tokens[0])] == tokens[0]
+    for labels in [["1", "10"], ["10", "1"]]:
+        response = server.make_request("POST", "/scale", {
+            "prompt": "Rate this answer:", "measurement": "ordinal",
+            "scale": [{"value": i, "label": label} for i, label in enumerate(labels)],
+        })
+        assert response.status_code == 400
+        assert "token-prefix" in response.body["error"]["message"]
+    valid = server.make_request("POST", "/scale", {
+        "prompt": "Rate this answer:", "measurement": "ordinal",
+        "scale": [{"value": 1, "label": "1"}, {"value": 2, "label": "2"}],
+    })
+    assert valid.status_code == 200
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize("question", [

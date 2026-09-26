@@ -1,4 +1,5 @@
 import pytest
+import requests
 from pathlib import Path
 from utils import *
 
@@ -316,3 +317,34 @@ def test_mixed_decision_modes_with_draft(tmp_path, monkeypatch, multitoken_first
         assert response.body["timings"]["draft_n"] > 0
         if slot_id == legacy_slot:
             assert response.body["timings"]["cache_n"] > 0
+
+
+@pytest.mark.parametrize("labels", [["yes", "no"], ["yes", " big dog", " little girl"]])
+def test_scale_with_draft(labels):
+    server.n_slots = 1
+    server.server_metrics = True
+    server.start()
+    completion = {"prompt": "Once upon a time", "temperature": 0, "n_predict": 16, "cache_prompt": False}
+    baseline = server.make_request("POST", "/completion", completion)
+    assert baseline.status_code == 200
+    assert baseline.body["timings"]["draft_n"] > 0
+
+    def metrics():
+        response = requests.get(server.make_url("/metrics"), timeout=10)
+        assert response.status_code == 200
+        return {line.split()[0]: float(line.split()[1]) for line in response.text.splitlines()
+                if line.startswith("llamacpp:")}
+
+    before = metrics()
+    response = server.make_request("POST", "/scale", {
+        "prompt": completion["prompt"], "measurement": "ordinal",
+        "scale": [{"value": i, "label": label} for i, label in enumerate(labels)],
+    })
+    assert response.status_code == 200
+    after = metrics()
+    for key in ["llamacpp:tokens_predicted_total", "llamacpp:spec_decode_num_draft_tokens_total"]:
+        assert before[key] == after[key]
+    repeated = server.make_request("POST", "/completion", completion)
+    assert repeated.status_code == 200
+    assert repeated.body["content"] == baseline.body["content"]
+    assert repeated.body["tokens_predicted"] == baseline.body["tokens_predicted"]

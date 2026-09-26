@@ -23,6 +23,7 @@
 #include <cinttypes>
 #include <exception>
 #include <memory>
+#include <iterator>
 #include <filesystem>
 #include <random>
 #include <set>
@@ -5040,9 +5041,84 @@ void server_routes::init_routes() {
             TASK_RESPONSE_TYPE_NONE); // infill is not OAI compatible
     };
 
-    this->post_decision = [this](const server_http_req & req) {
+    const auto post_scoring = [this](const server_http_req & req, bool is_scale) {
         auto res = create_response();
-        const json body = json::parse_no_throw(req.body);
+        json body = json::parse_no_throw(req.body);
+        json scale;
+        std::string measurement;
+        if (is_scale) {
+            if (!body.is_object() || !body.contains("measurement") || !body.at("measurement").is_string() ||
+                    (body.at("measurement") != "ordinal" && body.at("measurement") != "interval") ||
+                    !body.contains("scale") || !body.at("scale").is_array() ||
+                    body.at("scale").size() < 2 || body.at("scale").size() > 256) {
+                res->error(format_error_response("Expected measurement ordinal or interval and 2 to 256 scale points", ERROR_TYPE_INVALID_REQUEST));
+                return res;
+            }
+            for (const auto & item : body.items()) {
+                if (item.key() != "prompt" && item.key() != "messages" && item.key() != "scale" && item.key() != "measurement" && item.key() != "model") {
+                    res->error(format_error_response("Unsupported scale field: " + item.key(), ERROR_TYPE_INVALID_REQUEST));
+                    return res;
+                }
+            }
+            scale = body.at("scale");
+            std::set<std::string> labels;
+            for (const auto & point : scale) {
+                if (!point.is_object() || point.size() != 2 || !point.contains("value") || !point.contains("label") ||
+                        !point.at("value").is_number() || !std::isfinite(point.at("value").get<double>()) ||
+                        !point.at("label").is_string() || point.at("label").get<std::string>().empty()) {
+                    res->error(format_error_response("Each scale point must contain exactly a finite numeric value and a non-empty string label", ERROR_TYPE_INVALID_REQUEST));
+                    return res;
+                }
+                if (!labels.insert(point.at("label").get<std::string>()).second) {
+                    res->error(format_error_response("Scale labels must be unique", ERROR_TYPE_INVALID_REQUEST));
+                    return res;
+                }
+            }
+            const auto less = [](const json & a, const json & b) {
+                const auto & av = a.at("value");
+                const auto & bv = b.at("value");
+                const double ad = av.get<double>();
+                const double bd = bv.get<double>();
+                if (ad != bd) {
+                    return ad < bd;
+                }
+                if (av.is_number_float() && bv.is_number_float()) {
+                    return false;
+                }
+                // Resolve integer values that round to the same double without losing bits.
+                if (av.is_number_integer() && bv.is_number_integer()) {
+                    return ad < 0.0 ? av.get<int64_t>() < bv.get<int64_t>() : av.get<uint64_t>() < bv.get<uint64_t>();
+                }
+                if (ad >= 18446744073709551616.0) {
+                    return av.is_number_integer() && bv.is_number_float();
+                }
+                if (ad < 0.0) {
+                    return (av.is_number_integer() ? av.get<int64_t>() : int64_t(ad)) <
+                           (bv.is_number_integer() ? bv.get<int64_t>() : int64_t(bd));
+                }
+                return (av.is_number_integer() ? av.get<uint64_t>() : uint64_t(ad)) <
+                       (bv.is_number_integer() ? bv.get<uint64_t>() : uint64_t(bd));
+            };
+            std::vector<json> ordered(scale.begin(), scale.end());
+            std::sort(ordered.begin(), ordered.end(), less);
+            scale = json::array();
+            for (const auto & point : ordered) {
+                scale.push_back(point);
+            }
+            for (size_t i = 1; i < scale.size(); ++i) {
+                if (!less(scale[i - 1], scale[i])) {
+                    res->error(format_error_response("Scale values must be unique", ERROR_TYPE_INVALID_REQUEST));
+                    return res;
+                }
+            }
+            measurement = body.at("measurement").get<std::string>();
+            body.erase("measurement");
+            body.erase("scale");
+            body["choices"] = json::array();
+            for (const auto & point : scale) {
+                body["choices"].push_back(point.at("label"));
+            }
+        }
         if (body.is_object() && body.contains("messages") && body.contains("prompt")) {
             res->error(format_error_response("Expected exactly one of prompt or messages", ERROR_TYPE_INVALID_REQUEST));
             return res;
@@ -5099,6 +5175,17 @@ void server_routes::init_routes() {
             task.decision_sequences.push_back(tokens);
             task.decision_multitoken |= tokens.size() > 1;
         }
+        if (is_scale) {
+            for (auto it = seen.begin(); it != seen.end(); ++it) {
+                const auto next = std::next(it);
+                if (next != seen.end() && it->size() < next->size() && std::equal(it->begin(), it->end(), next->begin())) {
+                    res->error(format_error_response("Scale labels must not have strict token-prefix overlap", ERROR_TYPE_INVALID_REQUEST));
+                    return res;
+                }
+            }
+            // Use full-vocabulary log probabilities even when all labels have one token.
+            task.decision_multitoken = true;
+        }
         if (body.contains("prompt")) {
             task.tokens = server_tokens(common_tokenize(ctx_server.vocab, body.at("prompt").get<std::string>(), true, true), false);
         } else {
@@ -5128,9 +5215,21 @@ void server_routes::init_routes() {
         if (results.error) {
             res->error(results.error->to_json());
         } else {
-            res->ok(results.results[0]->to_json());
+            if (is_scale) {
+                const auto & scored = static_cast<const server_task_result_decision &>(*results.results[0]);
+                res->ok(scored.to_json_scale(scale, measurement));
+            } else {
+                res->ok(results.results[0]->to_json());
+            }
         }
         return res;
+    };
+
+    this->post_decision = [post_scoring](const server_http_req & req) {
+        return post_scoring(req, false);
+    };
+    this->post_scale = [post_scoring](const server_http_req & req) {
+        return post_scoring(req, true);
     };
 
     this->post_completions = [this](const server_http_req & req) {

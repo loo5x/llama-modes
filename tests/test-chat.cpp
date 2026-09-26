@@ -8,6 +8,7 @@
 #include "../src/llama-grammar.h"
 #include "../src/unicode.h"
 #include "../tools/server/server-chat.h"
+#include "../tools/server/server-task.h"
 #include "chat-auto-parser.h"
 #include "chat.h"
 #include "common.h"
@@ -15,6 +16,7 @@
 #include "log.h"
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
 #include <fstream>
 #include <functional>
@@ -7634,6 +7636,52 @@ static void test_msg_diffs_compute() {
     }
 }
 
+static void test_scale_summaries() {
+    server_task_result_decision scored;
+    scored.sequences = {{1}, {2, 3}, {4}, {5}};
+    scored.sum_log_probabilities = {-10000.0, -10000.0, -10000.0, -10000.0};
+    const json scale = json::array({json{{"value", -2}, {"label", "a"}}, json{{"value", 0}, {"label", "b"}},
+                                    json{{"value", 2}, {"label", "c"}}, json{{"value", 4}, {"label", "d"}}});
+    const auto ordinal = scored.to_json_scale(scale, "ordinal");
+    GGML_ASSERT(ordinal.size() == 5);
+    GGML_ASSERT(ordinal.at("mode") == json::array({-2, 0, 2, 4}));
+    GGML_ASSERT(ordinal.at("median") == 0);
+    GGML_ASSERT(ordinal.at("quantiles") == json({{"0.25", -2}, {"0.75", 2}}));
+    for (size_t i = 0; i < scale.size(); ++i) {
+        const auto & point = ordinal.at("points")[i];
+        GGML_ASSERT(point.at("relative_weight") == 0.25);
+        GGML_ASSERT(point.at("cumulative_weight") == 0.25 * (i + 1));
+        GGML_ASSERT(point.at("mean_log_probability") == -10000.0 / scored.sequences[i].size());
+    }
+    const auto interval = scored.to_json_scale(scale, "interval");
+    GGML_ASSERT(interval.size() == 7);
+    GGML_ASSERT(interval.at("expected_value") == 1.0);
+    GGML_ASSERT(std::abs(interval.at("standard_deviation").get<double>() - std::sqrt(5.0)) < 1e-12);
+    scored.sum_log_probabilities = {-20000.0, -10000.0, -10001.0, -20000.0};
+    const auto uneven = scored.to_json_scale(scale, "ordinal");
+    GGML_ASSERT(uneven.at("mode") == json::array({0}));
+    GGML_ASSERT(uneven.at("median") == 0);
+    GGML_ASSERT(uneven.at("quantiles") == json({{"0.25", 0}, {"0.75", 2}}));
+    GGML_ASSERT(std::abs(uneven.at("points")[1].at("relative_weight").get<double>() - 1.0 / (1.0 + std::exp(-1.0))) < 1e-12);
+    scored.sequences = {{1}, {2}};
+    scored.sum_log_probabilities = {-1.0, -1.0};
+    const auto extreme = scored.to_json_scale(json::array({json{{"value", -1e308}, {"label", "a"}}, json{{"value", 1e308}, {"label", "b"}}}), "interval");
+    GGML_ASSERT(extreme.at("expected_value") == 0.0);
+    GGML_ASSERT(extreme.at("standard_deviation") == 1e308);
+    const auto adjacent = scored.to_json_scale(json::array({json{{"value", uint64_t(9007199254740992)}, {"label", "a"}}, json{{"value", uint64_t(9007199254740993)}, {"label", "b"}}}), "interval");
+    GGML_ASSERT(std::abs(adjacent.at("standard_deviation").get<double>() - 0.5) < 1e-12);
+    const auto mixed = scored.to_json_scale(json::array({json{{"value", 9007199254740992.0}, {"label", "a"}}, json{{"value", uint64_t(9007199254740993)}, {"label", "b"}}}), "interval");
+    GGML_ASSERT(std::abs(mixed.at("standard_deviation").get<double>() - 0.5) < 1e-12);
+    scored.sum_log_probabilities = {-10000.0, 0.0};
+    const auto concentrated = scored.to_json_scale(json::array({json{{"value", -1e308}, {"label", "a"}}, json{{"value", 1.0}, {"label", "b"}}}), "interval");
+    GGML_ASSERT(std::abs(concentrated.at("expected_value").get<double>() - 1.0) < 1e-12);
+    GGML_ASSERT(concentrated.at("standard_deviation") == 0.0);
+    scored.sequences = {{1}, {2}, {3}};
+    scored.sum_log_probabilities = {-10000.0, 0.0, 0.0};
+    const auto distant = scored.to_json_scale(json::array({json{{"value", -1e308}, {"label", "a"}}, json{{"value", 1.0}, {"label", "b"}}, json{{"value", 2.0}, {"label", "c"}}}), "interval");
+    GGML_ASSERT(std::abs(distant.at("standard_deviation").get<double>() - 0.5) < 1e-12);
+}
+
 int main(int argc, char ** argv) {
     bool detailed_debug    = false;
     bool only_run_filtered = false;
@@ -7706,6 +7754,7 @@ int main(int argc, char ** argv) {
     } else
 #endif
     {
+        test_scale_summaries();
         test_msg_diffs_compute();
         test_msgs_oaicompat_json_conversion();
         test_msg_token_delimiters_split();

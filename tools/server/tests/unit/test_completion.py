@@ -164,6 +164,16 @@ def test_decision_teacher_forced_oracle(tmp_path, batch_size):
             baseline = scores
         assert scores == baseline
 
+    for indices in [[0, 3], [1, 4, 5], [0, 3, 4]]:
+        response = server.make_request("POST", "/scale", {
+            "prompt": prompt, "measurement": "ordinal",
+            "scale": [{"value": i, "label": texts[i]} for i in indices],
+        })
+        assert response.status_code == 200
+        for point, i in zip(response.body["points"], indices):
+            assert point["token_ids"] == tokens[i]
+            assert point["sum_log_probability"] == pytest.approx(math.fsum(oracle[i]), rel=0, abs=2e-4)
+
 
 def test_decision_context_and_resource_limits():
     server.n_slots = 1
@@ -191,8 +201,9 @@ def test_decision_context_and_resource_limits():
     assert repeated.body["choices"][0]["sum_log_probability"] == pytest.approx(accepted.body["choices"][0]["sum_log_probability"], abs=2e-4)
 
 
+@pytest.mark.parametrize("endpoint", ["/decision", "/scale"])
 @pytest.mark.parametrize("spec_type", [None, "ngram-simple"])
-def test_decision_cleanup_and_chat_regression(spec_type):
+def test_decision_cleanup_and_chat_regression(spec_type, endpoint):
     server.n_slots = 1
     server.spec_type = spec_type
     server.server_metrics = True
@@ -207,8 +218,10 @@ def test_decision_cleanup_and_chat_regression(spec_type):
     assert legacy_before.status_code == 200
     before = decision_metrics()
     request = {"prompt": "Once upon a time", "choices": ["yes", " little girl", "no", " big dog"]}
+    if endpoint == "/scale":
+        request = scale_request(request["choices"])
     for _ in range(2):
-        result = server.make_request("POST", "/decision", request)
+        result = server.make_request("POST", endpoint, request)
         assert result.status_code == 200
     after = decision_metrics()
     assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
@@ -226,16 +239,21 @@ def test_decision_cleanup_and_chat_regression(spec_type):
     assert first.body["usage"] == second.body["usage"]
 
 
-def test_decision_cancel_cleanup():
+@pytest.mark.parametrize("endpoint", ["/decision", "/scale"])
+def test_decision_cancel_cleanup(endpoint):
     server.n_slots = 1
     server.n_ctx = 1024
     server.server_slots = True
     server.server_metrics = True
     server.start()
     before = decision_metrics()
-    body = json.dumps({"prompt": "Once upon a time", "choices": [" yes" * 900 + str(i) for i in range(32)]}).encode()
+    if endpoint == "/scale":
+        request = scale_request([" yes" * 900 + chr(65 + i) for i in range(26)])
+    else:
+        request = {"prompt": "Once upon a time", "choices": [" yes" * 900 + str(i) for i in range(32)]}
+    body = json.dumps(request).encode()
     with socket.create_connection((server.server_host, server.server_port), timeout=10) as connection:
-        connection.sendall((f"POST /decision HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {len(body)}\r\n\r\n").encode() + body)
+        connection.sendall((f"POST {endpoint} HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {len(body)}\r\n\r\n").encode() + body)
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
             slots = server.make_request("GET", "/slots")
@@ -251,13 +269,167 @@ def test_decision_cancel_cleanup():
         time.sleep(0.01)
     else:
         pytest.fail("Cancelled decision did not release its slot")
-    assert decision_metrics()["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+    after = decision_metrics()
+    for key in ["llamacpp:tokens_predicted_total", "llamacpp:spec_decode_num_draft_tokens_total"]:
+        assert after[key] == before[key]
     request = {"prompt": "Once upon a time", "choices": [" little girl", " big dog"]}
-    first = server.make_request("POST", "/decision", request)
-    second = server.make_request("POST", "/decision", request)
+    if endpoint == "/scale":
+        request = scale_request(request["choices"])
+    first = server.make_request("POST", endpoint, request)
+    second = server.make_request("POST", endpoint, request)
     assert first.status_code == second.status_code == 200
-    for a, b in zip(first.body["choices"], second.body["choices"]):
+    key = "points" if endpoint == "/scale" else "choices"
+    for a, b in zip(first.body[key], second.body[key]):
         assert a["sum_log_probability"] == pytest.approx(b["sum_log_probability"], abs=2e-4)
+
+
+def scale_request(labels, measurement="ordinal"):
+    return {"prompt": "Once upon a time", "measurement": measurement,
+            "scale": [{"value": i - 1, "label": label} for i, label in enumerate(labels)]}
+
+
+@pytest.mark.parametrize("measurement", ["ordinal", "interval"])
+@pytest.mark.parametrize("labels", [["yes", "no"], [" little girl", " big dog"], ["yes", " big dog", "no"]])
+def test_scale_scores_and_order(measurement, labels):
+    server.n_slots = 1
+    server.server_metrics = True
+    server.start()
+    request = scale_request(labels, measurement)
+    ids = [decision_tokens(label) for label in labels]
+    assert [len(t) == 1 for t in ids] == [label in ("yes", "no") for label in labels]
+    # A multi-token choice keeps the decision reference on full-vocabulary scoring.
+    reference = server.make_request("POST", "/decision", {
+        "prompt": request["prompt"], "choices": labels + [" a completely different ending"],
+    })
+    assert reference.status_code == 200
+    before = decision_metrics()
+    baseline = None
+    for points in [request["scale"], request["scale"][::-1], request["scale"][1:] + request["scale"][:1]]:
+        response = server.make_request("POST", "/v1/scale", {**request, "scale": points})
+        assert response.status_code == 200, response.body
+        result = response.body
+        if baseline is None:
+            baseline = result
+        assert result == baseline
+        expected_fields = {"measurement", "points", "mode", "median", "quantiles"}
+        if measurement == "interval":
+            expected_fields |= {"expected_value", "standard_deviation"}
+        assert set(result) == expected_fields
+        assert result["measurement"] == measurement
+        scores = [p["sum_log_probability"] for p in result["points"]]
+        weights = [math.exp(score - max(scores)) for score in scores]
+        weights = [w / math.fsum(weights) for w in weights]
+        for i, (point, ref) in enumerate(zip(result["points"], reference.body["choices"])):
+            assert set(point) == {"value", "label", "token_ids", "token_count", "sum_log_probability",
+                                  "mean_log_probability", "relative_weight", "cumulative_weight"}
+            assert point["value"] == i - 1
+            assert point["label"] == labels[i]
+            assert point["token_ids"] == ids[i]
+            assert point["token_count"] == len(ids[i])
+            assert point["sum_log_probability"] == pytest.approx(ref["sum_log_probability"], abs=2e-4)
+            assert point["mean_log_probability"] == pytest.approx(scores[i] / len(ids[i]))
+            assert point["relative_weight"] == pytest.approx(weights[i])
+            assert point["cumulative_weight"] == pytest.approx(math.fsum(weights[:i + 1]))
+        quantile = lambda q: next(p["value"] for p in result["points"] if p["cumulative_weight"] >= q)
+        assert result["median"] == quantile(0.5)
+        assert result["quantiles"] == {"0.25": quantile(0.25), "0.75": quantile(0.75)}
+        maximum = max(p["relative_weight"] for p in result["points"])
+        assert result["mode"] == [p["value"] for p in result["points"] if p["relative_weight"] == maximum]
+        if measurement == "interval":
+            mean = math.fsum(p["value"] * p["relative_weight"] for p in result["points"])
+            variance = math.fsum(p["relative_weight"] * (p["value"] - mean) ** 2 for p in result["points"])
+            assert result["expected_value"] == pytest.approx(mean)
+            assert result["standard_deviation"] == pytest.approx(math.sqrt(variance))
+    after = decision_metrics()
+    assert after["llamacpp:tokens_predicted_total"] == before["llamacpp:tokens_predicted_total"]
+    assert after["llamacpp:spec_decode_num_draft_tokens_total"] == before["llamacpp:spec_decode_num_draft_tokens_total"]
+
+
+def test_scale_invalid_and_recovery():
+    server.n_slots = 1
+    server.n_ctx = 128
+    server.start()
+    request = scale_request(["yes", "no"])
+    invalid = [
+        {"measurement": m} for m in [None, "Ordinal", "nominal", 1, True]
+    ] + [
+        {"scale": []}, {"scale": request["scale"][:1]}, {"scale": {}},
+        {"scale": [{"value": 1, "label": "yes"}, {"value": 1.0, "label": "no"}]},
+        {"scale": [{"value": 1, "label": "yes"}, {"value": 2, "label": "yes"}]},
+        {"scale": [{"value": 1, "label": "yes", "extra": 0}, request["scale"][1]]},
+        {"scale": [{"label": "yes"}, request["scale"][1]]},
+        {"scale": [{"value": 1}, request["scale"][1]]},
+        {"scale": [None, request["scale"][1]]},
+        {"scale": [{"value": i, "label": str(i)} for i in range(257)]},
+        {"scale": [{"value": 1, "label": "x" * (1024 * 1024 + 1)}, request["scale"][1]]},
+        {"scale": [{"value": 1, "label": " yes" * 32769}, request["scale"][1]]},
+        {"scale": [{"value": 1, "label": " yes" * 200}, request["scale"][1]]},
+        {"messages": [{"role": "user", "content": "Hello"}]},
+        {"prompt": ""}, {"prompt": None}, {"min": 1, "max": 5, "step": 1}, {"choices": ["yes", "no"]},
+    ]
+    for value in [None, True, "1", [], {}]:
+        invalid.append({"scale": [{"value": value, "label": "yes"}, request["scale"][1]]})
+    for label in [None, "", 1, []]:
+        invalid.append({"scale": [{"value": 1, "label": label}, request["scale"][1]]})
+    baseline = server.make_request("POST", "/scale", request)
+    assert baseline.status_code == 200
+    for patch in invalid:
+        response = server.make_request("POST", "/scale", {**request, **patch})
+        assert response.status_code == 400, patch
+        recovered = server.make_request("POST", "/scale", request)
+        assert recovered.status_code == 200
+        assert recovered.body == baseline.body
+    for literal in ["NaN", "Infinity", "-Infinity", "1e400"]:
+        body = json.dumps(request).replace('"value": -1', '"value": ' + literal)
+        response = requests.post(server.make_url("/scale"), data=body, headers={"Content-Type": "application/json"}, timeout=10)
+        assert response.status_code == 400
+    for missing in ["prompt", "measurement", "scale"]:
+        response = server.make_request("POST", "/scale", {k: v for k, v in request.items() if k != missing})
+        assert response.status_code == 400
+
+
+
+@pytest.mark.parametrize("values", [
+    [2.5, -1, 0], [9007199254740993, 9007199254740992.0, -1],
+    [18446744073709551615, 18446744073709551616.0, -9223372036854775808],
+    [-9223372036854775807, -9223372036854775808.0, 0],
+    [18446744073709551615, 18446744073709551614, 18446744073709551616.0],
+])
+def test_scale_numeric_order(values):
+    server.n_slots = 1
+    server.start()
+    request = scale_request(["yes", "no", " big dog"])
+    for point, value in zip(request["scale"], values):
+        point["value"] = value
+    first = server.make_request("POST", "/scale", request)
+    second = server.make_request("POST", "/scale", {**request, "scale": request["scale"][::-1]})
+    assert first.status_code == second.status_code == 200
+    assert [p["value"] for p in first.body["points"]] == sorted(values)
+    assert first.body == second.body
+
+
+def test_scale_token_collisions():
+    server.start()
+    short, long = decision_tokens("yes"), decision_tokens("yes indeed")
+    assert len(short) < len(long) and long[:len(short)] == short
+    for labels in [["yes", "yes indeed"], ["yes indeed", "yes"]]:
+        response = server.make_request("POST", "/scale", scale_request(labels))
+        assert response.status_code == 400
+        assert "token-prefix" in response.body["error"]["message"]
+    # SentencePiece escapes spaces to the same marker already present in the other label.
+    assert decision_tokens(" yes") == decision_tokens("\u2581yes")
+    response = server.make_request("POST", "/scale", scale_request([" yes", "\u2581yes"]))
+    assert response.status_code == 400
+    assert "distinct token sequences" in response.body["error"]["message"]
+
+    short_label, long_label = " yes", "\u2581yes indeed"
+    assert not long_label.startswith(short_label)
+    short, long = decision_tokens(short_label), decision_tokens(long_label)
+    assert len(short) < len(long) and long[:len(short)] == short
+    response = server.make_request("POST", "/scale", scale_request([short_label, long_label]))
+    assert response.status_code == 400
+    assert "token-prefix" in response.body["error"]["message"]
+
 
 @pytest.fixture(autouse=True)
 def create_server():
