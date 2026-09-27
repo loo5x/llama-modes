@@ -1,0 +1,55 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "How favorable is this comment from 0 (very unfavorable) to 10 (very favorable)? Comment: Thoughtfully designed and easy to use; I would recommend it. Return one label. Mapping: A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8, J=9, K=10."
+    }
+  ],
+  "measurement": "interval",
+  "scale": [
+    {
+      "value": 0,
+      "label": "A"
+    },
+    {
+      "value": 1,
+      "label": "B"
+    },
+    {
+      "value": 2,
+      "label": "C"
+    },
+    {
+      "value": 3,
+      "label": "D"
+    },
+    {
+      "value": 4,
+      "label": "E"
+    },
+    {
+      "value": 5,
+      "label": "F"
+    },
+    {
+      "value": 6,
+      "label": "G"
+    },
+    {
+      "value": 7,
+      "label": "H"
+    },
+    {
+      "value": 8,
+      "label": "I"
+    },
+    {
+      "value": 9,
+      "label": "J"
+    },
+    {
+      "value": 10,
+      "label": "K"
+    }
+  ]
+}

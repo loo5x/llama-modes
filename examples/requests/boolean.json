@@ -1,0 +1,12 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Is Paris the capital of France? Select exactly one supplied label. Return only that label. Labels: [\"Yes\", \"No\"]"
+    }
+  ],
+  "choices": [
+    "Yes",
+    "No"
+  ]
+}

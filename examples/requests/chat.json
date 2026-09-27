@@ -1,0 +1,11 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Is Paris the capital of France? Select exactly one supplied label. Return only that label. Labels: [\"Yes\", \"No\"]"
+    }
+  ],
+  "temperature": 0,
+  "max_tokens": 1024,
+  "stream": false
+}

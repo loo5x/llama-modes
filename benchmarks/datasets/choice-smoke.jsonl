@@ -1,0 +1,3 @@
+{"id":"city-france","mode":"choice","question":"Which city is the capital of France?","choices":["Paris","London","New York"],"expected":"Paris"}
+{"id":"class-triangle","mode":"choice","question":"Classify a shape with exactly three straight sides.","choices":["triangle","square","circle"],"expected":"triangle"}
+{"id":"class-whale","mode":"choice","question":"Classify a whale.","choices":["mammal","reptile","insect"],"expected":"mammal"}

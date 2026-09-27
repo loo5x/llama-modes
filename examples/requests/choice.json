@@ -1,0 +1,13 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Which city is the capital of France? Select exactly one supplied label. Return only that label. Labels: [\"Paris\", \"London\", \"New York\"]"
+    }
+  ],
+  "choices": [
+    "Paris",
+    "London",
+    "New York"
+  ]
+}

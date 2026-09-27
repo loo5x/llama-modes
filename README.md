@@ -1,126 +1,106 @@
-# llama.cpp
+# llama-modes
 
-![llama](https://raw.githubusercontent.com/ggml-org/llama.brand/refs/heads/master/cover/llama-cpp/cover-llama-cpp-dark.svg)
+**Structured LLM inference modes for llama.cpp.**
 
-<div align="center">
+LLM applications often need a judgment rather than generated prose. llama-modes scores supplied alternatives at a prepared model evaluation state and returns a structured result.
 
-<b>LLM inference in C/C++</b>
+**[Quick start](docs/quickstart.md) | [Demo](demo/README.md) | [Cookbook](docs/cookbook.md) | [API: Decision](docs/decision.md) / [SCALE](docs/scale.md) | [Benchmark methodology](docs/benchmark-methodology.md) | [Releases](https://github.com/loo5x/llama-modes/releases)**
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Release](https://img.shields.io/github/v/release/ggml-org/llama.cpp?filter=v*&color=brightgreen)](https://github.com/ggml-org/llama.cpp/releases?q=tag:v0)
-[![Nightly](https://img.shields.io/github/v/release/ggml-org/llama.cpp?label=nightly&filter=b*&color=orange)](https://github.com/ggml-org/llama.cpp/releases?q=b)
-[![Server](https://img.shields.io/github/actions/workflow/status/ggml-org/llama.cpp/server.yml?label=Server)](https://github.com/ggml-org/llama.cpp/actions/workflows/server.yml)
-[![Docker](https://img.shields.io/github/actions/workflow/status/ggml-org/llama.cpp/docker.yml?label=Docker)](https://github.com/ggml-org/llama.cpp/actions/workflows/docker.yml)
-[![Winget](https://img.shields.io/github/actions/workflow/status/ggml-org/llama.cpp/winget.yml?label=Winget)](https://github.com/ggml-org/llama.cpp/actions/workflows/winget.yml)
+## Three modes
 
-[ggml](https://github.com/ggml-org/ggml) / [ops](https://github.com/ggml-org/llama.cpp/blob/master/docs/ops.md) / [maintainer PRs](https://github.com/ggml-org/llama.cpp/issues?q=is%3Apr%20is%3Aopen%20draft%3AFalse%20(author%3Argerganov%20OR%20author%3AKitaitiMakoto%20OR%20author%3Adanbev%20OR%20author%3Aaldehir%20OR%20author%3Amax-krasnyansky%20OR%20author%3ACISC%20OR%20author%3Aggerganov%20OR%20author%3Aam17an%20OR%20author%3Ajhen0409%20OR%20author%3Abartowski1182%20OR%20author%3Anikwen%20OR%20author%3Ahipudding%20OR%20author%3Aravi9%20OR%20author%3AServeurpersoCom%20OR%20author%3Apwilkin%20OR%20author%3Areeselevine%20OR%20author%3Angxson%20OR%20author%3Ajeffbolznv%20OR%20author%3Amarty1885%20OR%20author%3A0cc4m%20OR%20author%3ATitaniumtown%20OR%20author%3Aangt%20OR%20author%3AIMbackK%20OR%20author%3Aarthw%20OR%20author%3AJohannesGaessler%20OR%20author%3AORippler%20OR%20author%3Aruixiang63%20OR%20author%3Axctan%20OR%20author%3Aallozaur%20OR%20author%3Ayomaytk%20OR%20author%3Aaendk%20OR%20author%3Awine99%20OR%20author%3Agaugarg-nv%20OR%20author%3Ataronaeo%20OR%20author%3Aforforever73%20OR%20author%3Alhez%20OR%20author%3Anetrunnereve%20OR%20author%3Afairydreaming)%20sort%3Aupdated-desc) / [dev stats](https://github.com/ggml-org/llama.cpp-dev) / [lib llama API](https://github.com/ggml-org/llama.cpp/issues/9289) / [llama-server REST API](https://github.com/ggml-org/llama.cpp/issues/9291)
+| Mode | Give it | Get back |
+| --- | --- | --- |
+| **BOOLEAN** | A question and Yes / No | Relative scores for both alternatives |
+| **CHOICE** | Arbitrary labels, including multi-token labels | Candidate scores and token details |
+| **SCALE** | Ordered points and label representations | A discrete distribution, mode, median, and quantiles; mean and spread for interval scales |
 
-</div>
-
-## Quick start
-
-A few options to get `llama.cpp` installed on your machine:
-
-- Visit https://llama.app and follow the instructions
-- Run with Docker - see our [Docker documentation](docs/docker.md)
-- Download pre-built binaries from the [releases page](https://github.com/ggml-org/llama.cpp/releases)
-- Build from source by cloning this repository - check out [our build guide](docs/build.md)
-
-Once installed:
-
-```sh
-# Download and run a model directly from Hugging Face
-llama cli -hf ggml-org/Qwen3.5-0.8B-GGUF
-
-# Launch OpenAI-compatible API server
-llama serve -hf ggml-org/Qwen3.5-0.8B-GGUF
+```text
+CHAT         prompt -> autoregressive generation -> text answer
+llama-modes  prompt -> prepared evaluation state -> score supplied alternatives -> structured result
 ```
 
-<table align="center">
-    <tr>
-        <td align="center" width=50%>
-            <img width="1310" height="888" alt="VLM session with `llama cli`" src="https://github.com/user-attachments/assets/88726b48-1713-48aa-a525-95a02e78afc4" />
-            <i>VLM session with <b>llama cli</b></i>
-        </td>
-        <td align="center">
-            <img width="1392" height="958" alt="Built-in web UI against `llama serve` running Qwen 3.6" src="https://github.com/user-attachments/assets/b402f972-2e32-4def-8771-8d849f08cf2e" />
-            <i>Built-in web UI against <b>llama serve</b></i>
-        </td>
-    </tr>
-<table>
-
-## Description
-
-The main goal of `llama.cpp` is to enable LLM (and VLM) inference with minimal setup and state-of-the-art performance on
-a wide range of hardware - locally and in the cloud.
-
-- Plain C/C++ implementation without any dependencies
-- Apple silicon is a first-class citizen - optimized via ARM NEON, Accelerate and Metal frameworks
-- AVX, AVX2, AVX512 and AMX support for x86 architectures
-- RVV, ZVFH, ZFH, ZICBOP and ZIHINTPAUSE support for RISC-V architectures
-- 1.5-bit, 2-bit, 3-bit, 4-bit, 5-bit, 6-bit, and 8-bit integer quantization for faster inference and reduced memory use
-- Custom CUDA kernels for running LLMs on NVIDIA GPUs (support for AMD GPUs via HIP and Moore Threads GPUs via MUSA)
-- Vulkan and SYCL backend support
-- CPU+GPU hybrid inference to partially accelerate models larger than the total VRAM capacity
-
-The `llama.cpp` project is build on top of the [ggml](https://github.com/ggml-org/ggml) library.
-
-## Supported backends
-
-| Backend | Target devices |
+| Capability | Behavior |
 | --- | --- |
-| [BLAS](docs/build.md#blas-build) | All |
-| [BLIS](docs/backend/BLIS.md) | All |
-| [CANN](docs/build.md#cann) | Ascend NPU |
-| [CUDA](docs/build.md#cuda) | Nvidia GPU |
-| [HIP](docs/build.md#hip) | AMD GPU |
-| [Hexagon](docs/backend/snapdragon/README.md) | Snapdragon |
-| [IBM zDNN](docs/backend/zDNN.md) | IBM Z & LinuxONE |
-| [MUSA](docs/build.md#musa) | Moore Threads GPU |
-| [Metal](docs/build.md#metal-build) | Apple Silicon |
-| [OpenCL](docs/backend/OPENCL.md) | Adreno GPU |
-| [OpenVINO [In Progress]](docs/backend/OPENVINO.md) | Intel CPUs, GPUs, and NPUs |
-| [RPC](https://github.com/ggml-org/llama.cpp/tree/master/tools/rpc) | All |
-| [SYCL](docs/backend/SYCL.md) | Intel GPU |
-| [VirtGPU](docs/backend/VirtGPU.md) | VirtGPU APIR |
-| [Vulkan](docs/build.md#vulkan) | GPU |
-| [WebGPU](docs/build.md#webgpu) | All |
-| [ZenDNN](docs/build.md#zendnn) | AMD CPU |
+| Direct evaluation | Zero generated answer tokens; prompt and candidate-prefix evaluation still cost compute |
+| Native messages | Uses the model's chat template at a supported assistant content boundary |
+| Raw prompts | Caller controls the evaluation boundary |
+| Local runtime | Your GGUF, llama-server, existing llama.cpp backends |
+| Compatibility | Normal llama-server chat/completion behavior remains available |
 
-## Documentation
+## A 60-second example
 
-#### Tools
+With a llama-modes runtime and your GGUF already downloaded, start the server in PowerShell:
 
-- [cli](tools/cli/README.md)
-- [completion](tools/completion/README.md)
-- [server](tools/server/README.md)
-- [GBNF grammars](grammars/README.md)
+```powershell
+.\llama-server.exe -m "C:\models\your-model.gguf" --host 127.0.0.1 --port 8080 -ngl 99 --jinja
+```
 
-#### Development
+In another terminal:
 
-- [How to build](docs/build.md)
-- [Running on Docker](docs/docker.md)
-- [Build on Android](docs/android.md)
-- [Multi-GPU usage](docs/multi-gpu.md)
-- [Performance troubleshooting](docs/development/token_generation_performance_tips.md)
-- [GGML tips & tricks](https://github.com/ggml-org/llama.cpp/wiki/GGML-Tips-&-Tricks)
-- [XCFramework](docs/xcframework.md)
-- [Completions](docs/completions.md)
-- [Models](docs/models.md)
-- [Release process](docs/release.md)
+```powershell
+$body = @{ messages = @(@{ role = 'user'; content = 'Is Paris the capital of France? Return only Yes or No.' }); choices = @('Yes', 'No') } | ConvertTo-Json -Depth 10
+Invoke-RestMethod http://127.0.0.1:8080/decision -Method Post -ContentType 'application/json' -Body $body | ConvertTo-Json -Depth 20
+```
 
-## Contributing
+For single-token labels, inspect each choice's `probability`. If a label has multiple tokens, the response uses `sum_log_probability` and `mean_log_probability` instead. [Understand the two formats](docs/decision.md).
 
-- Contributors can open PRs
-- Collaborators will be invited based on contributions
-- Maintainers can push to branches in the `llama.cpp` repo and merge PRs into the `master` branch
-- Any help with managing issues, PRs and projects is very appreciated!
-- Read the [CONTRIBUTING.md](CONTRIBUTING.md) for more information
+## More than a single rating
 
-## Acknowledgements
+For comment favorability from 0 to 10, an **illustrative, unmeasured** distribution might be:
 
-- [yhirose/cpp-httplib](https://github.com/yhirose/cpp-httplib) - Single-header HTTP server, used by `llama-server` - MIT license
-- [nothings/stb](https://github.com/nothings/stb) - Single-header image format decoder, used by multimodal subsystem - Public domain
-- [nlohmann/json](https://github.com/nlohmann/json) - Single-header JSON library, used by various tools/examples - MIT License
-- [mackron/miniaudio](https://github.com/mackron/miniaudio) - Single-header audio format decoder, used by multimodal subsystem - Public domain
-- [sheredom/subprocess.h](https://github.com/sheredom/subprocess.h) - Single-header process launching solution for C and C++ - Public domain
+```text
+value      0  1  2  3  4  5  6  7    8    9    10
+weight     0  0  0  0  0  0  0  10%  20%  60%  10%
+
+mode: [9]     median: 9     expected_value: 8.7
+```
+
+`expected_value` is derived from the full discrete distribution; the model does not generate it directly. It appears only for interval scales, where the caller asserts that numeric distances have meaning. [Complete SCALE request and interpretation](docs/scale.md).
+
+## Run the local demo
+
+From this repository, with Node.js 22.12+:
+
+```sh
+cd demo
+npm install
+npm run dev
+```
+
+Open `http://127.0.0.1:5173`. Explore Boolean, Choice, SCALE, and sequential **Interactive comparison** with chat. Presentation mode enlarges results and charts. A loopback-only proxy connects to your server at `127.0.0.1:8080`; no cloud services, telemetry, or accounts are used. [Demo setup and settings](demo/README.md).
+
+![Actual rendered demo with explicitly labeled fixture data; no live inference or measured latency](demo/screenshot-fixture.png)
+
+Screenshot: illustrative fixture data, not a model result or benchmark.
+
+## Download and install
+
+Use the [GitHub Releases page](https://github.com/loo5x/llama-modes/releases) for public runtime downloads. The intended v0.4.0 package is a **Windows CUDA runtime ZIP**; supply your own GGUF model. No release asset is asserted to exist until published. Check its GPU/driver requirements and checksum. GitHub Actions artifacts are not the long-term public download interface.
+
+If no release package is available, see the [source build guide](docs/build.md) for this fork. Windows CUDA validation is documented; validated binaries for other platforms are not promised. The [Windows quick start](docs/quickstart.md) covers extraction, model discovery, all three modes, and the demo.
+
+## Interpret results carefully
+
+**Relative candidate/scale weights are not calibrated confidence.** Direct evaluation is not equivalent to autoregressive reasoning. Labels, tokenization, prompt wording, and templates affect scores. SCALE is discrete, representation-sensitive, and can reject strict token-prefix collisions such as `1` versus `10` for some tokenizers. There is no claim of universally better accuracy or speed than chat.
+
+- [Cookbook: 15 practical recipes](docs/cookbook.md)
+- [Design, correctness history, and limitations](docs/design-and-limitations.md)
+- [Runnable Python, PowerShell, and curl examples](examples/README-modes.md)
+- [Reproducible benchmark harness](benchmarks/README.md) and [methodology](docs/benchmark-methodology.md)
+- [v0.4.0 release notes](RELEASE_NOTES_v0.4.0.md)
+
+The benchmark preserves raw results and accepts external datasets. This landing page publishes no performance numbers from an unrun benchmark.
+
+## Roadmap
+
+**v0.5 — Shared-context multi-question evaluation**
+
+Ask multiple structured questions about the same context with shared prompt evaluation.
+
+[Roadmap →](docs/roadmap.md)
+
+## Based on llama.cpp
+
+llama-modes is a fork/extension of **[ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)**. It retains its model, runtime, and backend capabilities while adding structured evaluation modes. The upstream source, [MIT license](LICENSE), [third-party notices](licenses/), and source history are preserved. See [upstream attribution and release preparation](docs/upstream.md) and [contributor guidelines](CONTRIBUTING.md).
+
+Upstream acknowledgements are retained: [cpp-httplib](https://github.com/yhirose/cpp-httplib) (MIT), [stb](https://github.com/nothings/stb) (public domain), [nlohmann/json](https://github.com/nlohmann/json) (MIT), [miniaudio](https://github.com/mackron/miniaudio) (public domain), and [subprocess.h](https://github.com/sheredom/subprocess.h) (public domain).
