@@ -927,6 +927,8 @@ private:
         size_t candidate = 0;
         size_t prompt_pos = 0;
         size_t token = 0;
+        size_t prefix_pos = 0;
+        std::vector<float> prompt_logits;
 
         ~evaluate_state() {
             if (batch.token) {
@@ -2937,9 +2939,48 @@ private:
                     throw std::runtime_error("Allocated evaluation context is smaller than the prepared input");
                 }
                 if (!state.batch.token) {
+                    for (const auto & q : state.task.evaluate_questions) {
+                        for (const auto & sequence : q.sequences) {
+                            if (q.prompt.size() + sequence.size() - 1 > llama_n_ctx(state.ctx.get())) {
+                                throw std::runtime_error("Allocated evaluation context is smaller than the prepared input");
+                            }
+                        }
+                    }
                     state.result->n_batch = llama_n_batch(state.ctx.get());
                     state.result->n_ubatch = llama_n_ubatch(state.ctx.get());
                     state.batch = llama_batch_init(state.result->n_batch, 0, 1);
+                    if (params_base.evaluate_shared_prefix) {
+                        const auto & questions = state.task.evaluate_questions;
+                        auto & reason = state.result->fallback_reason;
+                        if (questions.size() < 2) {
+                            reason = "single_question";
+                        } else if (state.result->n_batch != state.result->n_ubatch) {
+                            reason = "unequal_batches";
+                        } else if (!llama_get_memory(state.ctx.get()) || llama_n_seq_max(state.ctx.get()) < 3) {
+                            reason = "sharing_ineligible";
+                        } else {
+                            size_t common = questions[0].prompt.size();
+                            for (size_t i = 1; i < questions.size(); ++i) {
+                                common = std::min(common, questions[i].prompt.size());
+                                size_t j = 0;
+                                while (j < common && questions[0].prompt[j] == questions[i].prompt[j]) {
+                                    ++j;
+                                }
+                                common = j;
+                            }
+                            const size_t prefix = common / state.result->n_batch * state.result->n_batch;
+                            if (prefix == 0) {
+                                reason = "no_aligned_prefix";
+                            } else if (std::any_of(questions.begin(), questions.end(), [&](const server_evaluate_question & q) {
+                                    return q.prompt.size() == prefix;
+                                })) {
+                                reason = "empty_suffix";
+                            } else {
+                                state.result->shared_prefix_tokens = prefix;
+                                reason.clear();
+                            }
+                        }
+                    }
                 } else if (state.result->n_batch != llama_n_batch(state.ctx.get()) ||
                         state.result->n_ubatch != llama_n_ubatch(state.ctx.get())) {
                     throw std::runtime_error("Evaluation batch settings changed between candidates");
@@ -2947,31 +2988,66 @@ private:
                 return;
             }
 
-            common_batch_clear(state.batch);
-            if (state.prompt_pos < question.prompt.size()) {
-                const size_t end = std::min(question.prompt.size(), state.prompt_pos + state.result->n_batch);
-                for (; state.prompt_pos < end; ++state.prompt_pos) {
-                    common_batch_add(state.batch, question.prompt[state.prompt_pos], state.prompt_pos, {0},
-                            state.prompt_pos + 1 == question.prompt.size());
+            const size_t prefix = state.result->shared_prefix_tokens;
+            const bool shared = prefix > 0;
+            auto memory = llama_get_memory(state.ctx.get());
+            auto decode = [&]() {
+                int status = 0;
+                queue_tasks.yield_to_queue([&]() {
+                    status = llama_decode(state.ctx.get(), state.batch);
+                    llama_synchronize(state.ctx.get());
+                });
+                if (status != 0) {
+                    throw std::runtime_error("Evaluation decode failed without retry");
                 }
-            } else {
-                common_batch_add(state.batch, candidate[state.token - 1], question.prompt.size() + state.token - 1, {0}, true);
-            }
-            int status = 0;
-            queue_tasks.yield_to_queue([&]() {
-                status = llama_decode(state.ctx.get(), state.batch);
-                llama_synchronize(state.ctx.get());
-            });
-            if (status != 0) {
-                throw std::runtime_error("Evaluation decode failed without retry");
-            }
-            if (state.prompt_pos < question.prompt.size()) {
+            };
+            common_batch_clear(state.batch);
+            if (state.prefix_pos < prefix) {
+                const size_t end = std::min(prefix, state.prefix_pos + state.result->n_batch);
+                for (; state.prefix_pos < end; ++state.prefix_pos) {
+                    common_batch_add(state.batch, question.prompt[state.prefix_pos], state.prefix_pos, {0}, false);
+                }
+                decode();
                 return;
             }
-
-            const float * logits = llama_get_logits_ith(state.ctx.get(), -1);
+            if (shared && state.prompt_pos == 0) {
+                // Remove candidate references before removing the question.
+                if (!llama_memory_seq_rm(memory, 2, -1, -1) || !llama_memory_seq_rm(memory, 1, -1, -1)) {
+                    throw std::runtime_error("Evaluation question cleanup failed");
+                }
+                llama_memory_seq_cp(memory, 0, 1, -1, -1);
+                state.prompt_pos = prefix;
+            }
+            const bool preparing_prompt = state.prompt_pos < question.prompt.size();
+            const float * logits = nullptr;
+            if (shared && !preparing_prompt && state.token == 0) {
+                if (!llama_memory_seq_rm(memory, 2, -1, -1)) {
+                    throw std::runtime_error("Evaluation candidate cleanup failed");
+                }
+                llama_memory_seq_cp(memory, 1, 2, -1, -1);
+                logits = state.prompt_logits.data();
+            } else {
+                if (preparing_prompt) {
+                    const size_t end = std::min(question.prompt.size(), state.prompt_pos + state.result->n_batch);
+                    for (; state.prompt_pos < end; ++state.prompt_pos) {
+                        common_batch_add(state.batch, question.prompt[state.prompt_pos], state.prompt_pos, {shared ? 1 : 0},
+                                state.prompt_pos + 1 == question.prompt.size());
+                    }
+                } else {
+                    common_batch_add(state.batch, candidate[state.token - 1], question.prompt.size() + state.token - 1, {shared ? 2 : 0}, true);
+                }
+                decode();
+                if (state.prompt_pos < question.prompt.size()) {
+                    return;
+                }
+                logits = llama_get_logits_ith(state.ctx.get(), -1);
+            }
             if (!logits) {
                 throw std::runtime_error("Evaluation logits are unavailable");
+            }
+            if (shared && preparing_prompt) {
+                state.prompt_logits.assign(logits, logits + llama_vocab_n_tokens(vocab));
+                return;
             }
             const auto normalization = scoring_normalization(logits, llama_vocab_n_tokens(vocab));
             if (!std::isfinite(logits[candidate[state.token]])) {
@@ -2982,11 +3058,15 @@ private:
                 result.logits[state.candidate] = logits[candidate[0]];
             }
             if (++state.token == candidate.size()) {
-                state.ctx.reset();
+                if (!shared) {
+                    state.ctx.reset();
+                    state.prompt_pos = 0;
+                }
                 state.token = 0;
-                state.prompt_pos = 0;
                 if (++state.candidate == question.sequences.size()) {
                     state.candidate = 0;
+                    state.prompt_pos = 0;
+                    state.prompt_logits.clear();
                     ++state.question;
                 }
                 if (state.question == state.task.evaluate_questions.size()) {

@@ -481,6 +481,8 @@ struct server_task_result_decision : server_task_result {
 
 struct server_task_result_evaluate : server_task_result {
     std::vector<server_task_result_decision> results;
+    size_t shared_prefix_tokens = 0;
+    std::string fallback_reason = "fresh_only";
     uint32_t n_batch = 0;
     uint32_t n_ubatch = 0;
 

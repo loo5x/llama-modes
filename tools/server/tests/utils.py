@@ -86,6 +86,7 @@ class ServerProcess:
     server_reranking: bool | None = False
     server_metrics: bool | None = False
     server_evaluate: bool = False
+    evaluate_shared_prefix: bool = False
     evaluate_context: int | None = None
     kv_unified: bool | None = False
     swa_full: bool | None = False
@@ -203,6 +204,8 @@ class ServerProcess:
             server_args.append("--metrics")
         if self.server_evaluate:
             server_args.append("--evaluate")
+        if self.evaluate_shared_prefix:
+            server_args.append("--evaluate-shared-prefix")
         if self.evaluate_context is not None:
             server_args.extend(["--evaluate-context", self.evaluate_context])
         if self.kv_unified:

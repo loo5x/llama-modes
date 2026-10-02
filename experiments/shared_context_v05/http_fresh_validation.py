@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--runtime", type=Path, default=Path(r"C:\AI\llama-modes-v05"))
     parser.add_argument("--batch", type=int, default=128)
     parser.add_argument("--oracle-only", action="store_true")
+    parser.add_argument("--shared-prefix", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     fixture = root / "experiments/shared_context_v05/results/expanded/gptoss-records"
@@ -70,15 +71,24 @@ def main():
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     url = f"http://127.0.0.1:{port}"
+    timings = []
 
     def request(route, body=None):
+        started = time.monotonic()
         req = urllib.request.Request(url + route, data=None if body is None else json.dumps(body).encode(), headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=300) as response:
-            return json.load(response)
+            value = json.load(response)
+        if route == "/evaluate":
+            timings.append(time.monotonic() - started)
+            write(output / "http-timings.json", timings)
+        return value
 
     command = [str(args.runtime / "llama-server.exe"), *common, "-np", "1", "--no-prefill-assistant",
                "--host", "127.0.0.1", "--port", str(port), "--evaluate", "--evaluate-context", "4096"]
     write(output / "server-command.json", command)
+    if args.shared_prefix:
+        command.append("--evaluate-shared-prefix")
+        write(output / "server-command.json", command)
     prepared = []
     with (output / "server.log").open("w") as log:
         process = subprocess.Popen(command, cwd=output, stdout=log, stderr=subprocess.STDOUT, creationflags=subprocess.CREATE_NO_WINDOW)
@@ -108,6 +118,12 @@ def main():
                 prepared.append({"prompt_tokens": prompt, "choices": tokens, "prepared_prompt": prefixes[0]})
             write(output / "prepared.json", prepared)
             response = request("/evaluate", payload)
+            if args.shared_prefix:
+                assert response["execution"]["strategy"] == "shared_aligned"
+                assert response["execution"]["shared_prefix_tokens"] > 0
+                assert response["execution"]["shared_prefix_tokens"] % args.batch == 0
+            else:
+                assert response["execution"]["strategy"] == "fresh"
             write(output / "response.json", response)
             print("HTTP mixed request passed", flush=True)
             reverse = copy.deepcopy(payload)
@@ -178,6 +194,7 @@ def check_oracle(args, output, model, common, prepared, response, manifest):
         write(output / "oracle-checks.json", checks)
         print("Oracle", i, checks[-1], flush=True)
     summary = {"build_commit": manifest["commit"], "batch": args.batch, "questions": len(checks),
+               "execution": response["execution"],
                "candidates": sum(c["candidate_count"] for c in checks), "max_delta": max(c["max_delta"] for c in checks),
                "passed": all(c["passed"] for c in checks), "order_repeat_overflow_completion": "passed"}
     write(output / "summary.json", summary)

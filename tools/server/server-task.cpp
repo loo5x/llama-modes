@@ -1506,8 +1506,9 @@ json server_task_result_evaluate::to_json() {
     return {
         {"results", values},
         {"execution", {
-            {"strategy", "fresh"}, {"shared_prefix_tokens", 0},
-            {"n_batch", n_batch}, {"n_ubatch", n_ubatch}, {"fallback_reason", "fresh_only"},
+            {"strategy", shared_prefix_tokens ? "shared_aligned" : "fresh"}, {"shared_prefix_tokens", shared_prefix_tokens},
+            {"n_batch", n_batch}, {"n_ubatch", n_ubatch},
+            {"fallback_reason", shared_prefix_tokens ? json(nullptr) : json(fallback_reason)},
         }},
     };
 }

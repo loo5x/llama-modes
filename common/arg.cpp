@@ -3586,9 +3586,16 @@ common_params_context common_params_parser_init(common_params & params, llama_ex
     ).set_examples({LLAMA_EXAMPLE_SERVER}).set_env("LLAMA_ARG_CACHE_REUSE"));
     add_opt(common_arg(
         {"--evaluate"},
-        "enable experimental fresh-only /evaluate endpoint (default: disabled)",
+        "enable experimental /evaluate endpoint (default: disabled)",
         [](common_params & params) {
             params.endpoint_evaluate = true;
+        }
+    ).set_examples({LLAMA_EXAMPLE_SERVER}));
+    add_opt(common_arg(
+        {"--evaluate-shared-prefix"},
+        "enable experimental batch-aligned prefix sharing for /evaluate (requires --evaluate)",
+        [](common_params & params) {
+            params.evaluate_shared_prefix = true;
         }
     ).set_examples({LLAMA_EXAMPLE_SERVER}));
     add_opt(common_arg(

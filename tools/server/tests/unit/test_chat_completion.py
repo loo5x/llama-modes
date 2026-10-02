@@ -5,10 +5,12 @@ from utils import *
 server: ServerProcess
 
 
-def test_evaluate_fresh_scores_and_validation():
+@pytest.mark.parametrize("shared_prefix", [False, True])
+def test_evaluate_fresh_scores_and_validation(shared_prefix):
     from copy import deepcopy
 
     server.server_evaluate = True
+    server.evaluate_shared_prefix = shared_prefix
     server.evaluate_context = 256
     server.n_ctx = 256
     server.n_slots = 1
@@ -20,7 +22,7 @@ def test_evaluate_fresh_scores_and_validation():
     server.chat_template = "chatml"
     server.start()
     payload = {
-        "context": "Paris is in France. The service was good.",
+        "context": "Paris is in France. The service was good. " * 4,
         "questions": [
             {"id": "fact", "type": "boolean", "question": "Is Paris in France? Answer yes or no.", "choices": ["yes", "no"]},
             {"id": "city", "type": "choice", "question": "Name a city.", "choices": ["New", "New York City", "Paris"]},
@@ -30,10 +32,17 @@ def test_evaluate_fresh_scores_and_validation():
     }
     response = server.make_request("POST", "/evaluate", payload)
     assert response.status_code == 200, response.body
-    assert response.body["execution"] == {
-        "strategy": "fresh", "shared_prefix_tokens": 0,
-        "n_batch": 32, "n_ubatch": 32, "fallback_reason": "fresh_only",
-    }
+    if shared_prefix:
+        execution = response.body["execution"]
+        assert execution["strategy"] == "shared_aligned"
+        assert execution["shared_prefix_tokens"] > 0 and execution["shared_prefix_tokens"] % 32 == 0
+        assert execution["n_batch"] == execution["n_ubatch"] == 32
+        assert execution["fallback_reason"] is None
+    else:
+        assert response.body["execution"] == {
+            "strategy": "fresh", "shared_prefix_tokens": 0,
+            "n_batch": 32, "n_ubatch": 32, "fallback_reason": "fresh_only",
+        }
     assert [r["id"] for r in response.body["results"]] == [q["id"] for q in payload["questions"]]
     for question, actual in zip(payload["questions"], response.body["results"]):
         messages = [{"role": "user", "content": payload["context"] + "\n\n" + question["question"]}]
@@ -112,6 +121,72 @@ def test_evaluate_disabled_by_default():
     server.start()
     for path in ["/evaluate", "/v1/evaluate"]:
         assert server.make_request("POST", path, {}).status_code == 404
+
+
+@pytest.mark.parametrize("batch,ubatch,count,reason", [
+    (32, 32, 1, "single_question"),
+    (512, 512, 2, "no_aligned_prefix"),
+    (32, 16, 2, "unequal_batches"),
+    (32, 32, 2, "empty_suffix"),
+])
+def test_evaluate_shared_fallback(batch, ubatch, count, reason):
+    server.server_evaluate = True
+    server.evaluate_shared_prefix = True
+    server.evaluate_context = 512
+    server.n_ctx = 512
+    server.n_slots = 1
+    server.n_batch = batch
+    server.n_ubatch = ubatch
+    server.jinja = True
+    server.chat_template = "chatml"
+    server.start()
+    payload = {
+        "context": "Paris is in France.", "questions": [
+            {"id": str(i), "type": "boolean", "question": "Is Paris in France?", "choices": ["yes", "no"]}
+            for i in range(count)
+        ],
+    }
+    if reason == "empty_suffix":
+        probe = "BoundaryProbe_A7f3"
+        for words in range(1, 65):
+            payload["context"] = " word" * words
+            prompt = server.make_request("POST", "/apply-template", {
+                "messages": [
+                    {"role": "user", "content": payload["context"] + "\n\nIs Paris in France?"},
+                    {"role": "assistant", "content": probe},
+                ], "add_generation_prompt": False,
+            })
+            assert prompt.status_code == 200
+            rendered = prompt.body["prompt"]
+            assert rendered.count(probe) == 1
+            tokens = server.make_request("POST", "/tokenize", {
+                "content": rendered[:rendered.index(probe)], "add_special": True, "parse_special": True,
+            })
+            assert tokens.status_code == 200
+            if len(tokens.body["tokens"]) > 0 and len(tokens.body["tokens"]) % batch == 0:
+                break
+        else:
+            pytest.fail("Could not prepare a batch-aligned complete prompt")
+    response = server.make_request("POST", "/evaluate", payload)
+    assert response.status_code == 200
+    assert response.body["execution"] == {
+        "strategy": "fresh", "shared_prefix_tokens": 0,
+        "n_batch": batch, "n_ubatch": ubatch, "fallback_reason": reason,
+    }
+    assert len(response.body["results"]) == count
+    expected = server.make_request("POST", "/decision", {
+        "messages": [{"role": "user", "content": payload["context"] + "\n\nIs Paris in France?"}],
+        "choices": ["yes", "no"],
+    })
+    assert expected.status_code == 200
+    for result in response.body["results"]:
+        for actual, reference in zip(result["result"]["choices"], expected.body["choices"]):
+            if "token_id" in actual:
+                assert actual["token_id"] == reference["token_id"]
+                assert actual["logit"] == pytest.approx(reference["logit"], abs=2e-4)
+            else:
+                assert actual["token_ids"] == reference["token_ids"]
+                assert actual["sum_log_probability"] == pytest.approx(reference["sum_log_probability"], abs=2e-4)
 
 
 def test_evaluate_pending_disconnect_during_stream():

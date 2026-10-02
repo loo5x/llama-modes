@@ -1,6 +1,6 @@
 # Evaluate: independent questions over one text
 
-Experimental fresh-only implementation. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Windows CUDA validation on GPT-OSS 20B is recorded in the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md); shared-prefix execution is not enabled.
+Experimental implementation, fresh-only by default. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Windows CUDA validation of the fresh-only path on GPT-OSS 20B is recorded in the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md). The new optional shared-prefix path requires separate build and runtime validation.
 
 `POST /evaluate` (alias `/v1/evaluate`) accepts one context and 1..32 independent questions:
 
@@ -21,7 +21,11 @@ Boolean requires exactly two explicit labels, without an implicit truth mapping.
 
 The response has `results` in request order. Each entry contains `id`, `type`, and `result`, where `result` is the existing decision or scale response. Boolean/Choice keep the single-token logit/probability format when all choices have one token; otherwise they expose SUM/MEAN sequence scores. Scale always uses full-vocabulary sequence scores and SUM-relative weights.
 
-An `execution` object reports `strategy: "fresh"`, `shared_prefix_tokens: 0`, actual `n_batch` and `n_ubatch`, and `fallback_reason: "fresh_only"`. This version does not reuse a prefix. Batch-size changes can change scores; compare results only under the same configuration. Relative candidate weights are not calibrated confidence.
+An `execution` object reports `strategy`, `shared_prefix_tokens`, actual `n_batch` and `n_ubatch`, and `fallback_reason`. Without `--evaluate-shared-prefix`, these remain `fresh`, zero, and `fresh_only`. Batch-size changes can change scores; compare results only under the same configuration. Relative candidate weights are not calibrated confidence.
+
+Add `--evaluate-shared-prefix` alongside `--evaluate` to opt into batch-aligned sharing. The server finds the common prefix of the complete tokenized prompts and reuses only its complete-batch portion. Shared execution uses one temporary context per request, protects the prefix, prepares each question separately, and isolates each candidate. No prompt token is omitted. Successful sharing reports `strategy: "shared_aligned"`, the reused token count, and a null fallback reason.
+
+The whole request uses fresh evaluation when there is one question (`single_question`), effective batch and microbatch sizes differ (`unequal_batches`), no complete common batch exists (`no_aligned_prefix`), any question has an empty suffix after the aligned prefix (`empty_suffix`), or the context lacks the required memory/sequence configuration (`sharing_ineligible`). Unsupported models remain rejected. Runtime failures do not trigger a retry with another batch size or a partial response. The option is experimental; no speedup or new runtime correctness result is claimed before validation.
 
 Limits:
 
@@ -30,7 +34,7 @@ Limits:
 - Per-question Choice/Scale limits remain in force. Every prompt plus the longest candidate's forced prefix must fit `--evaluate-context`. Nothing is shifted or truncated.
 - One evaluation admitted at a time; another receives HTTP 503. Existing active chat work drains before evaluation starts; new inference waits until it finishes. This can delay chat requests.
 
-A fresh temporary context is allocated for every candidate using the loaded model weights. The main server context stays resident, so additional memory is required. Evaluation uses unified KV, full SWA, f16 K/V, three sequence/output reservations, and the configured batch/microbatch sizes. Other model context parameters come from the server configuration. Encoder, recurrent/hybrid, multimodal, adapter, control-vector, speculative, and explicitly non-causal configurations are rejected in this first version.
+Fresh mode allocates a temporary context for every candidate using the loaded model weights; shared mode keeps one temporary context for the request. The main server context stays resident, so additional memory is required. Evaluation uses unified KV, full SWA, f16 K/V, three sequence/output reservations, and the configured batch/microbatch sizes. Other model context parameters come from the server configuration. Encoder, recurrent/hybrid, multimodal, adapter, control-vector, speculative, and explicitly non-causal configurations are rejected in this first version.
 
 Validation errors return HTTP 400 without partial results. Admission/allocation unavailability returns 503; decode or other execution failures return 500 without changing batch size or retrying. Disconnect cancellation is processed between steps after any current decode completes. Temporary contexts are discarded after each candidate, failure, cancellation, or shutdown.
 

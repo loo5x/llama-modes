@@ -672,6 +672,7 @@ struct common_params {
     bool endpoint_props   = false; // only control POST requests, not GET
     bool endpoint_metrics = false;
     bool endpoint_evaluate = false;
+    bool evaluate_shared_prefix = false;
     int32_t evaluate_context = 4096;
 
     // enable built-in tools
