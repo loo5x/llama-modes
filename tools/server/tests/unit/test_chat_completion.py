@@ -114,6 +114,74 @@ def test_evaluate_disabled_by_default():
         assert server.make_request("POST", path, {}).status_code == 404
 
 
+def test_evaluate_pending_disconnect_during_stream():
+    import socket
+    import struct
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    server.server_evaluate = True
+    server.evaluate_context = 512
+    server.n_ctx = 512
+    server.n_slots = 1
+    server.server_slots = True
+    server.enable_ctx_shift = True
+    server.jinja = True
+    server.chat_template = "chatml"
+    server.start()
+    payload = {"context": "Paris is in France.", "questions": [
+        {"id": "fact", "type": "boolean", "question": "Is Paris in France?", "choices": ["yes", "no"]},
+    ]}
+    started = threading.Event()
+    stop = threading.Event()
+    chunks = [0]
+
+    def stream_chat():
+        with requests.post(server.make_url("/completion"), json={
+            "prompt": "Count the numbers:", "n_predict": 1000000,
+            "ignore_eos": True, "stream": True, "temperature": 0,
+        }, stream=True, timeout=10) as response:
+            assert response.status_code == 200
+            for line in response.iter_lines(chunk_size=1):
+                if line.startswith(b"data:"):
+                    chunks[0] += 1
+                    started.set()
+                if stop.is_set():
+                    break
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        stream = pool.submit(stream_chat)
+        pending = None
+        try:
+            assert started.wait(timeout=10)
+            assert not stream.done()
+            pending = socket.create_connection((server.server_host, server.server_port), timeout=10)
+            data = json.dumps(payload).encode()
+            pending.sendall((f"POST /evaluate HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {len(data)}\r\nConnection: close\r\n\r\n").encode() + data)
+            time.sleep(0.5)
+            rejected = server.make_request("POST", "/evaluate", payload, timeout=5)
+            assert rejected.status_code == 503
+            pending.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("HH" if os.name == "nt" else "ii", 1, 0))
+            pending.close()
+            pending = None
+            count = chunks[0]
+            time.sleep(3)
+            assert not stream.done() and chunks[0] > count
+            replacement = pool.submit(server.make_request, "POST", "/evaluate", payload)
+            time.sleep(0.5)
+            if replacement.done():
+                pytest.fail(f"Replacement did not wait for chat: {replacement.result().status_code}")
+            assert not stream.done()
+            stop.set()
+            stream.result(timeout=10)
+            assert replacement.result(timeout=10).status_code == 200
+        finally:
+            if pending is not None:
+                pending.close()
+            stop.set()
+            server.stop()
+
+
 @pytest.mark.parametrize("choices", [["yes", "no"], ["yes", "yes indeed", "no thank you"]])
 @pytest.mark.parametrize("template,suffix", [
     ("chatml", ""),
