@@ -1,0 +1,20 @@
+{
+  "model": {
+    "path": "C:\\Users\\lucia\\.cache\\huggingface\\hub\\models--ggml-org--gpt-oss-20b-GGUF\\snapshots\\ef9b12f2ff56c69cf32153a02784e7a3c88bf524\\gpt-oss-20b-MXFP4.gguf",
+    "sha256": "27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901"
+  },
+  "runtime": {
+    "cublas64_13.dll": "1119dbca0a808e0c8850bb4221e330daf0b5ddb348d62d37b6ac533854723df9",
+    "cublasLt64_13.dll": "0f5bc315fef706b5626248ebd74e8a48a9e82fa2f0cad38330f5f70984913107",
+    "cudart64_13.dll": "05bfafcb97bd53b0089568a96e1e5bd6921637bd0853ff7f5342bd31a6a16890",
+    "ggml-base.dll": "3c0b3b13799d9c3c1e37bcb9e1897b044e6084e43b33e2e7ef274a31830a608d",
+    "ggml-cpu.dll": "eb715c17f5957356bba2600d5677c67bf5f3e4f460de4900536f3ba3d90ada8a",
+    "ggml-cuda.dll": "cc31882b8f32cbe944d68df5cd06abd82d33ed3cb258cbf0944456bad3da5d0f",
+    "ggml.dll": "5613dabb21ab378520032a5382b8e6fa12d72be48f76fcc01604302f4bd61e00",
+    "llama-common.dll": "59b72d0f12f655e0d2aaace361f5fc64e10016aeacc95db859639de799d7a945",
+    "llama-server-impl.dll": "cc879f5608d5bc64b180867001c66c729e5fc55c4193f5fac2b1b51ed37c120d",
+    "llama.dll": "cc2dc22934625916a39e7d6c09a6bce294009c58f2cf0f85fa462173f555abea",
+    "mtmd.dll": "3bde16e0b542f3b03df9fcc4f23e8f6c1cf0b809b712a3d0c5766ff0730beb4d"
+  },
+  "head": "6e0c988e784000916e00c87915d47dc3bee6da32"
+}

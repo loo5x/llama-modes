@@ -1,6 +1,6 @@
 # Evaluate: independent questions over one text
 
-Experimental fresh-only implementation. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Native compilation and live integration validation are still required for this initial implementation.
+Experimental fresh-only implementation. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Windows CUDA validation on GPT-OSS 20B is recorded in the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md); shared-prefix execution is not enabled.
 
 `POST /evaluate` (alias `/v1/evaluate`) accepts one context and 1..32 independent questions:
 
@@ -34,4 +34,4 @@ A fresh temporary context is allocated for every candidate using the loaded mode
 
 Validation errors return HTTP 400 without partial results. Admission/allocation unavailability returns 503; decode or other execution failures return 500 without changing batch size or retrying. Disconnect cancellation is processed between steps after any current decode completes. Temporary contexts are discarded after each candidate, failure, cancellation, or shutdown.
 
-The initial HTTP checks live in the existing `tools/server/tests/unit/test_chat_completion.py`; they cover mixed scoring, order/repeat invariance, selected validation failures, recovery, and default-disabled routes. Broader cancellation/concurrency/sleep tests, native oracle comparison, and memory/latency measurements remain activation gates in the [integration design](../experiments/shared_context_v05/EVALUATE-INTEGRATION.md).
+The HTTP checks live in the existing `tools/server/tests/unit/test_chat_completion.py`; they cover mixed scoring, order/repeat invariance, selected validation failures, recovery, default-disabled routes, pending cancellation, and shutdown with connected clients. Local Windows runs also cover native oracle comparison, cancellation/concurrency, sleep/wake, shutdown/restart, selected capacity boundaries, and repeated use. See the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md) for tested builds and limits. Allocation/decode failure injection, other model/backend configurations, and production shared-prefix execution remain unvalidated.

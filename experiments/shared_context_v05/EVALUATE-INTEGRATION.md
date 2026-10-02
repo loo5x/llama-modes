@@ -2,6 +2,8 @@
 
 Status: design for review, 2026-10-02. No endpoint implementation or production configuration change. Source baseline: `6e0c988e784000916e00c87915d47dc3bee6da32` on `feature/shared-context-v05`.
 
+Historical proposal: the status above describes the original design. The fresh-only endpoint and subsequent validation are now recorded in [HTTP-VALIDATION.md](HTTP-VALIDATION.md). Shared-prefix integration below remains a proposed next step.
+
 ## Decision
 
 Add an experimental, opt-in `/evaluate` endpoint that scores independent Boolean, Choice, and Scale questions against one text context. Use a request-owned inference context with the already loaded model. Keep its decode batches separate from ordinary server slots. Reuse only a batch-aligned prefix of the fully prepared question prompts. Fall back to a fresh context per candidate when sharing is ineligible.
