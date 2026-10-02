@@ -19,6 +19,7 @@ from http_fresh_validation import digest, write
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--shared-prefix", action="store_true")
     parser.add_argument("--runtime", type=Path, default=Path(r"C:\AI\llama-modes-v05"))
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
@@ -43,6 +44,9 @@ def main():
     medium = copy.deepcopy(heavy)
     medium["questions"] = medium["questions"][:1]
     medium["questions"][0]["choices"] = medium["questions"][0]["choices"][:24]
+    if args.shared_prefix:
+        small["questions"].append({**small["questions"][0], "id": "fact2"})
+        medium["questions"].append({**medium["questions"][0], "id": "1"})
     chat = {"prompt": "The capital of France is", "n_predict": 8, "temperature": 0, "seed": 42,
             "cache_prompt": False, "return_tokens": True, "id_slot": 0}
     write(output / "requests.json", {"small": small, "heavy": heavy, "medium": medium, "chat": chat})
@@ -115,6 +119,8 @@ def main():
                "-b", "128", "-ub", "128", "-t", "8", "-tb", "8", "--kv-unified", "--swa-full", "-fa", "on",
                "--no-warmup", "--no-prefill-assistant", "--host", "127.0.0.1", "--port", str(port),
                "--threads-http", "8", "--slots", "--slot-save-path", str(output / "slots") + "/", "--evaluate", "--evaluate-context", "4096", "-lv", "4"]
+    if args.shared_prefix:
+        command.append("--evaluate-shared-prefix")
     write(output / "server-command.json", command)
     process = None
     pool = ThreadPoolExecutor(max_workers=3)
@@ -138,6 +144,8 @@ def main():
             write(output / "cached-chat-control.json", cached_control)
             event("ordinary_cached_chat_control", tokens_identical=all(r["tokens"] == cached_control[0]["tokens"] for r in cached_control))
             baseline = ok("/evaluate", small)
+            if args.shared_prefix:
+                assert baseline["execution"]["strategy"] == "shared_aligned"
             baseline_chat = ok("/completion", chat)
             fresh_control = ok("/completion", chat)
             write(output / "fresh-chat-control.json", fresh_control)
@@ -180,6 +188,8 @@ def main():
             assert not waiting_chat.done(), "Chat was not deferred"
             admitted()
             result = evaluation.result(timeout=60)
+            if args.shared_prefix:
+                assert result["execution"]["strategy"] == "shared_aligned"
             same_chat(waiting_chat.result(timeout=10), baseline_chat)
             assert result == ok("/evaluate", medium)
             write(output / "completed-evaluation.json", result)

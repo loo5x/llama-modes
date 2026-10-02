@@ -48,6 +48,7 @@ def host(directory):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--shared-prefix", action="store_true")
     parser.add_argument("--host", type=Path)
     parser.add_argument("--runtime", type=Path, default=Path(r"C:\AI\llama-modes-v05"))
     args = parser.parse_args()
@@ -69,6 +70,9 @@ def main():
     write(output / "identity.json", {"manifest": manifest, "model": identity["model"]})
     requests = json.loads((root / "build/shared-v05/http-lifecycle-fixed/requests.json").read_text())
     expected = json.loads((root / "build/shared-v05/http-lifecycle-fixed/baseline.json").read_text())
+    if args.shared_prefix:
+        requests["small"]["questions"].append({**requests["small"]["questions"][0], "id": "fact2"})
+        expected["evaluation"]["results"].append({**expected["evaluation"]["results"][0], "id": "fact2"})
     write(output / "requests.json", requests)
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
@@ -81,6 +85,8 @@ def main():
                    "-b", "128", "-ub", "128", "-t", "8", "-tb", "8", "--kv-unified", "--swa-full", "-fa", "on",
                    "--no-warmup", "--no-prefill-assistant", "--host", "127.0.0.1", "--port", str(port),
                    "--threads-http", "8", "--slots", "--evaluate", "--evaluate-context", "4096", "-lv", "4"]
+        if args.shared_prefix:
+            command.append("--evaluate-shared-prefix")
         write(directory / "command.json", command)
         startup = subprocess.STARTUPINFO()
         startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -116,7 +122,12 @@ def main():
                         pass
                     assert time.monotonic() < deadline, "Startup timeout"
                     time.sleep(0.5)
-                assert request("/evaluate", requests["small"]) == (200, expected["evaluation"])
+                status, evaluation_result = request("/evaluate", requests["small"])
+                assert status == 200 and evaluation_result["results"] == expected["evaluation"]["results"]
+                if args.shared_prefix:
+                    assert evaluation_result["execution"]["strategy"] == "shared_aligned"
+                else:
+                    assert evaluation_result == expected["evaluation"]
                 status, chat = request("/completion", requests["chat"])
                 assert status == 200 and chat["tokens"] == expected["chat"]["tokens"] and chat["content"] == expected["chat"]["content"]
                 if scenario in ("pending", "chat_only"):

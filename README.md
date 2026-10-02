@@ -93,9 +93,11 @@ The benchmark preserves raw results and accepts external datasets. This landing 
 
 ## Roadmap
 
-**v0.5 — Shared-context multi-question evaluation**
+**v0.5 - Shared-context multi-question evaluation**
 
-Ask multiple structured questions about the same context with shared prompt evaluation.
+The experimental `/evaluate` endpoint combines independent Boolean, Choice, and Scale questions about one text. Enable it with `--evaluate`; add `--evaluate-shared-prefix` to reuse eligible batch-aligned prompt prefixes. Fresh evaluation remains the default and the fallback when sharing is ineligible.
+
+Shared-mode scores and lifecycle behavior were validated on GPT-OSS 20B MXFP4, Windows CUDA, and RTX 5080. See [v0.5 preparation notes](RELEASE_NOTES_v0.5.0.md), the [API](docs/evaluate.md), and [measured results and limits](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md). These documents do not assert that a public v0.5 release is available.
 
 [Roadmap →](docs/roadmap.md)
 

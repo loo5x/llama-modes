@@ -67,6 +67,33 @@ npm run dev
 
 Open `http://127.0.0.1:5173`. For a built local demo, use `npm run demo` and open `http://127.0.0.1:4173`. The loopback proxy avoids browser CORS configuration. See [demo instructions](../demo/README.md).
 
+## 8. v0.5 multiple questions (optional)
+
+Use a llama-modes build containing the v0.5 `/evaluate` feature. Restart the server with the endpoint and optional sharing enabled:
+
+```powershell
+.\llama-server.exe -m "C:\models\your-model.gguf" --host 127.0.0.1 --port 8080 -ngl 99 -c 4096 -np 1 -b 128 -ub 128 --jinja --no-prefill-assistant --evaluate --evaluate-context 4096 --evaluate-shared-prefix
+```
+
+In another terminal, submit two independent questions about one text:
+
+```powershell
+$text = ('Paris is in France. The service was good. ' * 20)
+$body = @{
+    context = $text
+    questions = @(
+        @{ id = 'location'; type = 'boolean'; question = 'Is Paris in France? Answer yes or no.'; choices = @('yes', 'no') }
+        @{ id = 'service'; type = 'choice'; question = 'Describe the service. Answer good or bad.'; choices = @('good', 'bad') }
+    )
+} | ConvertTo-Json -Depth 10
+$result = Invoke-RestMethod http://127.0.0.1:8080/evaluate -Method Post -ContentType 'application/json' -Body $body
+$result | ConvertTo-Json -Depth 20
+```
+
+The repeated text makes a longer shared context for this small example. Check `execution.strategy` and `execution.shared_prefix_tokens`. An eligible request reports `shared_aligned`; a short prefix or other ineligible case reports `fresh` with a reason. Remove `--evaluate-shared-prefix` to use fresh scoring for comparison. Removing `--evaluate` disables both endpoint routes.
+
+The validated shared configuration used GPT-OSS 20B MXFP4 on Windows CUDA with RTX 5080. Other models need their own checks, and evaluation requires memory in addition to the resident chat context. Read the [API and limits](evaluate.md) and [v0.5 preparation notes](../RELEASE_NOTES_v0.5.0.md). Public v0.5 packaging and a clean installation check are still pending.
+
 ## Troubleshooting
 
 - Disconnected: verify the server terminal, port, and `/v1/models`; use Reconnect in demo settings.

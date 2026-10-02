@@ -41,6 +41,7 @@ def memory(pid):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--reference", type=Path)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
@@ -51,7 +52,7 @@ def main():
     assert manifest["commit"] == subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
     for item in manifest["files"]:
         assert digest(runtime / item["name"]) == item["sha256"]
-    prior = root / "build/shared-v05/http-lifecycle-shutdown-fixed"
+    prior = args.reference.resolve() if args.reference else root / "build/shared-v05/http-lifecycle-shutdown-fixed"
     identity = json.loads((prior / "identity.json").read_text())
     assert digest(Path(identity["model"]["path"])) == identity["model"]["sha256"]
     write(output / "identity.json", identity)
