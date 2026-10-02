@@ -182,6 +182,53 @@ def test_evaluate_pending_disconnect_during_stream():
             server.stop()
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Windows Ctrl+C requires a console; covered by the Windows shutdown runner")
+@pytest.mark.parametrize("pending_evaluate", [False, True])
+def test_evaluate_shutdown_with_connected_clients(pending_evaluate):
+    import signal
+    import socket
+
+    if server.external_server:
+        pytest.skip("Shutdown test requires an owned server process")
+    server.server_evaluate = True
+    server.evaluate_context = 512
+    server.n_ctx = 512
+    server.n_slots = 1
+    server.server_slots = True
+    server.enable_ctx_shift = True
+    server.jinja = True
+    server.chat_template = "chatml"
+    server.start()
+    pending = None
+    try:
+        with requests.post(server.make_url("/completion"), json={
+            "prompt": "Count the numbers:", "n_predict": 1000000,
+            "ignore_eos": True, "stream": True, "temperature": 0,
+        }, stream=True, timeout=10) as response:
+            assert response.status_code == 200
+            lines = response.iter_lines(chunk_size=1)
+            assert next(line for line in lines if line.startswith(b"data:"))
+            if pending_evaluate:
+                payload = {"context": "Paris is in France.", "questions": [
+                    {"id": "fact", "type": "boolean", "question": "Is Paris in France?", "choices": ["yes", "no"]},
+                ]}
+                pending = socket.create_connection((server.server_host, server.server_port), timeout=10)
+                data = json.dumps(payload).encode()
+                pending.sendall((f"POST /evaluate HTTP/1.1\r\nHost: localhost\r\nContent-Type: application/json\r\nContent-Length: {len(data)}\r\nConnection: close\r\n\r\n").encode() + data)
+                time.sleep(0.5)
+                rejected = server.make_request("POST", "/evaluate", payload, timeout=5)
+                assert rejected.status_code == 503
+                assert "already admitted" in rejected.body["error"]["message"]
+            slots = server.make_request("GET", "/slots")
+            assert slots.status_code == 200 and any(slot["is_processing"] for slot in slots.body)
+            server.process.send_signal(signal.SIGINT)
+            assert server.process.wait(timeout=10) == 0
+    finally:
+        if pending is not None:
+            pending.close()
+        server.stop()
+
+
 @pytest.mark.parametrize("choices", [["yes", "no"], ["yes", "yes indeed", "no thank you"]])
 @pytest.mark.parametrize("template,suffix", [
     ("chatml", ""),
