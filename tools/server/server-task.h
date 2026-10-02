@@ -15,6 +15,7 @@
 enum server_task_type {
     SERVER_TASK_TYPE_COMPLETION,
     SERVER_TASK_TYPE_DECISION,
+    SERVER_TASK_TYPE_EVALUATE,
     SERVER_TASK_TYPE_EMBEDDING,
     SERVER_TASK_TYPE_RERANK,
     SERVER_TASK_TYPE_INFILL,
@@ -134,6 +135,13 @@ struct task_result_state {
         bool filter_tool_calls = false);
 };
 
+struct server_evaluate_question {
+    server_tokens prompt;
+    std::vector<std::string> choices;
+    std::vector<llama_tokens> sequences;
+    bool sequence_scores = false;
+};
+
 struct server_task {
     int id = -1; // to be filled by server_queue
 
@@ -159,6 +167,7 @@ struct server_task {
     llama_tokens decision_tokens;
     std::vector<llama_tokens> decision_sequences;
     bool decision_multitoken = false;
+    std::vector<server_evaluate_question> evaluate_questions;
 
     // only used by CLI, this allow tokenizing CLI inputs on server side
     // we need this because mtmd_context and vocab are not accessible outside of server_context
@@ -467,6 +476,14 @@ struct server_task_result_decision : server_task_result {
     std::vector<double> sum_log_probabilities;
 
     json to_json_scale(const json & scale, const std::string & measurement) const;
+    virtual json to_json() override;
+};
+
+struct server_task_result_evaluate : server_task_result {
+    std::vector<server_task_result_decision> results;
+    uint32_t n_batch = 0;
+    uint32_t n_ubatch = 0;
+
     virtual json to_json() override;
 };
 

@@ -1498,6 +1498,20 @@ json server_task_result_decision::to_json() {
     return {{"choices", result}};
 }
 
+json server_task_result_evaluate::to_json() {
+    json values = json::array();
+    for (auto & result : results) {
+        values.push_back(result.to_json());
+    }
+    return {
+        {"results", values},
+        {"execution", {
+            {"strategy", "fresh"}, {"shared_prefix_tokens", 0},
+            {"n_batch", n_batch}, {"n_ubatch", n_ubatch}, {"fallback_reason", "fresh_only"},
+        }},
+    };
+}
+
 json server_task_result_decision::to_json_scale(const json & scale, const std::string & measurement) const {
     GGML_ASSERT(scale.size() == sequences.size() && scale.size() == sum_log_probabilities.size() && scale.size() >= 2);
     const auto add = [](double value, double & sum, double & correction) {

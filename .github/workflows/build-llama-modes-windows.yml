@@ -3,9 +3,56 @@ name: Build llama-modes Windows CUDA
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
+  test-evaluate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure CPU server
+        run: >-
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DGGML_CUDA=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_BUILD_UI=OFF
+          -DLLAMA_BUILD_BORINGSSL=ON
+
+      - name: Build CPU server
+        run: cmake --build build --config Release -j 2 --target llama-server
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        run: python -m pip install -r tools/server/tests/requirements.txt
+
+      - name: Test evaluate and existing scoring routes
+        working-directory: tools/server/tests
+        env:
+          LLAMA_SERVER_BIN_PATH: ${{ github.workspace }}/build/bin/llama-server
+        run: >-
+          python -m pytest unit/test_chat_completion.py
+          -k 'evaluate or decision_messages_match_raw'
+          --junitxml=evaluate-results.xml -v
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: evaluate-cpu-test-results
+          path: tools/server/tests/evaluate-results.xml
+          if-no-files-found: warn
+
   build:
+    needs: test-evaluate
     runs-on: windows-2022
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -35,6 +82,7 @@ jobs:
             -DGGML_CUDA=ON ^
             -DGGML_NATIVE=OFF ^
             -DLLAMA_BUILD_SERVER=ON ^
+            -DLLAMA_BUILD_TESTS=ON ^
             -DLLAMA_BUILD_UI=OFF ^
             -DLLAMA_BUILD_BORINGSSL=ON ^
             -DCMAKE_CUDA_ARCHITECTURES=120
@@ -102,6 +150,28 @@ jobs:
             }
           }
 
+          $oracle = Join-Path $src "test-save-load-state.exe"
+          if (-not (Test-Path -LiteralPath $oracle)) {
+            throw "Decision oracle is missing: $oracle"
+          }
+          $files = @(Get-ChildItem -LiteralPath $dst -File | Sort-Object Name | ForEach-Object {
+            @{
+              name = $_.Name
+              bytes = $_.Length
+              sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            }
+          })
+          @{
+            commit = (git rev-parse HEAD)
+            ref = $env:GITHUB_REF
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            cuda_version = "13.4"
+            cuda_architectures = "120"
+            oracle_sha256 = (Get-FileHash -LiteralPath $oracle -Algorithm SHA256).Hash.ToLowerInvariant()
+            files = $files
+          } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $dst "build-manifest.json") -Encoding UTF8
+
           Compress-Archive `
             -Path "$dst\*" `
             -DestinationPath "llama-modes-win-cuda.zip" `
@@ -112,3 +182,11 @@ jobs:
         with:
           name: llama-modes-win-cuda
           path: llama-modes-win-cuda.zip
+          if-no-files-found: error
+
+      - name: Upload decision oracle
+        uses: actions/upload-artifact@v6
+        with:
+          name: llama-modes-decision-oracle
+          path: build/bin/Release/test-save-load-state.exe
+          if-no-files-found: error

@@ -41,6 +41,25 @@
 
 constexpr int HTTP_POLLING_SECONDS = 1;
 
+static std::pair<double, double> scoring_normalization(const float * logits, int32_t n_vocab) {
+    double max_logit = -INFINITY;
+    for (int32_t i = 0; i < n_vocab; ++i) {
+        if (std::isnan(logits[i]) || logits[i] == INFINITY) {
+            throw std::runtime_error("Decision logits contain NaN or positive infinity");
+        }
+        max_logit = std::max(max_logit, double(logits[i]));
+    }
+    if (!std::isfinite(max_logit)) {
+        throw std::runtime_error("Decision logits have no finite normalization");
+    }
+    double sum = 0.0;
+    for (int32_t i = 0; i < n_vocab; ++i) {
+        sum += std::exp(double(logits[i]) - max_logit);
+    }
+    const double log_sum = std::log(sum);
+    return {max_logit, log_sum};
+}
+
 static common_speculative_output_limits server_output_limits(const common_params & params) {
     if (params.embedding ||
             (params.pooling_type != LLAMA_POOLING_TYPE_UNSPECIFIED && params.pooling_type != LLAMA_POOLING_TYPE_NONE)) {
@@ -899,6 +918,24 @@ private:
 
     llama_context * ctx_tgt = nullptr;
 
+    struct evaluate_state {
+        server_task task;
+        llama_context_ptr ctx;
+        llama_batch batch = {};
+        std::unique_ptr<server_task_result_evaluate> result;
+        size_t question = 0;
+        size_t candidate = 0;
+        size_t prompt_pos = 0;
+        size_t token = 0;
+
+        ~evaluate_state() {
+            if (batch.token) {
+                llama_batch_free(batch);
+            }
+        }
+    };
+    std::unique_ptr<evaluate_state> evaluation;
+
     server_batch batch;
 
     llama_model   * model_dft = nullptr;
@@ -952,6 +989,7 @@ private:
     int64_t t_last_load_progress_ms = 0;
 
     void destroy() {
+        evaluation.reset();
         spec.reset();
         spec_init.reset();
 
@@ -2405,12 +2443,52 @@ private:
         }
 
         switch (task.type) {
+            case SERVER_TASK_TYPE_EVALUATE:
+                {
+                    if (evaluation) {
+                        send_error(task, "An evaluation is already admitted", ERROR_TYPE_UNAVAILABLE);
+                        break;
+                    }
+                    const bool has_spec = std::any_of(params_base.speculative.types.begin(), params_base.speculative.types.end(),
+                            [](common_speculative_type type) { return type != COMMON_SPECULATIVE_TYPE_NONE; });
+                    if (!params_base.endpoint_evaluate || params_base.embedding || !llama_model_has_decoder(model_tgt) ||
+                            llama_model_has_encoder(model_tgt) || llama_model_is_recurrent(model_tgt) || llama_model_is_hybrid(model_tgt) ||
+                            !params_base.lora_adapters.empty() || !params_base.control_vectors.empty() || has_spec || mctx ||
+                            (params_base.pooling_type != LLAMA_POOLING_TYPE_UNSPECIFIED && params_base.pooling_type != LLAMA_POOLING_TYPE_NONE) ||
+                            params_base.attention_type == LLAMA_ATTENTION_TYPE_NON_CAUSAL) {
+                        send_error(task, "Evaluate requires a text decoder without adapters, control vectors or speculative decoding", ERROR_TYPE_INVALID_REQUEST);
+                        break;
+                    }
+                    auto state = std::make_unique<evaluate_state>();
+                    state->result = std::make_unique<server_task_result_evaluate>();
+                    state->result->id = task.id;
+                    for (const auto & question : task.evaluate_questions) {
+                        server_task_result_decision result;
+                        result.choices = question.choices;
+                        result.sum_log_probabilities.resize(question.choices.size(), 0.0);
+                        if (question.sequence_scores) {
+                            result.sequences = question.sequences;
+                        } else {
+                            for (const auto & sequence : question.sequences) {
+                                result.tokens.push_back(sequence[0]);
+                            }
+                            result.logits.resize(question.choices.size());
+                        }
+                        state->result->results.push_back(std::move(result));
+                    }
+                    state->task = std::move(task);
+                    evaluation = std::move(state);
+                } break;
             case SERVER_TASK_TYPE_COMPLETION:
             case SERVER_TASK_TYPE_DECISION:
             case SERVER_TASK_TYPE_INFILL:
             case SERVER_TASK_TYPE_EMBEDDING:
             case SERVER_TASK_TYPE_RERANK:
                 {
+                    if (evaluation) {
+                        queue_tasks.defer(std::move(task));
+                        break;
+                    }
                     // special case: if input is provided via CLI, tokenize it first
                     // otherwise, no need to tokenize as it's already done inside the HTTP thread
                     if (task.cli) {
@@ -2479,6 +2557,9 @@ private:
                 } break;
             case SERVER_TASK_TYPE_CANCEL:
                 {
+                    if (evaluation && evaluation->task.id == task.id_target) {
+                        finish_evaluate();
+                    }
                     // release slot linked with the task id
                     for (auto & slot : slots) {
                         if (slot.task && slot.task->id == task.id_target) {
@@ -2737,6 +2818,10 @@ private:
                 } break;
             case SERVER_TASK_TYPE_SET_LORA:
                 {
+                    if (evaluation) {
+                        queue_tasks.defer(std::move(task));
+                        break;
+                    }
                     auto new_loras = construct_lora_list(task.set_lora);
                     // logging
                     for (size_t i = 0; i < new_loras.size(); ++i) {
@@ -2816,7 +2901,115 @@ private:
     };
 #endif
 
+    void finish_evaluate() {
+        evaluation.reset();
+        const size_t pending = queue_tasks.queue_tasks_deferred_size();
+        for (size_t i = 0; i < pending; ++i) {
+            queue_tasks.pop_deferred_task(-1);
+        }
+    }
+
+    void update_evaluate() {
+        auto & state = *evaluation;
+        const int id_task = state.task.id;
+        const auto & question = state.task.evaluate_questions[state.question];
+        const auto & candidate = question.sequences[state.candidate];
+        auto & result = state.result->results[state.question];
+        try {
+            if (!state.ctx) {
+                auto params = common_context_params_to_llama(params_base);
+                params.n_ctx = params_base.evaluate_context;
+                params.n_seq_max = 3;
+                params.n_outputs_max = 3;
+                params.n_outputs_max_per_seq = 1;
+                params.n_rs_seq = 0;
+                params.kv_unified = true;
+                params.swa_full = true;
+                params.type_k = GGML_TYPE_F16;
+                params.type_v = GGML_TYPE_F16;
+                state.ctx.reset(llama_init_from_model(model_tgt, params));
+                if (!state.ctx) {
+                    send_error(state.task, "Could not allocate evaluation context", ERROR_TYPE_UNAVAILABLE);
+                    finish_evaluate();
+                    return;
+                }
+                if (question.prompt.size() + candidate.size() - 1 > llama_n_ctx(state.ctx.get())) {
+                    throw std::runtime_error("Allocated evaluation context is smaller than the prepared input");
+                }
+                if (!state.batch.token) {
+                    state.result->n_batch = llama_n_batch(state.ctx.get());
+                    state.result->n_ubatch = llama_n_ubatch(state.ctx.get());
+                    state.batch = llama_batch_init(state.result->n_batch, 0, 1);
+                } else if (state.result->n_batch != llama_n_batch(state.ctx.get()) ||
+                        state.result->n_ubatch != llama_n_ubatch(state.ctx.get())) {
+                    throw std::runtime_error("Evaluation batch settings changed between candidates");
+                }
+                return;
+            }
+
+            common_batch_clear(state.batch);
+            if (state.prompt_pos < question.prompt.size()) {
+                const size_t end = std::min(question.prompt.size(), state.prompt_pos + state.result->n_batch);
+                for (; state.prompt_pos < end; ++state.prompt_pos) {
+                    common_batch_add(state.batch, question.prompt[state.prompt_pos], state.prompt_pos, {0},
+                            state.prompt_pos + 1 == question.prompt.size());
+                }
+            } else {
+                common_batch_add(state.batch, candidate[state.token - 1], question.prompt.size() + state.token - 1, {0}, true);
+            }
+            int status = 0;
+            queue_tasks.yield_to_queue([&]() {
+                status = llama_decode(state.ctx.get(), state.batch);
+                llama_synchronize(state.ctx.get());
+            });
+            if (status != 0) {
+                throw std::runtime_error("Evaluation decode failed without retry");
+            }
+            if (state.prompt_pos < question.prompt.size()) {
+                return;
+            }
+
+            const float * logits = llama_get_logits_ith(state.ctx.get(), -1);
+            if (!logits) {
+                throw std::runtime_error("Evaluation logits are unavailable");
+            }
+            const auto normalization = scoring_normalization(logits, llama_vocab_n_tokens(vocab));
+            if (!std::isfinite(logits[candidate[state.token]])) {
+                throw std::runtime_error("Evaluation target logit is non-finite");
+            }
+            result.sum_log_probabilities[state.candidate] += (double(logits[candidate[state.token]]) - normalization.first) - normalization.second;
+            if (!question.sequence_scores) {
+                result.logits[state.candidate] = logits[candidate[0]];
+            }
+            if (++state.token == candidate.size()) {
+                state.ctx.reset();
+                state.token = 0;
+                state.prompt_pos = 0;
+                if (++state.candidate == question.sequences.size()) {
+                    state.candidate = 0;
+                    ++state.question;
+                }
+                if (state.question == state.task.evaluate_questions.size()) {
+                    queue_results.send(std::move(state.result));
+                    finish_evaluate();
+                }
+            }
+        } catch (const std::exception & e) {
+            send_error(id_task, e.what(), ERROR_TYPE_SERVER);
+            finish_evaluate();
+        }
+    }
+
     void update_slots() {
+        if (evaluation && std::none_of(slots.begin(), slots.end(), [](const server_slot & slot) { return slot.is_processing(); })) {
+            update_evaluate();
+            if (evaluation) {
+                server_task next(SERVER_TASK_TYPE_NEXT_RESPONSE);
+                next.id = queue_tasks.get_new_id();
+                queue_tasks.post(std::move(next));
+            }
+            return;
+        }
 #ifdef DEBUG_TIMINGS
         static int64_t t_prev = 0;
         int64_t t_start = ggml_time_us();
@@ -3827,22 +4020,9 @@ private:
             if (!logits) {
                 throw std::runtime_error("Decision logits are unavailable");
             }
-            const int32_t n_vocab = llama_vocab_n_tokens(vocab);
-            double max_logit = -INFINITY;
-            for (int32_t i = 0; i < n_vocab; ++i) {
-                if (std::isnan(logits[i]) || logits[i] == INFINITY) {
-                    throw std::runtime_error("Decision logits contain NaN or positive infinity");
-                }
-                max_logit = std::max(max_logit, double(logits[i]));
-            }
-            if (!std::isfinite(max_logit)) {
-                throw std::runtime_error("Decision logits have no finite normalization");
-            }
-            double sum = 0.0;
-            for (int32_t i = 0; i < n_vocab; ++i) {
-                sum += std::exp(double(logits[i]) - max_logit);
-            }
-            const double log_sum = std::log(sum);
+            const auto normalization = scoring_normalization(logits, llama_vocab_n_tokens(vocab));
+            const double max_logit = normalization.first;
+            const double log_sum = normalization.second;
             auto log_probability = [&](llama_token token) {
                 if (!std::isfinite(logits[token])) {
                     throw std::runtime_error("Decision target logit is non-finite");
@@ -4302,6 +4482,7 @@ bool server_context::load_model(common_params & params) {
 void server_context::start_loop() {
     auto & params = impl->params_base;
     impl->queue_tasks.start_loop(params.sleep_idle_seconds * 1000);
+    impl->evaluation.reset();
 }
 
 void server_context::terminate() {
@@ -5041,23 +5222,18 @@ void server_routes::init_routes() {
             TASK_RESPONSE_TYPE_NONE); // infill is not OAI compatible
     };
 
-    const auto post_scoring = [this](const server_http_req & req, bool is_scale) {
-        auto res = create_response();
-        json body = json::parse_no_throw(req.body);
-        json scale;
-        std::string measurement;
+    const auto prepare_scoring = [this](json body, bool is_scale, json & scale, std::string & measurement,
+            std::chrono::system_clock::time_point now) {
         if (is_scale) {
             if (!body.is_object() || !body.contains("measurement") || !body.at("measurement").is_string() ||
                     (body.at("measurement") != "ordinal" && body.at("measurement") != "interval") ||
                     !body.contains("scale") || !body.at("scale").is_array() ||
                     body.at("scale").size() < 2 || body.at("scale").size() > 256) {
-                res->error(format_error_response("Expected measurement ordinal or interval and 2 to 256 scale points", ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Expected measurement ordinal or interval and 2 to 256 scale points");
             }
             for (const auto & item : body.items()) {
                 if (item.key() != "prompt" && item.key() != "messages" && item.key() != "scale" && item.key() != "measurement" && item.key() != "model") {
-                    res->error(format_error_response("Unsupported scale field: " + item.key(), ERROR_TYPE_INVALID_REQUEST));
-                    return res;
+                    throw std::invalid_argument("Unsupported scale field: " + item.key());
                 }
             }
             scale = body.at("scale");
@@ -5066,12 +5242,10 @@ void server_routes::init_routes() {
                 if (!point.is_object() || point.size() != 2 || !point.contains("value") || !point.contains("label") ||
                         !point.at("value").is_number() || !std::isfinite(point.at("value").get<double>()) ||
                         !point.at("label").is_string() || point.at("label").get<std::string>().empty()) {
-                    res->error(format_error_response("Each scale point must contain exactly a finite numeric value and a non-empty string label", ERROR_TYPE_INVALID_REQUEST));
-                    return res;
+                    throw std::invalid_argument("Each scale point must contain exactly a finite numeric value and a non-empty string label");
                 }
                 if (!labels.insert(point.at("label").get<std::string>()).second) {
-                    res->error(format_error_response("Scale labels must be unique", ERROR_TYPE_INVALID_REQUEST));
-                    return res;
+                    throw std::invalid_argument("Scale labels must be unique");
                 }
             }
             const auto less = [](const json & a, const json & b) {
@@ -5107,8 +5281,7 @@ void server_routes::init_routes() {
             }
             for (size_t i = 1; i < scale.size(); ++i) {
                 if (!less(scale[i - 1], scale[i])) {
-                    res->error(format_error_response("Scale values must be unique", ERROR_TYPE_INVALID_REQUEST));
-                    return res;
+                    throw std::invalid_argument("Scale values must be unique");
                 }
             }
             measurement = body.at("measurement").get<std::string>();
@@ -5120,55 +5293,46 @@ void server_routes::init_routes() {
             }
         }
         if (body.is_object() && body.contains("messages") && body.contains("prompt")) {
-            res->error(format_error_response("Expected exactly one of prompt or messages", ERROR_TYPE_INVALID_REQUEST));
-            return res;
+            throw std::invalid_argument("Expected exactly one of prompt or messages");
         }
         if (!body.is_object() || (!body.contains("messages") && (!body.contains("prompt") ||
                 !body.at("prompt").is_string() || body.at("prompt").get<std::string>().empty())) ||
                 !body.contains("choices") ||
                 !body.at("choices").is_array() || body.at("choices").empty()) {
-            res->error(format_error_response("Expected a non-empty prompt string and a non-empty choices array", ERROR_TYPE_INVALID_REQUEST));
-            return res;
+            throw std::invalid_argument("Expected a non-empty prompt string and a non-empty choices array");
         }
         for (const auto & item : body.items()) {
             if (item.key() != "prompt" && item.key() != "messages" && item.key() != "choices" && item.key() != "model") {
-                res->error(format_error_response("Unsupported decision field: " + item.key(), ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Unsupported decision field: " + item.key());
             }
         }
         if (params.embedding || !llama_model_has_decoder(ctx_server.model_tgt)) {
-            res->error(format_error_response("Decision requires a model serving next-token logits", ERROR_TYPE_NOT_SUPPORTED));
-            return res;
+            throw std::domain_error("Decision requires a model serving next-token logits");
         }
 
         server_task task(SERVER_TASK_TYPE_DECISION);
         if (body.at("choices").size() > 256) {
-            res->error(format_error_response("Decision supports at most 256 choices", ERROR_TYPE_INVALID_REQUEST));
-            return res;
+            throw std::invalid_argument("Decision supports at most 256 choices");
         }
         std::set<llama_tokens> seen;
         size_t total_bytes = 0;
         size_t total_tokens = 0;
         for (const auto & choice : body.at("choices")) {
             if (!choice.is_string() || choice.get<std::string>().empty()) {
-                res->error(format_error_response("Each choice must be a non-empty string", ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Each choice must be a non-empty string");
             }
             const auto text = choice.get<std::string>();
             if (text.size() > 1024 * 1024 - total_bytes) {
-                res->error(format_error_response("Decision choices exceed 1 MiB of text", ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Decision choices exceed 1 MiB of text");
             }
             total_bytes += text.size();
             const auto tokens = common_tokenize(ctx_server.vocab, text, false, false);
             if (tokens.empty() || tokens.size() > 32768 - total_tokens) {
-                res->error(format_error_response("Choices must tokenize to non-empty sequences totaling at most 32768 tokens", ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Choices must tokenize to non-empty sequences totaling at most 32768 tokens");
             }
             total_tokens += tokens.size();
             if (!seen.insert(tokens).second) {
-                res->error(format_error_response("Choices must have distinct token sequences", ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument("Choices must have distinct token sequences");
             }
             task.decision_choices.push_back(text);
             task.decision_tokens.push_back(tokens[0]);
@@ -5179,8 +5343,7 @@ void server_routes::init_routes() {
             for (auto it = seen.begin(); it != seen.end(); ++it) {
                 const auto next = std::next(it);
                 if (next != seen.end() && it->size() < next->size() && std::equal(it->begin(), it->end(), next->begin())) {
-                    res->error(format_error_response("Scale labels must not have strict token-prefix overlap", ERROR_TYPE_INVALID_REQUEST));
-                    return res;
+                    throw std::invalid_argument("Scale labels must not have strict token-prefix overlap");
                 }
             }
             // Use full-vocabulary log probabilities even when all labels have one token.
@@ -5192,15 +5355,31 @@ void server_routes::init_routes() {
             try {
                 json chat_body = {{ "messages", body.at("messages") }};
                 std::vector<raw_buffer> files;
-                const auto prepared = oaicompat_chat_params_parse(chat_body, meta->chat_params, files, /* content_entry= */ true);
+                const auto prepared = oaicompat_chat_params_parse(chat_body, meta->chat_params, files, /* content_entry= */ true, now);
                 task.tokens = std::move(tokenize_input_prompts(ctx_server.vocab, nullptr, prepared.at("prompt"), true, true, ctx_server.init_opt)[0]);
             } catch (const std::exception & e) {
-                res->error(format_error_response(e.what(), ERROR_TYPE_INVALID_REQUEST));
-                return res;
+                throw std::invalid_argument(e.what());
             }
         }
         if (task.tokens.empty()) {
-            res->error(format_error_response("Prompt must tokenize to at least one token", ERROR_TYPE_INVALID_REQUEST));
+            throw std::invalid_argument("Prompt must tokenize to at least one token");
+        }
+        task.params.cache_prompt = false;
+        return task;
+    };
+
+    const auto post_scoring = [this, prepare_scoring](const server_http_req & req, bool is_scale) {
+        auto res = create_response();
+        json scale;
+        std::string measurement;
+        server_task task;
+        try {
+            task = prepare_scoring(json::parse_no_throw(req.body), is_scale, scale, measurement, std::chrono::system_clock::now());
+        } catch (const std::domain_error & e) {
+            res->error(format_error_response(e.what(), ERROR_TYPE_NOT_SUPPORTED));
+            return res;
+        } catch (const std::exception & e) {
+            res->error(format_error_response(e.what(), ERROR_TYPE_INVALID_REQUEST));
             return res;
         }
         task.params.cache_prompt = false;
@@ -5230,6 +5409,127 @@ void server_routes::init_routes() {
     };
     this->post_scale = [post_scoring](const server_http_req & req) {
         return post_scoring(req, true);
+    };
+
+    this->post_evaluate = [this, prepare_scoring](const server_http_req & req) {
+        auto res = create_response();
+        server_task task(SERVER_TASK_TYPE_EVALUATE);
+        json metadata = json::array();
+        try {
+            const json body = json::parse_no_throw(req.body);
+            if (!body.is_object() || !body.contains("context") || !body.at("context").is_string() ||
+                    body.at("context").get<std::string>().empty() || !body.contains("questions") ||
+                    !body.at("questions").is_array() || body.at("questions").empty() || body.at("questions").size() > 32) {
+                throw std::invalid_argument("Expected a non-empty context and 1 to 32 questions");
+            }
+            for (const auto & field : body.items()) {
+                if (field.key() != "context" && field.key() != "questions" && field.key() != "model") {
+                    throw std::invalid_argument("Unsupported evaluate field: " + field.key());
+                }
+            }
+            const auto context = body.at("context").get<std::string>();
+            constexpr size_t max_bytes = 1024 * 1024;
+            if (context.size() > max_bytes) {
+                throw std::invalid_argument("Evaluate context and question text exceed 1 MiB");
+            }
+            size_t text_bytes = context.size();
+            size_t choice_bytes = 0;
+            size_t choice_tokens = 0;
+            size_t prompt_tokens = 0;
+            std::set<std::string> ids;
+            const auto now = std::chrono::system_clock::now();
+            for (size_t i = 0; i < body.at("questions").size(); ++i) {
+                try {
+                    const auto & question = body.at("questions").at(i);
+                    if (!question.is_object() || !question.contains("id") || !question.at("id").is_string() ||
+                            !question.contains("type") || !question.at("type").is_string() ||
+                            !question.contains("question") || !question.at("question").is_string()) {
+                        throw std::invalid_argument("Expected string id, type and question");
+                    }
+                    const auto id = question.at("id").get<std::string>();
+                    const auto type = question.at("type").get<std::string>();
+                    const auto text = question.at("question").get<std::string>();
+                    if (id.empty() || id.size() > 128 || !ids.insert(id).second) {
+                        throw std::invalid_argument("Question IDs must be unique, non-empty and at most 128 bytes");
+                    }
+                    if (type != "boolean" && type != "choice" && type != "scale") {
+                        throw std::invalid_argument("Expected type boolean, choice or scale");
+                    }
+                    if (text.empty() || text.size() > max_bytes - text_bytes) {
+                        throw std::invalid_argument("Question text must be non-empty; context and questions must fit 1 MiB");
+                    }
+                    text_bytes += text.size();
+                    const bool is_scale = type == "scale";
+                    for (const auto & field : question.items()) {
+                        const auto & key = field.key();
+                        if (key != "id" && key != "type" && key != "question" &&
+                                !(is_scale ? key == "scale" || key == "measurement" : key == "choices")) {
+                            throw std::invalid_argument("Unsupported question field: " + key);
+                        }
+                    }
+                    if (type == "boolean" && (!question.contains("choices") || !question.at("choices").is_array() ||
+                            question.at("choices").size() != 2)) {
+                        throw std::invalid_argument("Boolean requires exactly two choices");
+                    }
+                    json scoring = question;
+                    scoring.erase("id");
+                    scoring.erase("type");
+                    scoring.erase("question");
+                    scoring["messages"] = json::array({{{"role", "user"}, {"content", context + "\n\n" + text}}});
+                    json scale;
+                    std::string measurement;
+                    auto prepared = prepare_scoring(std::move(scoring), is_scale, scale, measurement, now);
+                    for (size_t c = 0; c < prepared.decision_choices.size(); ++c) {
+                        const size_t bytes = prepared.decision_choices[c].size();
+                        const size_t tokens = prepared.decision_sequences[c].size();
+                        if (bytes > max_bytes - choice_bytes || tokens > 32768 - choice_tokens) {
+                            throw std::invalid_argument("Evaluate choices exceed 1 MiB or 32768 tokens");
+                        }
+                        choice_bytes += bytes;
+                        choice_tokens += tokens;
+                        const size_t cap = params.evaluate_context;
+                        if (prepared.tokens.size() > cap || tokens - 1 > cap - prepared.tokens.size()) {
+                            throw std::invalid_argument("Prompt and forced candidate prefix exceed the evaluation context");
+                        }
+                    }
+                    if (prepared.tokens.size() > 131072 - prompt_tokens) {
+                        throw std::invalid_argument("Evaluate prepared prompts exceed 131072 tokens");
+                    }
+                    prompt_tokens += prepared.tokens.size();
+                    metadata.push_back({{"id", id}, {"type", type}, {"scale", scale}, {"measurement", measurement}});
+                    task.evaluate_questions.push_back({std::move(prepared.tokens), std::move(prepared.decision_choices),
+                            std::move(prepared.decision_sequences), prepared.decision_multitoken});
+                } catch (const std::exception & e) {
+                    throw std::invalid_argument("Question " + std::to_string(i) + ": " + e.what());
+                }
+            }
+        } catch (const std::exception & e) {
+            res->error(format_error_response(e.what(), ERROR_TYPE_INVALID_REQUEST));
+            return res;
+        }
+        task.id = res->rd.get_new_id();
+        std::vector<server_task> tasks;
+        tasks.push_back(std::move(task));
+        res->rd.post_tasks(std::move(tasks));
+        auto results = res->rd.wait_for_all(req.should_stop);
+        if (results.is_terminated) {
+            return res;
+        }
+        if (results.error) {
+            res->error(results.error->to_json());
+            return res;
+        }
+        auto & scored = static_cast<server_task_result_evaluate &>(*results.results[0]);
+        json response = scored.to_json();
+        for (size_t i = 0; i < metadata.size(); ++i) {
+            const auto & info = metadata[i];
+            json value = info.at("type") == "scale"
+                    ? scored.results[i].to_json_scale(info.at("scale"), info.at("measurement").get<std::string>())
+                    : response["results"][i];
+            response["results"][i] = {{"id", info.at("id")}, {"type", info.at("type")}, {"result", value}};
+        }
+        res->ok(response);
+        return res;
     };
 
     this->post_completions = [this](const server_http_req & req) {

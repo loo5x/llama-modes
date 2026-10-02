@@ -329,7 +329,8 @@ json oaicompat_chat_params_parse(
     json & body, /* openai api json semantics */
     const server_chat_params & opt,
     std::vector<raw_buffer> & out_files,
-    bool content_entry = false);
+    bool content_entry = false,
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now());
 
 // TODO: move it to server-task.cpp
 json format_embeddings_response_oaicompat(

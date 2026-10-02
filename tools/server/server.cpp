@@ -262,6 +262,10 @@ int llama_server(common_params & params, int argc, char ** argv) {
     ctx_http.post("/v1/decision",              ex_wrapper(routes.post_decision));
     ctx_http.post("/scale",                    ex_wrapper(routes.post_scale));
     ctx_http.post("/v1/scale",                 ex_wrapper(routes.post_scale));
+    if (params.endpoint_evaluate && !is_router_server) {
+        ctx_http.post("/evaluate",             ex_wrapper(routes.post_evaluate));
+        ctx_http.post("/v1/evaluate",          ex_wrapper(routes.post_evaluate));
+    }
     ctx_http.post("/completions",              ex_wrapper(routes.post_completions));
     ctx_http.post("/v1/completions",           ex_wrapper(routes.post_completions_oai));
     ctx_http.post("/chat/completions",         ex_wrapper(routes.post_chat_completions));

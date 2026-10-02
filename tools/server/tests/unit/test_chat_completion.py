@@ -5,6 +5,115 @@ from utils import *
 server: ServerProcess
 
 
+def test_evaluate_fresh_scores_and_validation():
+    from copy import deepcopy
+
+    server.server_evaluate = True
+    server.evaluate_context = 256
+    server.n_ctx = 256
+    server.n_slots = 1
+    server.n_batch = 32
+    server.n_ubatch = 32
+    server.kv_unified = True
+    server.swa_full = True
+    server.jinja = True
+    server.chat_template = "chatml"
+    server.start()
+    payload = {
+        "context": "Paris is in France. The service was good.",
+        "questions": [
+            {"id": "fact", "type": "boolean", "question": "Is Paris in France? Answer yes or no.", "choices": ["yes", "no"]},
+            {"id": "city", "type": "choice", "question": "Name a city.", "choices": ["New", "New York City", "Paris"]},
+            {"id": "rating", "type": "scale", "question": "Rate service: L=bad, H=good.", "measurement": "interval",
+             "scale": [{"value": 1, "label": "H"}, {"value": 0, "label": "L"}]},
+        ],
+    }
+    response = server.make_request("POST", "/evaluate", payload)
+    assert response.status_code == 200, response.body
+    assert response.body["execution"] == {
+        "strategy": "fresh", "shared_prefix_tokens": 0,
+        "n_batch": 32, "n_ubatch": 32, "fallback_reason": "fresh_only",
+    }
+    assert [r["id"] for r in response.body["results"]] == [q["id"] for q in payload["questions"]]
+    for question, actual in zip(payload["questions"], response.body["results"]):
+        messages = [{"role": "user", "content": payload["context"] + "\n\n" + question["question"]}]
+        if question["type"] == "scale":
+            expected = server.make_request("POST", "/scale", {
+                "messages": messages, "measurement": question["measurement"], "scale": question["scale"],
+            })
+            assert expected.status_code == 200
+            assert [p["value"] for p in actual["result"]["points"]] == [0, 1]
+            for a, e in zip(actual["result"]["points"], expected.body["points"]):
+                assert a["token_ids"] == e["token_ids"]
+                assert a["sum_log_probability"] == pytest.approx(e["sum_log_probability"], abs=2e-4)
+                assert a["relative_weight"] == pytest.approx(e["relative_weight"], abs=2e-4)
+            assert actual["result"]["expected_value"] == pytest.approx(expected.body["expected_value"], abs=2e-4)
+        else:
+            expected = server.make_request("POST", "/decision", {"messages": messages, "choices": question["choices"]})
+            assert expected.status_code == 200
+            for a, e in zip(actual["result"]["choices"], expected.body["choices"]):
+                assert set(a) == set(e)
+                if "token_ids" in a:
+                    assert a["token_ids"] == e["token_ids"]
+                    assert a["sum_log_probability"] == pytest.approx(e["sum_log_probability"], abs=2e-4)
+                    assert a["mean_log_probability"] == pytest.approx(e["mean_log_probability"], abs=2e-4)
+                else:
+                    assert a["token_id"] == e["token_id"]
+                    assert a["logit"] == pytest.approx(e["logit"], abs=2e-4)
+                    assert a["probability"] == pytest.approx(e["probability"], abs=2e-4)
+
+    reversed_payload = deepcopy(payload)
+    reversed_payload["questions"].reverse()
+    for q in reversed_payload["questions"]:
+        if "choices" in q:
+            q["choices"].reverse()
+    reversed_response = server.make_request("POST", "/v1/evaluate", reversed_payload)
+    assert reversed_response.status_code == 200
+    for actual, expected in zip(reversed(reversed_response.body["results"]), response.body["results"]):
+        if "choices" in actual["result"]:
+            actual["result"]["choices"].reverse()
+        assert actual == expected
+
+    invalid = []
+    value = deepcopy(payload)
+    value["questions"][1]["id"] = "fact"
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["questions"][0]["choices"] = ["yes"]
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["questions"][2]["scale"][0]["value"] = 0
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["questions"][1]["choices"] = ["Paris", "Paris"]
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["questions"][0]["temperature"] = 0
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["questions"][-1]["question"] = " word" * 1000
+    invalid.append(value)
+    value = deepcopy(payload)
+    value["context"] = "x" * (1024 * 1024 + 1)
+    invalid.append(value)
+    for value in invalid:
+        rejected = server.make_request("POST", "/evaluate", value)
+        assert rejected.status_code == 400, rejected.body
+        assert "results" not in rejected.body
+
+    repeated = server.make_request("POST", "/evaluate", payload)
+    assert repeated.status_code == 200
+    assert repeated.body == response.body
+    chat = server.make_request("POST", "/completion", {"prompt": "Hello", "n_predict": 2})
+    assert chat.status_code == 200
+
+
+def test_evaluate_disabled_by_default():
+    server.start()
+    for path in ["/evaluate", "/v1/evaluate"]:
+        assert server.make_request("POST", path, {}).status_code == 404
+
+
 @pytest.mark.parametrize("choices", [["yes", "no"], ["yes", "yes indeed", "no thank you"]])
 @pytest.mark.parametrize("template,suffix", [
     ("chatml", ""),
