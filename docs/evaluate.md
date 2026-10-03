@@ -1,6 +1,6 @@
 # Evaluate: independent questions over one text
 
-Experimental implementation, fresh-only by default. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Windows CUDA validation of the fresh-only path on GPT-OSS 20B is recorded in the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md). The optional shared-prefix path has also passed [Windows CUDA validation](../experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md) in that configuration.
+Available in [v0.5.0](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0) as an experimental capability, fresh-only by default. Enable with `--evaluate`; routes are absent by default and are not registered in router mode. Set `--evaluate-context N` to bound each prepared prompt plus forced candidate prefix (default 4096 tokens). Windows CUDA validation of the fresh-only path on GPT-OSS 20B is recorded in the [validation baseline](../experiments/shared_context_v05/HTTP-VALIDATION.md). The optional shared-prefix path has also passed [Windows CUDA validation](../experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md) in that configuration.
 
 `POST /evaluate` (alias `/v1/evaluate`) accepts one context and 1..32 independent questions:
 
@@ -15,7 +15,7 @@ Experimental implementation, fresh-only by default. Enable with `--evaluate`; ro
 }
 ```
 
-The server prepares a separate user message containing exactly `context + "\n\n" + question` for every question. It uses the native assistant content-entry template, with one captured template time for the request. Questions do not see other questions or their answers. No answer is sampled, no labels are inserted into the prompt automatically, and no EOS or other terminator is appended to candidates.
+The server prepares a separate user message containing exactly `context + "\n\n" + question` for every question. It uses the native assistant content-entry template, with one captured template time for the request. Questions do not see other questions or their answers. This is request-scoped orchestration of the three scoring primitives; there is no prepare-once context handle retained for later HTTP requests. No answer is sampled, no labels are inserted into the prompt automatically, and no EOS or other terminator is appended to candidates.
 
 Boolean requires exactly two explicit labels, without an implicit truth mapping. Choice and Scale retain the validation and scoring rules in [decision](decision.md) and [scale](scale.md). Unknown fields are rejected. Optional top-level `model` has the existing direct-server handling. Raw prompts, conversation history, media, tools, streaming, and request-level inference/template settings are unsupported.
 

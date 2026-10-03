@@ -4,7 +4,7 @@ You need a GGUF model supported by your runtime, an NVIDIA GPU/driver compatible
 
 ## 1. Get the runtime
 
-Open [llama-modes Releases](https://github.com/loo5x/llama-modes/releases). When v0.4.0 is published, select its **Windows CUDA runtime ZIP**, verify its published checksum, and extract it with its DLLs intact. The intended package name is `llama-modes-win-cuda.zip`; this documentation does not assert that a public asset has already been uploaded. If no release asset is available, build this fork from source using [docs/build.md](build.md), or wait for the release. An ordinary upstream llama.cpp binary does not provide the added endpoints.
+Download [llama-modes v0.5.0](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0): `llama-modes-v0.5.0-win-cuda.zip` and its `.sha256` file. Verify the checksum and extract the ZIP with its DLLs intact. The package targets Windows x64 and CUDA architecture 120; see its README for driver and Microsoft Visual C++ runtime requirements. For source builds, use [docs/build.md](build.md). An ordinary upstream llama.cpp binary does not provide the added endpoints.
 
 The preserved Windows validation used RTX 5080 hardware; it does not establish compatibility with every NVIDIA GPU. Read the release's architecture/driver requirements before downloading. No validated Linux/macOS binary is promised here.
 
@@ -69,7 +69,7 @@ Open `http://127.0.0.1:5173`. For a built local demo, use `npm run demo` and ope
 
 ## 8. v0.5 multiple questions (optional)
 
-Use a llama-modes build containing the v0.5 `/evaluate` feature. Restart the server with the endpoint and optional sharing enabled:
+The v0.5.0 runtime includes the experimental `/evaluate` feature. Restart the server with the endpoint and optional sharing enabled:
 
 ```powershell
 .\llama-server.exe -m "C:\models\your-model.gguf" --host 127.0.0.1 --port 8080 -ngl 99 -c 4096 -np 1 -b 128 -ub 128 --jinja --no-prefill-assistant --evaluate --evaluate-context 4096 --evaluate-shared-prefix
@@ -92,7 +92,7 @@ $result | ConvertTo-Json -Depth 20
 
 The repeated text makes a longer shared context for this small example. Check `execution.strategy` and `execution.shared_prefix_tokens`. An eligible request reports `shared_aligned`; a short prefix or other ineligible case reports `fresh` with a reason. Remove `--evaluate-shared-prefix` to use fresh scoring for comparison. Removing `--evaluate` disables both endpoint routes.
 
-The validated shared configuration used GPT-OSS 20B MXFP4 on Windows CUDA with RTX 5080. Other models need their own checks, and evaluation requires memory in addition to the resident chat context. Read the [API and limits](evaluate.md) and [v0.5 preparation notes](../RELEASE_NOTES_v0.5.0.md). Public v0.5 packaging and a clean installation check are still pending.
+The validated shared configuration used GPT-OSS 20B MXFP4 on Windows CUDA with RTX 5080. Other models need their own checks, and evaluation requires memory in addition to the resident chat context. Read the [API and limits](evaluate.md), [v0.5.0 release notes](../RELEASE_NOTES_v0.5.0.md), and [final ZIP validation](../experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md#final-050-zip-validation). Reuse lasts for this request only, and each question remains independent. The demo does not expose this endpoint.
 
 ## Troubleshooting
 

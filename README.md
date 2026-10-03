@@ -1,12 +1,29 @@
 # llama-modes
 
-**Structured LLM inference modes for llama.cpp.**
+**Load one GGUF once: normal chat, direct structured scoring, and one context for many independent questions in v0.5.0.**
 
-LLM applications often need a judgment rather than generated prose. llama-modes scores supplied alternatives at a prepared model evaluation state and returns a structured result.
+LLM applications often need a judgment rather than generated prose. llama-modes scores supplied alternatives at a prepared model evaluation state and returns a structured result. Direct is a structured readout from that state, not shortened Chat, and does not universally replace reasoning.
 
-**[Quick start](docs/quickstart.md) | [Demo](demo/README.md) | [Cookbook](docs/cookbook.md) | [API: Decision](docs/decision.md) / [SCALE](docs/scale.md) | [Benchmark methodology](docs/benchmark-methodology.md) | [Releases](https://github.com/loo5x/llama-modes/releases)**
+**[Quick start](docs/quickstart.md) | [Demo](demo/README.md) | [Cookbook](docs/cookbook.md) | [API: Decision](docs/decision.md) / [SCALE](docs/scale.md) / [Evaluate](docs/evaluate.md) | [Benchmark methodology](docs/benchmark-methodology.md) | [Releases](https://github.com/loo5x/llama-modes/releases)**
 
-## Three modes
+## Shared-context multi-question evaluation
+
+v0.5.0 adds experimental `POST /evaluate`: submit one shared context and multiple independent Boolean, Choice, or Scale questions in one request. With optional sharing enabled, the eligible common prompt prefix is evaluated once, then reused while each question is prepared and scored independently. Questions never see one another's answers.
+
+```text
+shared context
+      |
+      +--> BOOLEAN
+      +--> CHOICE
+      +--> SCALE
+      +--> BOOLEAN
+```
+
+Enable the endpoint with `--evaluate`; add `--evaluate-shared-prefix` to reuse complete batches of the common tokenized prefix. Each question's remaining prompt and candidate prefixes still require evaluation. Fresh evaluation is the default and the fallback when sharing is ineligible. Reuse is confined to one request, not a persistent context session across requests. The optimization must preserve independent-evaluation semantics under the same runtime configuration.
+
+This is orchestration of the three scoring primitives below. [Run the v0.5 example](docs/quickstart.md#8-v05-multiple-questions-optional) or read the [API and limits](docs/evaluate.md).
+
+## Three structured scoring primitives
 
 | Mode | Give it | Get back |
 | --- | --- | --- |
@@ -67,7 +84,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. Explore Boolean, Choice, SCALE, and sequential **Interactive comparison** with chat. Presentation mode enlarges results and charts. A loopback-only proxy connects to your server at `127.0.0.1:8080`; no cloud services, telemetry, or accounts are used. [Demo setup and settings](demo/README.md).
+Open `http://127.0.0.1:5173`. Explore Boolean, Choice, SCALE, and sequential **Interactive comparison** with chat. The demo does not expose shared-context `/evaluate`; use the [API quickstart](docs/quickstart.md#8-v05-multiple-questions-optional) for that capability. Presentation mode enlarges results and charts. A loopback-only proxy connects to your server at `127.0.0.1:8080`; no cloud services, telemetry, or accounts are used. [Demo setup and settings](demo/README.md).
 
 ![Actual rendered demo with explicitly labeled fixture data; no live inference or measured latency](demo/screenshot-fixture.png)
 
@@ -75,34 +92,28 @@ Screenshot: illustrative fixture data, not a model result or benchmark.
 
 ## Download and install
 
-Use the [GitHub Releases page](https://github.com/loo5x/llama-modes/releases) for public runtime downloads. The intended v0.4.0 package is a **Windows CUDA runtime ZIP**; supply your own GGUF model. No release asset is asserted to exist until published. Check its GPU/driver requirements and checksum. GitHub Actions artifacts are not the long-term public download interface.
+Download the published [v0.5.0 release](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0): [llama-modes-v0.5.0-win-cuda.zip](https://github.com/loo5x/llama-modes/releases/download/v0.5.0/llama-modes-v0.5.0-win-cuda.zip) and its [SHA-256 checksum](https://github.com/loo5x/llama-modes/releases/download/v0.5.0/llama-modes-v0.5.0-win-cuda.zip.sha256). Supply your own GGUF model and keep the runtime DLLs together. The package targets Windows x64 and CUDA architecture 120; validation used RTX 5080. Check the packaged README for GPU/driver and runtime requirements.
 
-If no release package is available, see the [source build guide](docs/build.md) for this fork. Windows CUDA validation is documented; validated binaries for other platforms are not promised. The [Windows quick start](docs/quickstart.md) covers extraction, model discovery, all three modes, and the demo.
+For other builds, see the [source build guide](docs/build.md) for this fork. Validated binaries for other platforms are not promised. The [Windows quick start](docs/quickstart.md) covers extraction, model discovery, the three scoring primitives, shared-context evaluation, and the demo.
 
 ## Interpret results carefully
 
-**Relative candidate/scale weights are not calibrated confidence.** Direct evaluation is not equivalent to autoregressive reasoning. Labels, tokenization, prompt wording, and templates affect scores. SCALE is discrete, representation-sensitive, and can reject strict token-prefix collisions such as `1` versus `10` for some tokenizers. There is no claim of universally better accuracy or speed than chat.
+**Relative candidate/scale weights are not calibrated confidence.** Direct evaluation is not equivalent to autoregressive reasoning. Labels, tokenization, prompt wording, templates, and readout boundaries affect scores. SCALE is discrete, representation-sensitive, and can reject strict token-prefix collisions such as `1` versus `10` for some tokenizers. There is no claim of universally better accuracy or speed than chat.
 
 - [Cookbook: 15 practical recipes](docs/cookbook.md)
 - [Design, correctness history, and limitations](docs/design-and-limitations.md)
 - [Runnable Python, PowerShell, and curl examples](examples/README-modes.md)
 - [Reproducible benchmark harness](benchmarks/README.md) and [methodology](docs/benchmark-methodology.md)
-- [v0.4.0 release notes](RELEASE_NOTES_v0.4.0.md)
+- [v0.5.0 release notes](RELEASE_NOTES_v0.5.0.md) and [historical v0.4.0 notes](RELEASE_NOTES_v0.4.0.md)
 
 The benchmark preserves raw results and accepts external datasets. This landing page publishes no performance numbers from an unrun benchmark.
 
-## Roadmap
+## Current release - v0.5.0
 
-**v0.5 - Shared-context multi-question evaluation**
-
-The experimental `/evaluate` endpoint combines independent Boolean, Choice, and Scale questions about one text. Enable it with `--evaluate`; add `--evaluate-shared-prefix` to reuse eligible batch-aligned prompt prefixes. Fresh evaluation remains the default and the fallback when sharing is ineligible.
-
-Shared-mode scores and lifecycle behavior were validated on GPT-OSS 20B MXFP4, Windows CUDA, and RTX 5080. See [v0.5 preparation notes](RELEASE_NOTES_v0.5.0.md), the [API](docs/evaluate.md), and [measured results and limits](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md). These documents do not assert that a public v0.5 release is available.
-
-[Roadmap →](docs/roadmap.md)
+[v0.5.0 is released](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0), with experimental shared-context evaluation. Shared-mode scores and lifecycle behavior were validated on GPT-OSS 20B MXFP4, Windows CUDA, and RTX 5080. See the [release notes](RELEASE_NOTES_v0.5.0.md), [API](docs/evaluate.md), [measured results and limits](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md), and [final package checks](experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md#final-050-zip-validation).
 
 ## Based on llama.cpp
 
-llama-modes is a fork/extension of **[ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)**. It retains its model, runtime, and backend capabilities while adding structured evaluation modes. The upstream source, [MIT license](LICENSE), [third-party notices](licenses/), and source history are preserved. See [upstream attribution and release preparation](docs/upstream.md) and [contributor guidelines](CONTRIBUTING.md).
+llama-modes is a fork/extension of **[ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp)**. It retains its model, runtime, and backend capabilities while adding structured evaluation modes. The upstream source, [MIT license](LICENSE), [third-party notices](licenses/), and source history are preserved. See [upstream attribution and release provenance](docs/upstream.md) and [contributor guidelines](CONTRIBUTING.md).
 
 Upstream acknowledgements are retained: [cpp-httplib](https://github.com/yhirose/cpp-httplib) (MIT), [stb](https://github.com/nothings/stb) (public domain), [nlohmann/json](https://github.com/nlohmann/json) (MIT), [miniaudio](https://github.com/mackron/miniaudio) (public domain), and [subprocess.h](https://github.com/sheredom/subprocess.h) (public domain).

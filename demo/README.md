@@ -2,6 +2,8 @@
 
 A local React + TypeScript workbench for BOOLEAN, CHOICE, SCALE, and **Interactive comparison**. All live inference comes from llama-server. The demo does not contain an inference engine.
 
+The demo does not currently expose v0.5.0 shared-context `/evaluate`; its proxy permits only the endpoints listed below. Use the [API quickstart](../docs/quickstart.md#8-v05-multiple-questions-optional) for multiple independent questions over one context.
+
 ## Launch
 
 Start your llama-modes server with a GGUF on `http://127.0.0.1:8080`. Use Node.js 22.12+ (local checks used Node 24), then:

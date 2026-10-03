@@ -1,10 +1,12 @@
-# llama-modes v0.5.0 - preparation notes
+# llama-modes v0.5.0 - release notes
 
 Multiple independent evaluations over a shared context.
 
-These notes describe the validated experimental feature. The Windows 0.5.0 ZIP passed checksum, extraction, file identity, numerical, chat, and clean shutdown checks on the existing RTX 5080 machine. Its runtime commit is `a02fe9f1ed3214ddaceac3630431fd592371abd3`, built in Actions run `37126739509`. Tagging and public release remain pending. The broader earlier feature validation used runtime commit `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`.
+These notes describe the validated experimental feature. The Windows 0.5.0 ZIP passed checksum, extraction, file identity, numerical, chat, and clean shutdown checks on the existing RTX 5080 machine. Its runtime commit is `a02fe9f1ed3214ddaceac3630431fd592371abd3`, built in Actions run `37126739509`. [v0.5.0 is published as a normal release](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0); `/evaluate` remains experimental. The broader earlier feature validation used runtime commit `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`.
 
-## Windows package preparation
+## Published Windows package
+
+Download `llama-modes-v0.5.0-win-cuda.zip` and its `.sha256` file from the release page. The package targets Windows x64 and CUDA architecture 120; validation used RTX 5080.
 
 The Windows workflow accepts `release=true` to build version `0.5.0`; ordinary builds use `0.5.0-dev`. This does not tag or publish a release. The package includes runtime instructions, licenses/notices, and a manifest recording the source commit, Actions run, and file hashes. A separate SHA-256 file accompanies the versioned ZIP. The final archive passed those checks on 2026-10-03; see the package validation section in the clean-folder report.
 
@@ -26,4 +28,4 @@ Preliminary repeated-request timings on the three-question fixture were 2.167 ve
 
 Direct-server only. Unsupported configurations include recurrent/hybrid models, multimodal input, adapters, control vectors, and speculative decoding. One evaluation is admitted at a time and can delay queued chat. The main context remains resident while evaluation allocates temporary memory. Inputs are neither truncated nor shifted, and execution failures do not silently change batch size or return partial success.
 
-Other deployed model/backend configurations, injected allocation/decode failures, GPU-specific memory accounting, and long-duration workloads remain outside this validation. No public release is asserted by these preparation notes.
+Other deployed model/backend configurations, injected allocation/decode failures, GPU-specific memory accounting, and long-duration workloads remain outside this validation. The published ZIP retains the documentation from its build commit; these source notes record the subsequent validation and publication status.

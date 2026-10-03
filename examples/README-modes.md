@@ -2,6 +2,8 @@
 
 Start a llama-modes server with your GGUF first. All examples default to `http://127.0.0.1:8080`, print actual response JSON, and include no model output fixtures. Requests live in [requests/](requests/) so you can edit the question, labels, and scale mapping directly.
 
+These scripts exercise the three individual scoring primitives and chat comparison. For v0.5.0 shared-context multi-question evaluation, use the complete [PowerShell quickstart](../docs/quickstart.md#8-v05-multiple-questions-optional) and [`/evaluate` contract](../docs/evaluate.md). `/evaluate` requires `--evaluate` on a direct server; it is not a router endpoint.
+
 From the repository root:
 
 ```sh

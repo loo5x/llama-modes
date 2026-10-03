@@ -12,18 +12,10 @@ The [MIT license](../LICENSE), attribution, third-party notices under [licenses/
 - [Contributing guidelines](../CONTRIBUTING.md)
 - [Upstream project](https://github.com/ggml-org/llama.cpp)
 
-## Public landing page and release migration (manual)
+## Published release provenance
 
-Recommended description: **Structured LLM inference modes for llama.cpp.**
+[llama-modes v0.5.0](https://github.com/loo5x/llama-modes/releases/tag/v0.5.0) is a normal release with experimental shared-context evaluation. Tag `v0.5.0` points to the tested runtime commit `a02fe9f1ed3214ddaceac3630431fd592371abd3`, built in Actions run `37126739509`. The public Windows CUDA ZIP and checksum are attached to that release; users supply their own GGUF.
 
-Suggested topics: `llama-cpp`, `llm`, `local-llm`, `structured-inference`, `gguf`, `inference`, `classification`, `cuda`.
+Later documentation and validation records do not change the tagged binaries. See the [v0.5.0 notes](../RELEASE_NOTES_v0.5.0.md), [package validation](../experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md#final-050-zip-validation), and [historical v0.4.0 notes](../RELEASE_NOTES_v0.4.0.md). The package preserves the license and third-party notices. Its validated configuration does not establish support for every upstream model, backend, or GPU.
 
-1. Review and validate the public-release branch. The owner handles any commit/push after review; this milestone does neither.
-2. Create a public `main` branch from the reviewed release state. Keep `master` and upstream history if useful for tracking the base.
-3. In GitHub repository settings, change the default branch to `main`. Review branch protections and Actions branch filters; do not rename or delete history merely to change the landing page.
-4. Build and test the intended Windows CUDA runtime package from the exact release commit. Record the commit, CUDA/GPU compatibility, runtime dependencies, ZIP contents, and SHA-256 checksum. Include license and third-party notices with redistributed binaries.
-5. Create the `v0.4.0` tag and GitHub Release manually when ready. Use the prepared [release notes](../RELEASE_NOTES_v0.4.0.md), after confirming every validation claim.
-6. Attach the actual Windows CUDA runtime ZIP and checksum to the Release. Users supply their own GGUF. Actions artifacts are build outputs, not the durable public download interface.
-7. Check the release page and download from a signed-out browser, then set the description/topics above. Add exact asset links only after the assets exist.
-
-No repository settings, releases, tags, or remote branches are changed by this preparation.
+GitHub displays the README from the repository's default branch. Documentation changes on another branch reach that landing page only after the owner incorporates them into the default branch. Updating these files does not change repository settings, branches, tags, or release assets.

@@ -8,6 +8,12 @@ Normal chat can generate reasoning tokens before its eventual answer. Direct eva
 
 Zero generated tokens does not mean zero model work. Prompt prefill, forced candidate-prefix evaluations, and correctness-first re-prefills still cost compute and memory. Multi-token scoring can be expensive with long prompts or many labels. No universal speedup is promised.
 
+## Shared-context evaluation in v0.5.0
+
+`/evaluate` orchestrates independent Boolean, Choice, and Scale questions in one request. With `--evaluate-shared-prefix`, an eligible complete-batch common prefix is prepared once and reused; each question suffix and candidate branch is still evaluated independently. It must preserve fresh independent-evaluation semantics at the same batch/microbatch settings. The temporary shared state ends with the request. This is not a persistent context session or a chain in which later questions receive earlier answers.
+
+Fresh scoring remains the default and the fallback for ineligible sharing. The resident chat context remains allocated, so evaluation needs additional memory; one admitted evaluation can delay queued chat. See [API limits](evaluate.md) and [shared validation scope](../experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md). Direct remains a structured readout, not shortened Chat or a universal replacement for reasoning.
+
 ## Scores depend on representation
 
 - Label wording and whitespace affect likelihoods. Tokenization of independently supplied labels can differ from concatenated text tokenization.

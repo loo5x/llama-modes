@@ -4,6 +4,8 @@ These recipes target `http://127.0.0.1:8080` with a loaded GGUF and a llama-mode
 
 **All representative responses below are illustrative schema examples, not measured results. Token IDs and numbers are invented only to explain the format, explicitly not performance evidence.** Excerpts are labeled; actual responses contain every requested row and the complete fields described in [Decision](decision.md) and [SCALE](scale.md). Relative weights are never calibrated confidence. Unless stated otherwise, direct requests generate zero answer tokens by design.
 
+For several independent questions about one text, v0.5.0 adds [`/evaluate`](evaluate.md), which orchestrates these same three scoring primitives. See the [shared-context quickstart](quickstart.md#8-v05-multiple-questions-optional) for a complete request and opt-in prefix reuse. The recipes below use the individual scoring endpoints.
+
 ## 1. Boolean fact judgment
 
 ### Goal
@@ -630,7 +632,7 @@ Evaluate a list of inputs with a stable task definition.
 
 ### When to use it
 
-You need repeatable per-input records. The endpoint accepts one prompt/conversation per request, not a batch array.
+You need repeatable per-input records. The `/decision` endpoint accepts one prompt/conversation per request, not a batch array. For multiple questions about a single context, use `/evaluate`; that is distinct from batching unrelated inputs.
 
 ### Complete request
 
