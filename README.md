@@ -23,6 +23,25 @@ Enable the endpoint with `--evaluate`; add `--evaluate-shared-prefix` to reuse c
 
 This is orchestration of the three scoring primitives below. [Run the v0.5 example](docs/quickstart.md#8-v05-multiple-questions-optional) or read the [API and limits](docs/evaluate.md).
 
+## Correctness & Validation
+
+Shared-context scoring is checked against fresh independent evaluation on full score vectors over the supplied candidates, not only selected answers. The [automated HTTP regression tests](tools/server/tests/unit/test_chat_completion.py) compare `/evaluate` with independent `/decision` and `/scale` calls, including candidate scores, weights and token IDs, and check ordering/repeat invariance. See the [evaluation contract and limits](docs/evaluate.md).
+
+The [local shared-prefix validation](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md#scores-and-preliminary-timings) separately records fresh/shared HTTP comparison and independent native oracle checks on GPT-OSS 20B MXFP4, Windows CUDA, RTX 5080, build `427d6bd`. Comparisons use identical settings within each batch configuration.
+
+| Kind | Check | Value |
+| --- | --- | --- |
+| Regression threshold | HTTP parity assertions using `pytest.approx` | `abs=2e-4` |
+| Observed difference | Shared versus fresh HTTP results, batch/microbatch 128/128 and 512/512 | `0` |
+| Observed maximum oracle difference | Batch/microbatch 128/128 | `5.551115123125783e-17` |
+| Observed maximum oracle difference | Batch/microbatch 512/512 | `0` |
+
+The `abs=2e-4` value is a conservative regression threshold used by the HTTP tests, not the expected numerical error. Observed differences on the validated Windows CUDA configuration were much smaller. The batch-128 oracle difference was in derived candidate-relative weights; sequence SUM and MEAN scores matched exactly. Raw Boolean logits were compared between HTTP modes, not against the oracle's token-log-probability output. HTTP does not expose per-token score vectors. These observations do not establish equality across batch sizes or other environments.
+
+**Concurrency and lifecycle coverage:** automated tests cover waiting for active chat to drain, admission rejection, pending cancellation while another chat streams, recovery, and connected-client shutdown (the signal test is skipped on Windows). The [local shared-mode report](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md#lifecycle) additionally records active cancellation, queued-chat recovery, six shutdown/restart scenarios, three sleep/wake cycles and 100 evaluation/chat pairs. The [fresh-only baseline](experiments/shared_context_v05/HTTP-VALIDATION.md) links the earlier numerical and lifecycle evidence, including failures and fixes.
+
+Automated regression tests and local Windows CUDA evidence are distinct. Replaying the RTX 5080 runs requires the matching runtime, model and saved inputs described in the [replay prerequisites](experiments/shared_context_v05/HTTP-VALIDATION.md#saved-data-and-local-prerequisites); cloning and running one command does not reproduce that validation. Full logs and binary snapshots remain local, with selected JSON records and hashes archived. Other deployed model/backend configurations and allocation/decode failure injection remain unvalidated.
+
 ## Three structured scoring primitives
 
 | Mode | Give it | Get back |

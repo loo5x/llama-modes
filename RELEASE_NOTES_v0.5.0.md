@@ -20,6 +20,8 @@ The response reports the execution strategy, reused token count, batch settings,
 
 ## Validated configuration
 
+The [Correctness & Validation overview](README.md#correctness--validation) separates regression thresholds from observed differences and links the automated tests, local numerical evidence and lifecycle reports.
+
 GPT-OSS 20B MXFP4, Windows CUDA, RTX 5080, context 4096, with batch/microbatch 128 and 512 for numerical comparisons. Shared and fresh response results matched exactly within each configuration. The independent native oracle comparisons passed. Lifecycle checks at batch 128 covered cancellation, admission, queued chat, shutdown/restart, sleep/wake, selected request limits, and 100 evaluation/chat pairs.
 
 Preliminary repeated-request timings on the three-question fixture were 2.167 versus 0.312 seconds at batch 128, and 1.134 versus 0.230 seconds at batch 512, fresh versus shared. Only two calls per mode/configuration were timed; this is not a general performance benchmark or a guarantee. [Full evidence and limitations](experiments/shared_context_v05/HTTP-SHARED-VALIDATION.md).
