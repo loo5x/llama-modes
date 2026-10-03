@@ -2,13 +2,13 @@
 
 Multiple independent evaluations over a shared context.
 
-These notes describe the validated experimental feature. A clean-folder runtime check passed; extraction of the final versioned ZIP, tagging, and public release remain pending. The tested runtime commit is `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`, built in Actions run `37066508221`.
+These notes describe the validated experimental feature. The Windows 0.5.0 ZIP passed checksum, extraction, file identity, numerical, chat, and clean shutdown checks on the existing RTX 5080 machine. Its runtime commit is `a02fe9f1ed3214ddaceac3630431fd592371abd3`, built in Actions run `37126739509`. Tagging and public release remain pending. The broader earlier feature validation used runtime commit `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`.
 
 ## Windows package preparation
 
-The Windows workflow accepts `release=true` to build version `0.5.0`; ordinary builds use `0.5.0-dev`. This does not tag or publish a release. The package includes runtime instructions, licenses/notices, and a manifest recording the source commit, Actions run, and file hashes. A separate SHA-256 file accompanies the versioned ZIP. The final archive still requires checksum, extraction, version, and runtime validation after the build.
+The Windows workflow accepts `release=true` to build version `0.5.0`; ordinary builds use `0.5.0-dev`. This does not tag or publish a release. The package includes runtime instructions, licenses/notices, and a manifest recording the source commit, Actions run, and file hashes. A separate SHA-256 file accompanies the versioned ZIP. The final archive passed those checks on 2026-10-03; see the package validation section in the clean-folder report.
 
-The [clean-folder check](experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md) used the earlier binaries on the existing Windows installation, with a minimal environment and a path containing spaces. It confirmed independent loading of packaged DLLs, evaluation/chat results, and clean shutdown. It did not test the final ZIP or a fresh Windows installation.
+The [clean-folder report](experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md) records both the earlier reconstruction and the final ZIP extraction. The final check used a minimal environment and a path containing spaces. It confirmed independent loading of packaged DLLs, evaluation/chat results, and clean shutdown. This was not a fresh Windows installation.
 
 ## Added behavior
 
@@ -26,4 +26,4 @@ Preliminary repeated-request timings on the three-question fixture were 2.167 ve
 
 Direct-server only. Unsupported configurations include recurrent/hybrid models, multimodal input, adapters, control vectors, and speculative decoding. One evaluation is admitted at a time and can delay queued chat. The main context remains resident while evaluation allocates temporary memory. Inputs are neither truncated nor shifted, and execution failures do not silently change batch size or return partial success.
 
-Other deployed model/backend configurations, injected allocation/decode failures, GPU-specific memory accounting, and long-duration workloads remain outside this validation. No public artifact or final release version is asserted by these preparation notes.
+Other deployed model/backend configurations, injected allocation/decode failures, GPU-specific memory accounting, and long-duration workloads remain outside this validation. No public release is asserted by these preparation notes.

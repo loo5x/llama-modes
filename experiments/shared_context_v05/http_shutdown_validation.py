@@ -49,6 +49,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--shared-prefix", action="store_true")
+    parser.add_argument("--reference", type=Path)
     parser.add_argument("--host", type=Path)
     parser.add_argument("--runtime", type=Path, default=Path(r"C:\AI\llama-modes-v05"))
     args = parser.parse_args()
@@ -73,6 +74,16 @@ def main():
     if args.shared_prefix:
         requests["small"]["questions"].append({**requests["small"]["questions"][0], "id": "fact2"})
         expected["evaluation"]["results"].append({**expected["evaluation"]["results"][0], "id": "fact2"})
+    if args.reference:
+        reference = args.reference.resolve()
+        saved = json.loads((reference / "identity.json").read_text())
+        assert saved["manifest"] == manifest and saved["model"] == identity["model"]
+        assert json.loads((reference / "summary.json").read_text())["passed"]
+        requests["small"] = json.loads((reference / "request.json").read_text())
+        expected["evaluation"] = json.loads((reference / "response.json").read_text())
+        execution = expected["evaluation"]["execution"]
+        assert execution["n_batch"] == execution["n_ubatch"] == 128
+        assert execution["strategy"] == ("shared_aligned" if args.shared_prefix else "fresh")
     write(output / "requests.json", requests)
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
@@ -123,6 +134,7 @@ def main():
                     assert time.monotonic() < deadline, "Startup timeout"
                     time.sleep(0.5)
                 status, evaluation_result = request("/evaluate", requests["small"])
+                write(directory / "evaluation.json", evaluation_result)
                 assert status == 200 and evaluation_result["results"] == expected["evaluation"]["results"]
                 if args.shared_prefix:
                     assert evaluation_result["execution"]["strategy"] == "shared_aligned"

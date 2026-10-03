@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 import urllib.request
+import zipfile
 
 from http_fresh_validation import digest, write
 
@@ -49,6 +50,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--reference", type=Path, required=True)
+    parser.add_argument("--archive", type=Path)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     output = args.output.resolve()
@@ -59,23 +61,55 @@ def main():
     subprocess.run(["git", "diff", "--exit-code", manifest["commit"], "HEAD", "--", "common", "src", "ggml", "include", "tools/server", "vendor", "cmake", "CMakeLists.txt"], cwd=root, check=True, stdout=subprocess.PIPE)
     runtime = output / "clean runtime"
     runtime.mkdir()
+    archive_check = None
+    if args.archive:
+        archive = args.archive.resolve()
+        checksum, filename = Path(str(archive) + ".sha256").read_text(encoding="ascii").strip().split()
+        assert filename == archive.name and digest(archive) == checksum.lower()
+        with zipfile.ZipFile(archive) as bundle:
+            names = set()
+            for item in bundle.infolist():
+                name = item.filename.replace("\\", "/")
+                target = (runtime / name).resolve()
+                assert target.is_relative_to(runtime) and ":" not in name, name
+                if item.is_dir():
+                    continue
+                assert name not in names, name
+                names.add(name)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                with bundle.open(item) as src, target.open("wb") as dst:
+                    shutil.copyfileobj(src, dst)
+        assert json.loads((runtime / "build-manifest.json").read_text(encoding="utf-8-sig")) == manifest
+        assert names == {item["name"] for item in manifest["package_files"]} | {"build-manifest.json"}
+        for item in manifest["package_files"]:
+            path = runtime / item["name"]
+            assert path.stat().st_size == item["bytes"] and digest(path) == item["sha256"], item["name"]
+            installed = source / item["name"]
+            assert installed.stat().st_size == item["bytes"] and digest(installed) == item["sha256"], item["name"]
+        archive_check = {"path": str(archive), "sha256": checksum.lower(), "files": len(names)}
+        write(output / "archive.json", archive_check)
     for item in manifest["files"]:
         assert Path(item["name"]).name == item["name"]
         assert digest(source / item["name"]) == item["sha256"]
-        shutil.copy2(source / item["name"], runtime / item["name"])
+        if not args.archive:
+            shutil.copy2(source / item["name"], runtime / item["name"])
         assert digest(runtime / item["name"]) == item["sha256"]
-    shutil.copy2(source / "build-manifest.json", runtime / "build-manifest.json")
-    assert len(list(runtime.iterdir())) == len(manifest["files"]) + 1
+    if not args.archive:
+        shutil.copy2(source / "build-manifest.json", runtime / "build-manifest.json")
+        assert len(list(runtime.iterdir())) == len(manifest["files"]) + 1
     assert not (runtime / "test-save-load-state.exe").exists()
     work = output / "empty working directory"
     work.mkdir()
-    env = {name: os.environ[name] for name in ("SystemRoot", "WINDIR", "TEMP", "TMP", "COMSPEC", "PATHEXT") if name in os.environ}
-    windows = Path(os.environ["SystemRoot"])
+    inherited = {name.upper(): value for name, value in os.environ.items()}
+    env = {name: inherited[name] for name in ("SYSTEMROOT", "WINDIR", "TEMP", "TMP", "COMSPEC", "PATHEXT") if name in inherited}
+    windows = Path(env["SYSTEMROOT"])
     env["PATH"] = str(windows / "System32") + ";" + str(windows)
     write(output / "environment.json", env)
     version = subprocess.run([str(runtime / "llama-server.exe"), "--version"], cwd=work, env=env, capture_output=True, timeout=30, creationflags=subprocess.CREATE_NO_WINDOW)
     assert version.returncode == 0
     (output / "version.txt").write_bytes(version.stdout + version.stderr)
+    if args.archive:
+        assert f"version: {manifest['version']} (".encode() in version.stdout + version.stderr
     prior = args.reference.resolve()
     identity = json.loads((prior / "identity.json").read_text())
     assert manifest == identity["manifest"]
@@ -142,7 +176,7 @@ def main():
         probe.settimeout(1)
         assert probe.connect_ex(("127.0.0.1", port)) != 0
     write(output / "summary.json", {"passed": True, "runtime_commit": manifest["commit"], "runtime_files": len(manifest["files"]), "shutdown": stopped,
-        "scope": "Manifest files copied to a fresh folder on the existing Windows machine; original v0.5 ZIP not available"})
+        "archive": archive_check, "scope": "Original ZIP extracted on the existing Windows machine" if args.archive else "Manifest files copied to a fresh folder on the existing Windows machine"})
 
 
 if __name__ == "__main__":
