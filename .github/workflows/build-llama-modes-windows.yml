@@ -191,9 +191,10 @@ jobs:
           }
           $version = $parts -join "."
           if ($env:PACKAGE_RELEASE -ne "true") { $version += "-dev" }
-          $versionProcess = Start-Process -FilePath (Join-Path $src "llama-server.exe") -ArgumentList "--version" -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput "version-out.txt" -RedirectStandardError "version-err.txt"
-          if ($versionProcess.ExitCode -ne 0) { throw "Version check failed" }
+          $versionProcess = Start-Process -FilePath (Join-Path $dst "llama-server.exe") -ArgumentList "--version" -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput "version-out.txt" -RedirectStandardError "version-err.txt"
           $versionText = (Get-Content "version-out.txt", "version-err.txt") -join "`n"
+          Write-Host $versionText
+          if ($versionProcess.ExitCode -ne 0) { throw "Version check failed: exit code $($versionProcess.ExitCode)" }
           if ($versionText -notmatch ("version: " + [regex]::Escape($version) + " \(")) { throw "Unexpected binary version: $versionText" }
 
           Copy-Item -LiteralPath "LICENSE", "RELEASE_NOTES_v0.5.0.md" -Destination $dst
