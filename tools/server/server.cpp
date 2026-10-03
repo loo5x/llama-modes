@@ -13,27 +13,76 @@
 #include "log.h"
 
 #include <atomic>
+#include <chrono>
 #include <clocale>
+#include <cstdlib>
 #include <exception>
 #include <signal.h>
 #include <thread> // for std::thread::hardware_concurrency
 
 #if defined(_WIN32)
 #include <windows.h>
+#elif defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+#include <unistd.h>
 #endif
 
 static std::function<void(int)> shutdown_handler;
 static std::atomic_flag is_terminating = ATOMIC_FLAG_INIT;
 
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+static_assert(ATOMIC_INT_LOCK_FREE == 2, "Signal handling requires lock-free atomics");
+static std::atomic<int> pending_signal{0};
+
+struct server_signal_monitor {
+    std::atomic<bool> done{false};
+    std::thread thread;
+
+    explicit server_signal_monitor(bool enabled) {
+        if (enabled) {
+            pending_signal.store(0);
+            is_terminating.clear();
+            thread = std::thread([this] {
+                while (!done.load()) {
+                    const int signal = pending_signal.load();
+                    if (signal != 0) {
+                        shutdown_handler(signal);
+                        return;
+                    }
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
+            });
+        }
+    }
+
+    ~server_signal_monitor() {
+        done.store(true);
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
+};
+#endif
+
 static inline void signal_handler(int signal) {
     if (is_terminating.test_and_set()) {
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+        const char message[] = "Received second interrupt, terminating immediately.\n";
+        (void) write(STDERR_FILENO, message, sizeof(message) - 1);
+        std::_Exit(1);
+#else
         // in case it hangs, we can force terminate the server by hitting Ctrl+C twice
         // this is for better developer experience, we can remove when the server is stable enough
         fprintf(stderr, "Received second interrupt, terminating immediately.\n");
         exit(1);
+#endif
     }
 
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+    // Run shutdown outside the signal handler; it acquires queue locks.
+    pending_signal.store(signal);
+#else
     shutdown_handler(signal);
+#endif
 }
 
 // satisfies -Wmissing-declarations (used by llama command)
@@ -490,7 +539,6 @@ int llama_server(common_params & params, int argc, char ** argv) {
         }
 
         routes.update_meta(ctx_server);
-        ctx_http.is_ready.store(true);
 
         SRV_INF("%s", "model loaded\n");
 
@@ -500,6 +548,10 @@ int llama_server(common_params & params, int argc, char ** argv) {
             ctx_server.terminate();
         };
     }
+
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
+    server_signal_monitor signal_monitor(!is_run_by_cli);
+#endif
 
     // register signal handler if not running by CLI
     if (!is_run_by_cli) {
@@ -516,6 +568,10 @@ int llama_server(common_params & params, int argc, char ** argv) {
         };
         SetConsoleCtrlHandler(reinterpret_cast<PHANDLER_ROUTINE>(console_ctrl_handler), true);
 #endif
+    }
+
+    if (!is_router_server) {
+        ctx_http.is_ready.store(true);
     }
 
     bool uses_default_port = false;

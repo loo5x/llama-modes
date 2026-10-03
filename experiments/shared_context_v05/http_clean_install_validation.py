@@ -15,6 +15,8 @@ from http_fresh_validation import digest, write
 
 
 def modules(pid):
+    if sys.platform != "win32":
+        raise RuntimeError("Module inspection requires Windows")
     kernel = ctypes.WinDLL("kernel32", use_last_error=True)
     psapi = ctypes.WinDLL("psapi", use_last_error=True)
     kernel.OpenProcess.restype = ctypes.c_void_p
@@ -42,6 +44,8 @@ def modules(pid):
 
 
 def main():
+    if sys.platform != "win32":
+        raise RuntimeError("Clean-folder runtime validation requires Windows")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--reference", type=Path, required=True)

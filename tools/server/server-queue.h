@@ -15,7 +15,7 @@
 struct server_queue {
 private:
     int id = 0;
-    bool running  = false;
+    bool running  = true; // preserve stop requests received before start_loop()
     bool sleeping = false;
     bool req_stop_sleeping = false;
     int64_t time_last_task = 0;

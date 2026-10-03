@@ -47,12 +47,25 @@ jobs:
           -k 'evaluate or decision_messages_match_raw'
           --junitxml=evaluate-results.xml -v
 
+      - name: Repeat shutdown tests
+        working-directory: tools/server/tests
+        env:
+          LLAMA_SERVER_BIN_PATH: ${{ github.workspace }}/build/bin/llama-server
+        run: |
+          for attempt in $(seq 1 10); do
+            python -m pytest unit/test_chat_completion.py \
+              -k 'evaluate_shutdown_with_connected_clients' \
+              --junitxml="evaluate-shutdown-$attempt.xml" -v
+          done
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v6
         with:
           name: evaluate-cpu-test-results
-          path: tools/server/tests/evaluate-results.xml
+          path: |
+            tools/server/tests/evaluate-results.xml
+            tools/server/tests/evaluate-shutdown-*.xml
           if-no-files-found: warn
 
   build:

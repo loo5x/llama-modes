@@ -258,8 +258,9 @@ def test_evaluate_pending_disconnect_during_stream():
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows Ctrl+C requires a console; covered by the Windows shutdown runner")
-@pytest.mark.parametrize("pending_evaluate", [False, True])
-def test_evaluate_shutdown_with_connected_clients(pending_evaluate):
+@pytest.mark.parametrize("workload", ["idle", "stream", "pending_evaluate"])
+@pytest.mark.parametrize("stop_signal", ["SIGINT", "SIGTERM"])
+def test_evaluate_shutdown_with_connected_clients(workload, stop_signal):
     import signal
     import socket
 
@@ -276,6 +277,10 @@ def test_evaluate_shutdown_with_connected_clients(pending_evaluate):
     server.start()
     pending = None
     try:
+        if workload == "idle":
+            server.process.send_signal(getattr(signal, stop_signal))
+            assert server.process.wait(timeout=10) == 0
+            return
         with requests.post(server.make_url("/completion"), json={
             "prompt": "Count the numbers:", "n_predict": 1000000,
             "ignore_eos": True, "stream": True, "temperature": 0,
@@ -283,7 +288,7 @@ def test_evaluate_shutdown_with_connected_clients(pending_evaluate):
             assert response.status_code == 200
             lines = response.iter_lines(chunk_size=1)
             assert next(line for line in lines if line.startswith(b"data:"))
-            if pending_evaluate:
+            if workload == "pending_evaluate":
                 payload = {"context": "Paris is in France.", "questions": [
                     {"id": "fact", "type": "boolean", "question": "Is Paris in France?", "choices": ["yes", "no"]},
                 ]}
@@ -296,7 +301,7 @@ def test_evaluate_shutdown_with_connected_clients(pending_evaluate):
                 assert "already admitted" in rejected.body["error"]["message"]
             slots = server.make_request("GET", "/slots")
             assert slots.status_code == 200 and any(slot["is_processing"] for slot in slots.body)
-            server.process.send_signal(signal.SIGINT)
+            server.process.send_signal(getattr(signal, stop_signal))
             assert server.process.wait(timeout=10) == 0
     finally:
         if pending is not None:

@@ -276,7 +276,6 @@ void server_queue::yield_to_queue(std::function<void()> && work) {
 }
 
 void server_queue::start_loop(int64_t idle_sleep_ms) {
-    running = true;
     time_last_task = ggml_time_ms();
 
     // spawn the worker thread used by yield_to_queue()
