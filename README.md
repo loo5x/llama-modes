@@ -21,6 +21,8 @@ shared context
 
 Enable the endpoint with `--evaluate`; add `--evaluate-shared-prefix` to reuse complete batches of the common tokenized prefix. Each question's remaining prompt and candidate prefixes still require evaluation. Fresh evaluation is the default and the fallback when sharing is ineligible. Reuse is confined to one request, not a persistent context session across requests. The optimization must preserve independent-evaluation semantics under the same runtime configuration.
 
+Only one evaluation request is admitted at a time. Existing active chat/inference is allowed to drain before evaluation starts; new inference waits until evaluation completes.
+
 This is orchestration of the three scoring primitives below. [Run the v0.5 example](docs/quickstart.md#8-v05-multiple-questions-optional) or read the [API and limits](docs/evaluate.md).
 
 ## Correctness & Validation
