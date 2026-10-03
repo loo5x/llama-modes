@@ -92,7 +92,7 @@ $result | ConvertTo-Json -Depth 20
 
 The repeated text makes a longer shared context for this small example. Check `execution.strategy` and `execution.shared_prefix_tokens`. An eligible request reports `shared_aligned`; a short prefix or other ineligible case reports `fresh` with a reason. Remove `--evaluate-shared-prefix` to use fresh scoring for comparison. Removing `--evaluate` disables both endpoint routes.
 
-The validated shared configuration used GPT-OSS 20B MXFP4 on Windows CUDA with RTX 5080. Other models need their own checks, and evaluation requires memory in addition to the resident chat context. Read the [API and limits](evaluate.md), [v0.5.0 release notes](../RELEASE_NOTES_v0.5.0.md), and [final ZIP validation](../experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md#final-050-zip-validation). Reuse lasts for this request only, and each question remains independent. The demo does not expose this endpoint.
+The validated shared configuration used GPT-OSS 20B MXFP4 on Windows CUDA with RTX 5080. Other models need their own checks, and evaluation requires memory in addition to the resident chat context. Read the [API and limits](evaluate.md), [v0.5.0 release notes](../RELEASE_NOTES_v0.5.0.md), and [final ZIP validation](../experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md#final-050-zip-validation). Reuse lasts for this request only, and each question remains independent. The demo exposes this endpoint in its **Shared Context** workflow.
 
 ## Troubleshooting
 

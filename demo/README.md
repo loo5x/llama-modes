@@ -2,7 +2,23 @@
 
 A local React + TypeScript workbench for BOOLEAN, CHOICE, SCALE, and **Interactive comparison**. All live inference comes from llama-server. The demo does not contain an inference engine.
 
-The demo does not currently expose v0.5.0 shared-context `/evaluate`; its proxy permits only the endpoints listed below. Use the [API quickstart](../docs/quickstart.md#8-v05-multiple-questions-optional) for multiple independent questions over one context.
+The **Shared Context** workflow sends one context and multiple independent Boolean, Choice and Scale questions to v0.5.0 `/evaluate`. It orchestrates the three primitives; it is not a fourth scoring primitive.
+
+## Shared Context
+
+Start the v0.5 server with your model (PowerShell):
+
+```powershell
+.\llama-server.exe -m "C:\models\your-model.gguf" --host 127.0.0.1 --port 8080 -ngl 99 -c 4096 -np 1 -b 128 -ub 128 --jinja --no-prefill-assistant --evaluate --evaluate-context 4096 --evaluate-shared-prefix
+```
+
+Open **Shared Context**, edit the common text and each question's labels or scale mapping, then select **Run all**. Add, remove or reorder up to 32 questions. Each result has its own card; Advanced shows the full request, response and token/scoring details. Presentation mode keeps the common text, results and model/server information visible while hiding editors.
+
+`--evaluate` enables the endpoint. Optional `--evaluate-shared-prefix` enables eligible prefix reuse; there is no request toggle. The UI displays the returned strategy, shared token count, batch sizes and fallback reason. Fresh evaluation is the default and fallback. Reuse is confined to one request, not a persistent cross-request session. Questions do not see other questions or answers, and sharing must preserve independent evaluation semantics.
+
+The first request after model load may be slower due to warm-up. UI latency measures the whole interactive request, not individual questions, and is not a reproducible benchmark. Sharing is not guaranteed to be faster. Evaluation requires additional memory and can delay chat; server context/token limits still apply. See the [API contract](../docs/evaluate.md) and [quickstart](../docs/quickstart.md#8-v05-multiple-questions-optional).
+
+Direct is a structured readout from a prepared model state, not shortened Chat. Candidate/scale weights are not calibrated correctness probabilities. Labels, tokenization, templates and readout boundaries can affect results; Direct does not universally replace reasoning.
 
 ## Launch
 
@@ -52,7 +68,7 @@ Chat requires an exact supplied label in final content after outer whitespace tr
 
 ![Rendered SCALE demo using labeled fixture data](screenshot-fixture.png)
 
-Open `http://127.0.0.1:5173/?fixture=1` and click **Show fixture** in SCALE. A persistent banner identifies illustrative data. No model requests are made, token IDs are illustrative, and latency is marked unmeasured. The preview supports SCALE only; remove the query parameter for live inference. This mode is for visual development and screenshots, never performance evidence.
+Open `http://127.0.0.1:5173/?fixture=1` and click **Show fixture** in SCALE. A persistent banner identifies illustrative data. No model requests are made, token IDs are illustrative, and latency is marked unmeasured. For mixed results, open Shared Context and select **Show shared fixture**. Its fictional customer example uses illustrative scores and token IDs, with no server execution diagnostics or latency. The preview supports SCALE and Shared Context; remove the query parameter for live inference. This mode is for visual development and screenshots, never performance evidence.
 
 ## Checks
 
@@ -67,12 +83,13 @@ Pure unit tests need no model server. Browser/manual checks should cover editing
 
 ## Architecture and privacy
 
+- `src/SharedContext.tsx`: shared context editor, question ordering, mixed result cards and diagnostics.
 - `src/App.tsx`: view state, editable inputs, sequential runs, results, and Advanced.
 - `src/api.ts`: request construction, strict response parsing, and interpretation helpers.
 - `src/presets.ts` / `src/fixtures.ts`: editable tasks and explicitly labeled development data.
 - `proxy.ts`: loopback-only target, exact endpoint/method allowlist, same-origin checks, request size limit, redirect refusal, timeout, and disconnect cancellation.
 - `vite.config.ts`: identical proxy behavior for development and built preview.
 
-The proxy accepts only `/v1/models`, `/decision`, `/scale`, and `/v1/chat/completions`, plus its own read-only config endpoint. It forwards no browser credentials. No authentication system, filesystem API, database, analytics, telemetry, remote model service, or external font is added. Runtime requests stay on the machine; dependency installation separately downloads packages from npm. Raw content is shown as React text, never rendered as HTML.
+The proxy accepts only `/v1/models`, `/decision`, `/scale`, `/evaluate`, and `/v1/chat/completions`, plus its own read-only config endpoint. It forwards no browser credentials. No authentication system, filesystem API, database, analytics, telemetry, remote model service, or external font is added. Runtime requests stay on the machine; dependency installation separately downloads packages from npm. Raw content is shown as React text, never rendered as HTML.
 
 The stack follows the [Vite guide](https://vite.dev/guide/), [Tailwind Vite integration](https://tailwindcss.com/docs/installation/using-vite), and [Recharts responsive container API](https://recharts.github.io/api/ResponsiveContainer/). Its dependencies are isolated from the existing upstream server UI.

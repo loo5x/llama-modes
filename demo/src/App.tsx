@@ -27,6 +27,7 @@ import {
 } from './api';
 import { presets, type Preset } from './presets';
 import { scaleFixture } from './fixtures';
+import SharedContext from './SharedContext';
 
 type Run = {
     raw: unknown;
@@ -248,7 +249,7 @@ function ResultCard({
 }
 
 export default function App() {
-    const [view, setView] = useState<Mode | 'COMPARE'>('SCALE');
+    const [view, setView] = useState<Mode | 'COMPARE' | 'SHARED'>('SCALE');
     const [mode, setMode] = useState<Mode>('SCALE');
     const [question, setQuestion] = useState(presets[2].question);
     const [labels, setLabels] = useState(['Paris', 'London', 'New York']);
@@ -423,7 +424,9 @@ export default function App() {
     const match = direct?.parsed && chat?.chat ? agreement(direct.parsed.winners, chat.chat.answer) : null;
 
     return (
-        <div className={presentation ? 'app presentation' : 'app'}>
+        <div
+            className={`${presentation ? 'app presentation' : 'app'}${view === 'SHARED' ? ' shared-view' : ''}`}
+        >
             <header>
                 <div className="brand">
                     <div className="brand-mark">
@@ -431,7 +434,7 @@ export default function App() {
                     </div>
                     <div>
                         <b>
-                            llama-modes<span className="version">v0.4</span>
+                            llama-modes<span className="version">v0.5</span>
                         </b>
                         <p>Direct structured inference for local LLMs</p>
                     </div>
@@ -490,18 +493,18 @@ export default function App() {
                     </div>
                 </div>
                 <nav aria-label="Inference views">
-                    {(['BOOLEAN', 'CHOICE', 'SCALE', 'COMPARE'] as const).map((tab) => (
+                    {(['BOOLEAN', 'CHOICE', 'SCALE', 'COMPARE', 'SHARED'] as const).map((tab) => (
                         <button
-                            key={tab}
+                            key={tab === 'SHARED' ? 'Shared Context' : tab}
                             disabled={busy}
                             className={view === tab ? 'active' : ''}
                             onClick={() => {
-                                if (tab !== 'COMPARE') changeMode(tab);
+                                if (tab !== 'COMPARE' && tab !== 'SHARED') changeMode(tab);
                                 setView(tab);
                                 clearResults();
                             }}
                         >
-                            {tab}
+                            {tab === 'SHARED' ? 'Shared Context' : tab}
                             <span>
                                 {tab === 'BOOLEAN'
                                     ? '01'
@@ -509,423 +512,462 @@ export default function App() {
                                       ? '02'
                                       : tab === 'SCALE'
                                         ? '03'
-                                        : '04'}
+                                        : tab === 'COMPARE'
+                                          ? 'Chat'
+                                          : 'v0.5'}
                             </span>
                         </button>
                     ))}
                 </nav>
-                {presentation && (
-                    <div className="presentation-context">
-                        <span className="field-label">{view === 'COMPARE' ? `COMPARE / ${mode}` : mode}</span>
-                        <p>{question}</p>
-                        {mode === 'SCALE' && (
-                            <small>Symbolic labels are sent to the model with the label/value mapping.</small>
-                        )}
-                    </div>
-                )}
-                <div className={`workspace ${view === 'COMPARE' ? 'compare' : ''}`}>
-                    <section className="panel input-panel">
-                        <div className="panel-heading">
-                            <h2>
-                                {view === 'COMPARE'
-                                    ? 'Interactive comparison'
-                                    : `${mode[0]}${mode.slice(1).toLowerCase()} evaluation`}
-                            </h2>
-                            <span className="badge">INPUT</span>
-                        </div>
-                        <fieldset disabled={busy}>
-                            <label className="field-label" htmlFor="preset">
-                                START WITH AN EXAMPLE
-                            </label>
-                            <div className="select-wrap">
-                                <select
-                                    id="preset"
-                                    value=""
-                                    onChange={(e) => applyPreset(presets[Number(e.target.value)])}
-                                >
-                                    <option value="" disabled>
-                                        Choose a preset
-                                    </option>
-                                    {presets.map((p, i) => (
-                                        <option key={p.name} value={i}>
-                                            {p.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown size={16} />
-                            </div>
-                            {view === 'COMPARE' && (
-                                <div className="segmented">
-                                    {(['BOOLEAN', 'CHOICE', 'SCALE'] as Mode[]).map((m) => (
-                                        <button
-                                            className={mode === m ? 'selected' : ''}
-                                            key={m}
-                                            onClick={() => changeMode(m)}
-                                        >
-                                            {m}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                            <label className="field-label" htmlFor="question">
-                                {mode === 'SCALE' ? 'TASK / COMMENT' : 'QUESTION'}
-                            </label>
-                            <textarea
-                                id="question"
-                                rows={6}
-                                value={question}
-                                onChange={(e) => {
-                                    setQuestion(e.target.value);
-                                    clearResults();
-                                }}
-                            />
-                            {mode === 'BOOLEAN' && (
-                                <div className="boolean-options">
-                                    <span>YES</span>
-                                    <span>NO</span>
-                                    <p>Two supplied alternatives. Zero generated answer tokens.</p>
-                                </div>
-                            )}
-                            {mode === 'CHOICE' && (
-                                <>
-                                    <div className="field-label">CANDIDATE LABELS</div>
-                                    <div className="label-list">
-                                        {labels.map((label, i) => (
-                                            <div key={i}>
-                                                <input
-                                                    aria-label={`Candidate ${i + 1}`}
-                                                    value={label}
-                                                    onChange={(e) => {
-                                                        setLabels(
-                                                            labels.map((x, j) =>
-                                                                i === j ? e.target.value : x,
-                                                            ),
-                                                        );
-                                                        clearResults();
-                                                    }}
-                                                />
-                                                <button
-                                                    className="icon-button"
-                                                    aria-label={`Remove candidate ${i + 1}`}
-                                                    onClick={() => {
-                                                        setLabels(labels.filter((_, j) => i !== j));
-                                                        clearResults();
-                                                    }}
-                                                >
-                                                    <X size={16} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <button
-                                        className="subtle"
-                                        onClick={() => {
-                                            setLabels([...labels, '']);
-                                            clearResults();
-                                        }}
-                                    >
-                                        <Plus size={15} />
-                                        Add candidate
-                                    </button>
-                                    <p className="caption">
-                                        Multi-token labels are supported. Inspect token counts and log scores
-                                        in Advanced.
-                                    </p>
-                                </>
-                            )}
-                            {mode === 'SCALE' && (
-                                <>
-                                    <div className="field-label">MEASUREMENT</div>
-                                    <div className="segmented">
-                                        {(['ordinal', 'interval'] as const).map((m) => (
-                                            <button
-                                                key={m}
-                                                className={measurement === m ? 'selected' : ''}
-                                                onClick={() => {
-                                                    setMeasurement(m);
-                                                    clearResults();
-                                                }}
-                                            >
-                                                {m === 'ordinal' ? 'Ordinal' : 'Interval'}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <p className="caption">
-                                        {measurement === 'interval'
-                                            ? 'You assert that numeric distances have meaning. Expected value is derived from all point weights.'
-                                            : 'Order has meaning. Expected value and standard deviation are not reported.'}
-                                    </p>
-                                    {question === presets[2].question && (
-                                        <div className="semantic-scale">
-                                            <span>
-                                                <b>0</b> Very unfavorable
-                                            </span>
-                                            <span>
-                                                <b>5</b> Neutral
-                                            </span>
-                                            <span>
-                                                <b>10</b> Very favorable
-                                            </span>
-                                        </div>
-                                    )}
-                                    <p className="caption">
-                                        Symbolic labels are sent to the model with this label/value mapping.
-                                    </p>
-                                    <details className="encoding">
-                                        <summary>
-                                            Encoding / Edit mapping <span>{points.length} labels</span>
-                                        </summary>
-                                        <div className="scale-editor">
-                                            {points.map((p, i) => (
-                                                <div key={i}>
-                                                    <input
-                                                        aria-label={`Scale label ${i + 1}`}
-                                                        value={p.label}
-                                                        onChange={(e) => {
-                                                            setPoints(
-                                                                points.map((x, j) =>
-                                                                    i === j
-                                                                        ? { ...x, label: e.target.value }
-                                                                        : x,
-                                                                ),
-                                                            );
-                                                            clearResults();
-                                                        }}
-                                                    />
-                                                    <span>=</span>
-                                                    <input
-                                                        type="number"
-                                                        step="any"
-                                                        aria-label={`Scale value ${i + 1}`}
-                                                        value={Number.isFinite(p.value) ? p.value : ''}
-                                                        onChange={(e) => {
-                                                            setPoints(
-                                                                points.map((x, j) =>
-                                                                    i === j
-                                                                        ? {
-                                                                              ...x,
-                                                                              value:
-                                                                                  e.target.value === ''
-                                                                                      ? NaN
-                                                                                      : Number(
-                                                                                            e.target.value,
-                                                                                        ),
-                                                                          }
-                                                                        : x,
-                                                                ),
-                                                            );
-                                                            clearResults();
-                                                        }}
-                                                    />
-                                                    <button
-                                                        className="icon-button"
-                                                        aria-label={`Remove scale point ${i + 1}`}
-                                                        onClick={() => {
-                                                            setPoints(points.filter((_, j) => i !== j));
-                                                            clearResults();
-                                                        }}
-                                                    >
-                                                        <X size={13} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <button
-                                            className="subtle"
-                                            onClick={() => {
-                                                setPoints([
-                                                    ...points,
-                                                    {
-                                                        label: '',
-                                                        value:
-                                                            Math.max(...points.map((p) => p.value), -1) + 1,
-                                                    },
-                                                ]);
-                                                clearResults();
-                                            }}
-                                        >
-                                            <Plus size={15} />
-                                            Add point
-                                        </button>
-                                        <p className="caption">
-                                            This mapping is included in the prompt. Symbols can avoid numeric
-                                            token-prefix overlap; they are not universally unbiased.
-                                        </p>
-                                    </details>
-                                </>
-                            )}
-                        </fieldset>
-                        {(validation || error) && (
-                            <div className="error" role="alert">
-                                {error || validation}
-                            </div>
-                        )}
-                        <div className="actions">
-                            <button
-                                className="primary"
-                                disabled={busy || !!validation}
-                                onClick={() => void run('direct')}
-                            >
-                                <Play size={15} />
-                                {fixtureMode ? 'Show fixture' : 'Run Direct'}
-                            </button>
-                            {view === 'COMPARE' && (
-                                <>
-                                    <button
-                                        disabled={busy || !!validation || fixtureMode}
-                                        onClick={() => void run('chat')}
-                                    >
-                                        Run Chat
-                                    </button>
-                                    <button
-                                        disabled={busy || !!validation || fixtureMode}
-                                        onClick={() => void run('both')}
-                                    >
-                                        Run Both
-                                        <ArrowRight size={15} />
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </section>
-                    <div className="results">
-                        <ResultCard
-                            run={direct}
-                            side="DIRECT"
-                            busy={busy}
-                            points={mode === 'SCALE' ? points : []}
-                        />
-                        {view === 'COMPARE' && (
-                            <>
-                                <ResultCard
-                                    run={chat}
-                                    side="CHAT"
-                                    busy={busy}
-                                    points={mode === 'SCALE' ? points : []}
-                                />
-                                <div className="agreement">
-                                    <span>
-                                        {mode === 'SCALE'
-                                            ? 'Direct mode / Chat agreement'
-                                            : 'Direct / Chat agreement'}
-                                    </span>
-                                    <b>
-                                        {match === null
-                                            ? 'Not available (missing answer or tie)'
-                                            : match
-                                              ? 'Same result'
-                                              : 'Different'}
-                                    </b>
-                                </div>
-                                <p className="caption comparison-notice">
-                                    Sequential timing: Direct finishes before Chat starts when running both.
-                                    This interactive comparison is not a benchmark. Different results do not
-                                    establish which procedure is correct.
-                                </p>
-                            </>
-                        )}
-                        <div className="interpretation">
-                            <span>READ THE DISTRIBUTION</span>
-                            <p>
-                                {mode === 'SCALE'
-                                    ? 'A middle score can mean a narrow middle preference or a split between extremes. The point weights show the difference.'
-                                    : 'The highest-scoring label reflects the model at this evaluation state. Autoregressive reasoning can lead to a different answer.'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {!presentation && (
-                    <details className="advanced">
-                        <summary>
-                            Advanced <span>Requests, raw responses, tokens and log scores</span>
-                        </summary>
-                        <div className="advanced-content">
-                            <p>
-                                Model: {model || 'not detected'} | Endpoint: {requests?.endpoint} | Target:{' '}
-                                {target}
-                            </p>
-                            <div className="actions">
-                                <button
-                                    disabled={!requests}
-                                    onClick={() => void copy(json(requests?.direct), 'request')}
-                                >
-                                    <Copy size={14} />
-                                    Copy request JSON
-                                </button>
-                                <button
-                                    disabled={!requests}
-                                    onClick={() =>
-                                        requests &&
-                                        void copy(curl(requests.endpoint, requests.direct), 'curl')
-                                    }
-                                >
-                                    <Copy size={14} />
-                                    Copy curl (POSIX shell)
-                                </button>
-                                <button
-                                    disabled={!direct}
-                                    onClick={() => void copy(json(direct?.raw), 'response')}
-                                >
-                                    Copy response JSON
-                                </button>
-                                {copied && (
-                                    <small role="status">
-                                        <Check size={14} />
-                                        Copied {copied}
+                {view === 'SHARED' ? (
+                    <SharedContext
+                        key={model}
+                        model={model}
+                        target={target}
+                        presentation={presentation}
+                        fixture={fixtureMode}
+                        onBusy={(value) => {
+                            running.current = value;
+                            setBusy(value);
+                        }}
+                        distribution={(result) => <Distribution result={result} />}
+                    />
+                ) : (
+                    <>
+                        {presentation && (
+                            <div className="presentation-context">
+                                <span className="field-label">
+                                    {view === 'COMPARE' ? `COMPARE / ${mode}` : mode}
+                                </span>
+                                <p>{question}</p>
+                                {mode === 'SCALE' && (
+                                    <small>
+                                        Symbolic labels are sent to the model with the label/value mapping.
                                     </small>
                                 )}
                             </div>
-                            <h3>Request JSON</h3>
-                            <pre>{json(requests?.direct)}</pre>
-                            {direct?.parsed && (
-                                <div className="table-scroll">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Label</th>
-                                                <th>Token IDs</th>
-                                                <th>Count</th>
-                                                <th>SUM log p</th>
-                                                <th>MEAN log p</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {direct.parsed.rows.map((r) => (
-                                                <tr key={r.label}>
-                                                    <td>{r.label}</td>
-                                                    <td>{r.tokenIds?.join(', ')}</td>
-                                                    <td>{r.tokenCount}</td>
-                                                    <td>{r.sum ?? 'Not returned'}</td>
-                                                    <td>{r.mean ?? 'Not returned'}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                        )}
+                        <div className={`workspace ${view === 'COMPARE' ? 'compare' : ''}`}>
+                            <section className="panel input-panel">
+                                <div className="panel-heading">
+                                    <h2>
+                                        {view === 'COMPARE'
+                                            ? 'Interactive comparison'
+                                            : `${mode[0]}${mode.slice(1).toLowerCase()} evaluation`}
+                                    </h2>
+                                    <span className="badge">INPUT</span>
                                 </div>
-                            )}
-                            {direct && (
-                                <>
-                                    <h3>Direct response JSON</h3>
-                                    <pre>{json(direct.raw)}</pre>
-                                </>
-                            )}
-                            {chat && (
-                                <>
-                                    <h3>
-                                        Chat request / response (includes usage and fingerprint when returned)
-                                    </h3>
+                                <fieldset disabled={busy}>
+                                    <label className="field-label" htmlFor="preset">
+                                        START WITH AN EXAMPLE
+                                    </label>
+                                    <div className="select-wrap">
+                                        <select
+                                            id="preset"
+                                            value=""
+                                            onChange={(e) => applyPreset(presets[Number(e.target.value)])}
+                                        >
+                                            <option value="" disabled>
+                                                Choose a preset
+                                            </option>
+                                            {presets.map((p, i) => (
+                                                <option key={p.name} value={i}>
+                                                    {p.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown size={16} />
+                                    </div>
+                                    {view === 'COMPARE' && (
+                                        <div className="segmented">
+                                            {(['BOOLEAN', 'CHOICE', 'SCALE'] as Mode[]).map((m) => (
+                                                <button
+                                                    className={mode === m ? 'selected' : ''}
+                                                    key={m}
+                                                    onClick={() => changeMode(m)}
+                                                >
+                                                    {m}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <label className="field-label" htmlFor="question">
+                                        {mode === 'SCALE' ? 'TASK / COMMENT' : 'QUESTION'}
+                                    </label>
+                                    <textarea
+                                        id="question"
+                                        rows={6}
+                                        value={question}
+                                        onChange={(e) => {
+                                            setQuestion(e.target.value);
+                                            clearResults();
+                                        }}
+                                    />
+                                    {mode === 'BOOLEAN' && (
+                                        <div className="boolean-options">
+                                            <span>YES</span>
+                                            <span>NO</span>
+                                            <p>Two supplied alternatives. Zero generated answer tokens.</p>
+                                        </div>
+                                    )}
+                                    {mode === 'CHOICE' && (
+                                        <>
+                                            <div className="field-label">CANDIDATE LABELS</div>
+                                            <div className="label-list">
+                                                {labels.map((label, i) => (
+                                                    <div key={i}>
+                                                        <input
+                                                            aria-label={`Candidate ${i + 1}`}
+                                                            value={label}
+                                                            onChange={(e) => {
+                                                                setLabels(
+                                                                    labels.map((x, j) =>
+                                                                        i === j ? e.target.value : x,
+                                                                    ),
+                                                                );
+                                                                clearResults();
+                                                            }}
+                                                        />
+                                                        <button
+                                                            className="icon-button"
+                                                            aria-label={`Remove candidate ${i + 1}`}
+                                                            onClick={() => {
+                                                                setLabels(labels.filter((_, j) => i !== j));
+                                                                clearResults();
+                                                            }}
+                                                        >
+                                                            <X size={16} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <button
+                                                className="subtle"
+                                                onClick={() => {
+                                                    setLabels([...labels, '']);
+                                                    clearResults();
+                                                }}
+                                            >
+                                                <Plus size={15} />
+                                                Add candidate
+                                            </button>
+                                            <p className="caption">
+                                                Multi-token labels are supported. Inspect token counts and log
+                                                scores in Advanced.
+                                            </p>
+                                        </>
+                                    )}
+                                    {mode === 'SCALE' && (
+                                        <>
+                                            <div className="field-label">MEASUREMENT</div>
+                                            <div className="segmented">
+                                                {(['ordinal', 'interval'] as const).map((m) => (
+                                                    <button
+                                                        key={m}
+                                                        className={measurement === m ? 'selected' : ''}
+                                                        onClick={() => {
+                                                            setMeasurement(m);
+                                                            clearResults();
+                                                        }}
+                                                    >
+                                                        {m === 'ordinal' ? 'Ordinal' : 'Interval'}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                            <p className="caption">
+                                                {measurement === 'interval'
+                                                    ? 'You assert that numeric distances have meaning. Expected value is derived from all point weights.'
+                                                    : 'Order has meaning. Expected value and standard deviation are not reported.'}
+                                            </p>
+                                            {question === presets[2].question && (
+                                                <div className="semantic-scale">
+                                                    <span>
+                                                        <b>0</b> Very unfavorable
+                                                    </span>
+                                                    <span>
+                                                        <b>5</b> Neutral
+                                                    </span>
+                                                    <span>
+                                                        <b>10</b> Very favorable
+                                                    </span>
+                                                </div>
+                                            )}
+                                            <p className="caption">
+                                                Symbolic labels are sent to the model with this label/value
+                                                mapping.
+                                            </p>
+                                            <details className="encoding">
+                                                <summary>
+                                                    Encoding / Edit mapping{' '}
+                                                    <span>{points.length} labels</span>
+                                                </summary>
+                                                <div className="scale-editor">
+                                                    {points.map((p, i) => (
+                                                        <div key={i}>
+                                                            <input
+                                                                aria-label={`Scale label ${i + 1}`}
+                                                                value={p.label}
+                                                                onChange={(e) => {
+                                                                    setPoints(
+                                                                        points.map((x, j) =>
+                                                                            i === j
+                                                                                ? {
+                                                                                      ...x,
+                                                                                      label: e.target.value,
+                                                                                  }
+                                                                                : x,
+                                                                        ),
+                                                                    );
+                                                                    clearResults();
+                                                                }}
+                                                            />
+                                                            <span>=</span>
+                                                            <input
+                                                                type="number"
+                                                                step="any"
+                                                                aria-label={`Scale value ${i + 1}`}
+                                                                value={
+                                                                    Number.isFinite(p.value) ? p.value : ''
+                                                                }
+                                                                onChange={(e) => {
+                                                                    setPoints(
+                                                                        points.map((x, j) =>
+                                                                            i === j
+                                                                                ? {
+                                                                                      ...x,
+                                                                                      value:
+                                                                                          e.target.value ===
+                                                                                          ''
+                                                                                              ? NaN
+                                                                                              : Number(
+                                                                                                    e.target
+                                                                                                        .value,
+                                                                                                ),
+                                                                                  }
+                                                                                : x,
+                                                                        ),
+                                                                    );
+                                                                    clearResults();
+                                                                }}
+                                                            />
+                                                            <button
+                                                                className="icon-button"
+                                                                aria-label={`Remove scale point ${i + 1}`}
+                                                                onClick={() => {
+                                                                    setPoints(
+                                                                        points.filter((_, j) => i !== j),
+                                                                    );
+                                                                    clearResults();
+                                                                }}
+                                                            >
+                                                                <X size={13} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <button
+                                                    className="subtle"
+                                                    onClick={() => {
+                                                        setPoints([
+                                                            ...points,
+                                                            {
+                                                                label: '',
+                                                                value:
+                                                                    Math.max(
+                                                                        ...points.map((p) => p.value),
+                                                                        -1,
+                                                                    ) + 1,
+                                                            },
+                                                        ]);
+                                                        clearResults();
+                                                    }}
+                                                >
+                                                    <Plus size={15} />
+                                                    Add point
+                                                </button>
+                                                <p className="caption">
+                                                    This mapping is included in the prompt. Symbols can avoid
+                                                    numeric token-prefix overlap; they are not universally
+                                                    unbiased.
+                                                </p>
+                                            </details>
+                                        </>
+                                    )}
+                                </fieldset>
+                                {(validation || error) && (
+                                    <div className="error" role="alert">
+                                        {error || validation}
+                                    </div>
+                                )}
+                                <div className="actions">
                                     <button
-                                        onClick={() =>
-                                            void copy(curl(chat.endpoint, chat.request), 'chat curl')
-                                        }
+                                        className="primary"
+                                        disabled={busy || !!validation}
+                                        onClick={() => void run('direct')}
                                     >
-                                        Copy chat curl
+                                        <Play size={15} />
+                                        {fixtureMode ? 'Show fixture' : 'Run Direct'}
                                     </button>
-                                    <pre>{json({ request: chat.request, response: chat.raw })}</pre>
-                                </>
-                            )}
+                                    {view === 'COMPARE' && (
+                                        <>
+                                            <button
+                                                disabled={busy || !!validation || fixtureMode}
+                                                onClick={() => void run('chat')}
+                                            >
+                                                Run Chat
+                                            </button>
+                                            <button
+                                                disabled={busy || !!validation || fixtureMode}
+                                                onClick={() => void run('both')}
+                                            >
+                                                Run Both
+                                                <ArrowRight size={15} />
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
+                            </section>
+                            <div className="results">
+                                <ResultCard
+                                    run={direct}
+                                    side="DIRECT"
+                                    busy={busy}
+                                    points={mode === 'SCALE' ? points : []}
+                                />
+                                {view === 'COMPARE' && (
+                                    <>
+                                        <ResultCard
+                                            run={chat}
+                                            side="CHAT"
+                                            busy={busy}
+                                            points={mode === 'SCALE' ? points : []}
+                                        />
+                                        <div className="agreement">
+                                            <span>
+                                                {mode === 'SCALE'
+                                                    ? 'Direct mode / Chat agreement'
+                                                    : 'Direct / Chat agreement'}
+                                            </span>
+                                            <b>
+                                                {match === null
+                                                    ? 'Not available (missing answer or tie)'
+                                                    : match
+                                                      ? 'Same result'
+                                                      : 'Different'}
+                                            </b>
+                                        </div>
+                                        <p className="caption comparison-notice">
+                                            Sequential timing: Direct finishes before Chat starts when running
+                                            both. This interactive comparison is not a benchmark. Different
+                                            results do not establish which procedure is correct.
+                                        </p>
+                                    </>
+                                )}
+                                <div className="interpretation">
+                                    <span>READ THE DISTRIBUTION</span>
+                                    <p>
+                                        {mode === 'SCALE'
+                                            ? 'A middle score can mean a narrow middle preference or a split between extremes. The point weights show the difference.'
+                                            : 'The highest-scoring label reflects the model at this evaluation state. Autoregressive reasoning can lead to a different answer.'}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </details>
+                        {!presentation && (
+                            <details className="advanced">
+                                <summary>
+                                    Advanced <span>Requests, raw responses, tokens and log scores</span>
+                                </summary>
+                                <div className="advanced-content">
+                                    <p>
+                                        Model: {model || 'not detected'} | Endpoint: {requests?.endpoint} |
+                                        Target: {target}
+                                    </p>
+                                    <div className="actions">
+                                        <button
+                                            disabled={!requests}
+                                            onClick={() => void copy(json(requests?.direct), 'request')}
+                                        >
+                                            <Copy size={14} />
+                                            Copy request JSON
+                                        </button>
+                                        <button
+                                            disabled={!requests}
+                                            onClick={() =>
+                                                requests &&
+                                                void copy(curl(requests.endpoint, requests.direct), 'curl')
+                                            }
+                                        >
+                                            <Copy size={14} />
+                                            Copy curl (POSIX shell)
+                                        </button>
+                                        <button
+                                            disabled={!direct}
+                                            onClick={() => void copy(json(direct?.raw), 'response')}
+                                        >
+                                            Copy response JSON
+                                        </button>
+                                        {copied && (
+                                            <small role="status">
+                                                <Check size={14} />
+                                                Copied {copied}
+                                            </small>
+                                        )}
+                                    </div>
+                                    <h3>Request JSON</h3>
+                                    <pre>{json(requests?.direct)}</pre>
+                                    {direct?.parsed && (
+                                        <div className="table-scroll">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Label</th>
+                                                        <th>Token IDs</th>
+                                                        <th>Count</th>
+                                                        <th>SUM log p</th>
+                                                        <th>MEAN log p</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {direct.parsed.rows.map((r) => (
+                                                        <tr key={r.label}>
+                                                            <td>{r.label}</td>
+                                                            <td>{r.tokenIds?.join(', ')}</td>
+                                                            <td>{r.tokenCount}</td>
+                                                            <td>{r.sum ?? 'Not returned'}</td>
+                                                            <td>{r.mean ?? 'Not returned'}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                    {direct && (
+                                        <>
+                                            <h3>Direct response JSON</h3>
+                                            <pre>{json(direct.raw)}</pre>
+                                        </>
+                                    )}
+                                    {chat && (
+                                        <>
+                                            <h3>
+                                                Chat request / response (includes usage and fingerprint when
+                                                returned)
+                                            </h3>
+                                            <button
+                                                onClick={() =>
+                                                    void copy(curl(chat.endpoint, chat.request), 'chat curl')
+                                                }
+                                            >
+                                                Copy chat curl
+                                            </button>
+                                            <pre>{json({ request: chat.request, response: chat.raw })}</pre>
+                                        </>
+                                    )}
+                                </div>
+                            </details>
+                        )}
+                    </>
                 )}
                 <footer>
                     <span>llama-modes / Built on llama.cpp</span>

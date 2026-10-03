@@ -84,4 +84,25 @@ it('allows only local same-origin JSON requests to the fixed endpoint set', asyn
         ).status,
     ).toBe(502);
     expect(forwarded).toBe(2);
+    expect((await fetch(target + '/api/evaluate')).status).toBe(404);
+    expect((await fetch(target + '/api/v1/evaluate', { method: 'POST' })).status).toBe(404);
+    expect(
+        (
+            await fetch(target + '/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Origin: 'https://evil.example' },
+                body: '{}',
+            })
+        ).status,
+    ).toBe(403);
+    expect(
+        (
+            await fetch(target + '/api/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: '{}',
+            })
+        ).status,
+    ).toBe(200);
+    expect(forwarded).toBe(3);
 });

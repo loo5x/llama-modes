@@ -858,3 +858,202 @@ footer {
         animation: none !important;
     }
 }
+
+/* Shared-context orchestration uses the existing scoring cards. */
+nav {
+    flex-wrap: wrap;
+}
+.shared-workflow {
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+}
+.shared-concept {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+}
+.shared-concept h2 {
+    margin: 0 0 8px;
+    font-size: 23px;
+    font-weight: 500;
+}
+.shared-concept p {
+    color: #98a6ad;
+    font-size: 13px;
+}
+.shared-flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: #a6d8ba;
+}
+.shared-flow > span {
+    color: #98a6ad;
+}
+.shared-flow > div {
+    display: grid;
+    gap: 6px;
+    border-left: 1px solid #648476;
+}
+.shared-flow > div span {
+    padding-left: 14px;
+    position: relative;
+}
+.shared-flow > div span::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 9px;
+    border-top: 1px solid #648476;
+}
+.shared-editors,
+.shared-results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    min-width: 0;
+}
+.shared-editors > button {
+    align-self: start;
+}
+.shared-workflow .field-label {
+    display: block;
+    margin: 12px 0 8px;
+}
+.shared-workflow input,
+.shared-workflow textarea,
+.shared-workflow select {
+    width: 100%;
+    min-width: 0;
+}
+.shared-point {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    gap: 6px;
+    margin: 6px 0;
+}
+.shared-label {
+    display: flex;
+    gap: 6px;
+    margin: 6px 0;
+}
+.shared-label input {
+    flex: 1;
+}
+.question-actions {
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+.question-actions button {
+    font-size: 11px;
+    padding: 8px;
+}
+.shared-workflow .panel,
+.shared-workflow .advanced {
+    min-width: 0;
+}
+.shared-workflow p,
+.execution {
+    overflow-wrap: anywhere;
+}
+.context-text {
+    white-space: pre-wrap;
+    line-height: 1.65;
+}
+.execution {
+    font-size: 12px;
+    padding: 14px;
+    border: 1px solid #35413e;
+    border-radius: 8px;
+    color: #b9e6c9;
+}
+.result-question {
+    font-size: 13px;
+    color: #bac7c0;
+    min-height: 54px;
+}
+.shared-results .summary-grid {
+    grid-template-columns: 1fr;
+}
+.shared-results .summary-details {
+    border-left: 0;
+    padding-left: 0;
+}
+.shared-results .score strong {
+    font-size: 48px;
+}
+.shared-results .chart {
+    height: 155px;
+}
+.shared-results .answer-heading strong {
+    font-size: 30px;
+    overflow-wrap: anywhere;
+}
+.shared-results .panel {
+    padding: 20px;
+}
+.presentation .shared-workflow {
+    gap: 12px;
+}
+.presentation .shared-context {
+    padding: 16px 22px;
+}
+.presentation .shared-concept h2 {
+    font-size: 22px;
+}
+.presentation .shared-results .summary-grid {
+    display: flex;
+    gap: 20px;
+}
+.presentation .shared-results .summary-details {
+    flex: 1;
+}
+.presentation .shared-results .score strong {
+    font-size: 50px;
+}
+.presentation .shared-results .chart {
+    height: 150px;
+}
+.presentation .shared-results .summary-details > div {
+    font-size: 12px;
+}
+@media (max-width: 1000px) {
+    .shared-editors,
+    .shared-results {
+        grid-template-columns: 1fr;
+    }
+    .shared-concept {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .shared-workflow .actions {
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 480px) {
+    nav button {
+        flex: 1 1 30%;
+    }
+    .presentation .shared-results .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}
+
+.presentation.shared-view .model-context small {
+    display: block;
+}
+.shared-workflow > .actions .primary {
+    flex: 0 0 auto;
+    min-width: 160px;
+}
+.presentation .shared-results .result-question {
+    min-height: 30px;
+}
+.presentation .shared-results .answer-heading {
+    margin: 16px 0;
+}

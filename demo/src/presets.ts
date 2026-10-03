@@ -49,3 +49,41 @@ export const presets: Preset[] = [
         measurement: 'ordinal',
     },
 ];
+
+export const sharedPreset: { context: string; questions: import('./api').EvaluationQuestion[] } = {
+    context:
+        'Fictional customer message: I bought the Northstar desk lamp last week. The light is pleasant and the controls are simple, but the charging port stopped working after two days. Support replied quickly and offered a replacement. I am disappointed that a new lamp failed, although I appreciate the helpful reply.',
+    questions: [
+        {
+            id: 'dissatisfied',
+            mode: 'BOOLEAN',
+            question:
+                'Is the customer dissatisfied with the product? Yes means dissatisfied; No means not dissatisfied.',
+            labels: ['Yes', 'No'],
+            points: [],
+            measurement: 'ordinal',
+        },
+        {
+            id: 'topic',
+            mode: 'CHOICE',
+            question: 'What is the primary topic of the customer message?',
+            labels: ['product reliability', 'delivery', 'price'],
+            points: [],
+            measurement: 'ordinal',
+        },
+        {
+            id: 'severity',
+            mode: 'SCALE',
+            question:
+                'Rate the product issue severity: 0 no issue, 1 cosmetic issue, 2 a feature fails, 3 unusable product.',
+            labels: [],
+            points: [
+                { label: 'A', value: 0 },
+                { label: 'B', value: 1 },
+                { label: 'C', value: 2 },
+                { label: 'D', value: 3 },
+            ],
+            measurement: 'ordinal',
+        },
+    ],
+};

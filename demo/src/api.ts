@@ -170,8 +170,84 @@ export function errorMessage(status: number, body: unknown): string {
             detail
         );
     if (status === 404)
-        return 'Endpoint unavailable. Use a llama-modes build with /decision and /scale support.';
+        return 'Endpoint unavailable. Use a llama-modes build with the required endpoint; /evaluate requires server startup flag --evaluate.';
     return `HTTP ${status}${detail ? ': ' + detail : ': request failed'}`;
+}
+
+export type EvaluationQuestion = {
+    id: string;
+    mode: Mode;
+    question: string;
+    labels: string[];
+    points: Point[];
+    measurement: 'ordinal' | 'interval';
+};
+
+type EvaluationItem = { id: string; type: string; question: string } & (
+    | { choices: string[]; scale?: never; measurement?: never }
+    | { choices?: never; scale: Point[]; measurement: 'ordinal' | 'interval' }
+);
+
+export function makeEvaluation(context: string, questions: EvaluationQuestion[], model = '') {
+    if (!context.trim()) throw new Error('Enter a shared context.');
+    if (!questions.length || questions.length > 32) throw new Error('Provide 1 to 32 questions.');
+    const ids = new Set<string>();
+    return {
+        context,
+        ...(model ? { model } : {}),
+        questions: questions.map((q): EvaluationItem => {
+            if (!q.id.trim() || new TextEncoder().encode(q.id).length > 128 || ids.has(q.id))
+                throw new Error('Question IDs must be unique, non-empty and at most 128 bytes.');
+            ids.add(q.id);
+            if (q.mode === 'BOOLEAN' && q.labels.length !== 2)
+                throw new Error('Boolean requires exactly two labels.');
+            const prepared = makeRequests(q.mode, q.question, q.labels, q.points, q.measurement, '');
+            return {
+                id: q.id,
+                type: q.mode.toLowerCase(),
+                question: prepared.direct.messages[0].content,
+                ...(q.mode === 'SCALE'
+                    ? { measurement: q.measurement, scale: q.points }
+                    : { choices: q.labels }),
+            };
+        }),
+    };
+}
+
+export function parseEvaluation(input: unknown, request: ReturnType<typeof makeEvaluation>) {
+    const data = object(input);
+    if (!Array.isArray(data.results) || data.results.length !== request.questions.length)
+        throw new Error('Malformed response: question count mismatch');
+    const results = data.results.map((item, i) => {
+        const row = object(item);
+        const q = request.questions[i];
+        if (row.id !== q.id || row.type !== q.type)
+            throw new Error('Malformed response: question ID, type or order differs from request');
+        const parsed = parseDirect(
+            row.result,
+            q.type.toUpperCase() as Mode,
+            q.scale ? q.scale.map((p) => p.label) : q.choices!,
+        );
+        if (
+            q.scale &&
+            (parsed.measurement !== q.measurement ||
+                parsed.rows.some((r) => !q.scale!.some((p) => p.label === r.label && p.value === r.value)))
+        )
+            throw new Error('Malformed response: scale mapping or measurement differs from request');
+        return { id: q.id, type: q.type, parsed };
+    });
+    const execution = object(data.execution);
+    if (
+        !['fresh', 'shared_aligned'].includes(String(execution.strategy)) ||
+        !['shared_prefix_tokens', 'n_batch', 'n_ubatch'].every(
+            (key) =>
+                Number.isInteger(execution[key]) &&
+                Number(execution[key]) >= (key === 'shared_prefix_tokens' ? 0 : 1),
+        ) ||
+        !(execution.fallback_reason === null || typeof execution.fallback_reason === 'string')
+    )
+        throw new Error('Malformed response: invalid execution diagnostics');
+    return { results, execution };
 }
 export async function api(path: string, body?: unknown): Promise<unknown> {
     const controller = new AbortController();

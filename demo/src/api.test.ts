@@ -128,3 +128,117 @@ describe('requests and errors', () => {
             expect(() => localTarget(url)).toThrow();
     });
 });
+
+import { makeEvaluation, parseEvaluation } from './api';
+import { sharedPreset } from './presets';
+import { sharedFixture } from './fixtures';
+import { editQuestions } from './SharedContext';
+
+describe('shared context', () => {
+    const request = () => makeEvaluation(sharedPreset.context, sharedPreset.questions, 'local-model');
+    const response = () => ({
+        results: request().questions.map((q) => ({
+            id: q.id,
+            type: q.type,
+            result: q.scale
+                ? scaleFixture(q.scale, q.measurement!)
+                : {
+                      choices: q.choices!.map((text, i) => ({
+                          text,
+                          token_id: i,
+                          probability: 1 / q.choices!.length,
+                      })),
+                  },
+        })),
+        execution: {
+            strategy: 'shared_aligned',
+            shared_prefix_tokens: 128,
+            n_batch: 128,
+            n_ubatch: 128,
+            fallback_reason: null,
+        },
+    });
+    it('constructs mixed requests with explicit labels and mappings, without a sharing toggle', () => {
+        const body = request();
+        expect(Object.keys(body).sort()).toEqual(['context', 'model', 'questions']);
+        expect(body.questions.map((q) => q.type)).toEqual(['boolean', 'choice', 'scale']);
+        expect(body.questions[0].choices).toEqual(['Yes', 'No']);
+        expect(body.questions[2].question).toContain('Ordered label/value mapping');
+        expect(body.questions[2].question).toContain('"label":"C"');
+        expect(body.questions[0]).not.toHaveProperty('messages');
+        expect(() => makeEvaluation('', sharedPreset.questions)).toThrow('context');
+        expect(() => makeEvaluation('text', [])).toThrow('1 to 32');
+        expect(() => makeEvaluation('text', Array(33).fill(sharedPreset.questions[0]))).toThrow();
+        expect(() => makeEvaluation('text', [sharedPreset.questions[0], sharedPreset.questions[0]])).toThrow(
+            'IDs',
+        );
+        expect(() => makeEvaluation('text', [{ ...sharedPreset.questions[0], labels: ['Yes'] }])).toThrow(
+            'two',
+        );
+    });
+    it('parses mixed results and retains actual server diagnostics', () => {
+        const parsed = parseEvaluation(response(), request());
+        expect(parsed.results).toHaveLength(3);
+        expect(parsed.results[2].parsed.measurement).toBe('ordinal');
+        expect(parsed.execution.shared_prefix_tokens).toBe(128);
+        const fresh = response();
+        Object.assign(fresh.execution, {
+            strategy: 'fresh',
+            shared_prefix_tokens: 0,
+            fallback_reason: 'fresh_only',
+        });
+        expect(parseEvaluation(fresh, request()).execution.fallback_reason).toBe('fresh_only');
+    });
+    it('rejects mismatched IDs, types, scale mapping, missing results and diagnostics', () => {
+        for (const mutate of [
+            (r: ReturnType<typeof response>) => {
+                r.results.reverse();
+            },
+            (r: ReturnType<typeof response>) => {
+                r.results[0].type = 'choice';
+            },
+            (r: ReturnType<typeof response>) => {
+                r.results.pop();
+            },
+            (r: ReturnType<typeof response>) => {
+                r.execution.shared_prefix_tokens = -1;
+            },
+            (r: ReturnType<typeof response>) => {
+                r.results[2].result = scaleFixture(
+                    [
+                        { label: 'A', value: 10 },
+                        { label: 'B', value: 11 },
+                        { label: 'C', value: 12 },
+                        { label: 'D', value: 13 },
+                    ],
+                    'ordinal',
+                );
+            },
+        ]) {
+            const r = response();
+            mutate(r);
+            expect(() => parseEvaluation(r, request())).toThrow('Malformed');
+        }
+        expect(() => parseEvaluation({ results: response().results }, request())).toThrow();
+        expect(errorMessage(503, { error: { message: 'Evaluation busy' } })).toContain('Evaluation busy');
+        expect(errorMessage(404, {})).toContain('--evaluate');
+    });
+    it('adds, removes and reorders independent rows with stable unique IDs', () => {
+        const original = sharedPreset.questions;
+        const added = editQuestions(original, 'add');
+        expect(added).toHaveLength(4);
+        expect(original).toHaveLength(3);
+        expect(new Set(editQuestions(added, 'add').map((q) => q.id)).size).toBe(5);
+        expect(editQuestions(added, 'remove', 3)).toEqual(original);
+        expect(editQuestions(original, 'down', 0)[1]).toEqual(original[0]);
+        expect(editQuestions(original, 'up', 0)).toEqual(original);
+        expect(editQuestions(Array(32).fill(original[0]), 'add')).toHaveLength(32);
+    });
+    it('provides illustrative mixed fixtures without fabricated execution or timing', () => {
+        const result = sharedFixture(request());
+        expect(result.map((r) => r.type)).toEqual(['boolean', 'choice', 'scale']);
+        expect(result[1].parsed.weightKind).toContain('softmax of SUM');
+        expect(result[2].parsed.mode).toBeDefined();
+        expect(JSON.stringify(result)).not.toMatch(/latency|shared_prefix_tokens|strategy/);
+    });
+});

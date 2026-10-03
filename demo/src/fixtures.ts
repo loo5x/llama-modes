@@ -1,4 +1,4 @@
-import type { Point } from './api';
+import { parseDirect, type Mode, type Point } from './api';
 
 // Illustrative UI data only. No model evaluation or timing is represented.
 export function scaleFixture(points: Point[], measurement: 'ordinal' | 'interval') {
@@ -36,4 +36,30 @@ export function scaleFixture(points: Point[], measurement: 'ordinal' | 'interval
               }
             : {}),
     };
+}
+
+// Synthetic scores and token IDs; no execution metadata or measured latency.
+export function sharedFixture(request: ReturnType<typeof import('./api').makeEvaluation>) {
+    return request.questions.map((q) => {
+        const raw = q.scale
+            ? scaleFixture(q.scale, q.measurement!)
+            : {
+                  choices: q.choices!.map((label, i) => ({
+                      text: label,
+                      token_ids: [100 + i, 200 + i],
+                      token_count: 2,
+                      sum_log_probability: -2 - i,
+                      mean_log_probability: (-2 - i) / 2,
+                  })),
+              };
+        return {
+            id: q.id,
+            type: q.type,
+            parsed: parseDirect(
+                raw,
+                q.type.toUpperCase() as Mode,
+                q.scale ? q.scale.map((p) => p.label) : q.choices!,
+            ),
+        };
+    });
 }

@@ -21,6 +21,7 @@ const endpoints = new Map([
     ['/v1/models', 'GET'],
     ['/decision', 'POST'],
     ['/scale', 'POST'],
+    ['/evaluate', 'POST'],
     ['/v1/chat/completions', 'POST'],
 ]);
 

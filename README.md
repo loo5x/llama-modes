@@ -84,7 +84,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. Explore Boolean, Choice, SCALE, and sequential **Interactive comparison** with chat. The demo does not expose shared-context `/evaluate`; use the [API quickstart](docs/quickstart.md#8-v05-multiple-questions-optional) for that capability. Presentation mode enlarges results and charts. A loopback-only proxy connects to your server at `127.0.0.1:8080`; no cloud services, telemetry, or accounts are used. [Demo setup and settings](demo/README.md).
+Open `http://127.0.0.1:5173`. Explore Boolean, Choice, SCALE, and sequential **Interactive comparison** with chat. Use **Shared Context** for multiple independent questions through `/evaluate`; start the server with the [v0.5 flags](docs/quickstart.md#8-v05-multiple-questions-optional). Presentation mode enlarges results and charts. A loopback-only proxy connects to your server at `127.0.0.1:8080`; no cloud services, telemetry, or accounts are used. [Demo setup and settings](demo/README.md).
 
 ![Actual rendered demo with explicitly labeled fixture data; no live inference or measured latency](demo/screenshot-fixture.png)
 
