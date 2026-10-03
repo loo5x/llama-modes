@@ -29,6 +29,7 @@ def main():
     parser.add_argument("--batch", type=int, default=128)
     parser.add_argument("--oracle-only", action="store_true")
     parser.add_argument("--shared-prefix", action="store_true")
+    parser.add_argument("--allow-documentation-only", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     fixture = root / "experiments/shared_context_v05/results/expanded/gptoss-records"
@@ -36,7 +37,12 @@ def main():
     model = Path(identity["model"]["path"])
     output = args.output.resolve()
     manifest = json.loads((args.runtime / "build-manifest.json").read_text(encoding="utf-8-sig"))
-    assert manifest["commit"] == subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+    if manifest["commit"] != head:
+        assert args.allow_documentation_only, "Runtime commit differs from HEAD"
+        subprocess.run(["git", "merge-base", "--is-ancestor", manifest["commit"], head], cwd=root, check=True)
+        changed = subprocess.check_output(["git", "diff", "--name-only", manifest["commit"], head], cwd=root, text=True).splitlines()
+        assert all(p.startswith(("docs/", "experiments/", "RELEASE_NOTES_")) or p == "README.md" for p in changed), changed
     for item in manifest["files"]:
         assert (args.runtime / item["name"]).stat().st_size == item["bytes"]
         assert digest(args.runtime / item["name"]) == item["sha256"]

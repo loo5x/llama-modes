@@ -1,0 +1,29 @@
+llama-modes - Windows CUDA runtime
+
+See build-manifest.json for the exact version, source commit, Actions run,
+CUDA version, GPU architecture, and packaged-file SHA-256 hashes.
+The adjacent .zip.sha256 verifies the ZIP before extraction.
+
+Requirements
+- Windows x64, an NVIDIA driver compatible with the packaged CUDA runtime,
+  and a GPU compatible with CUDA architecture 120 (the tested GPU is RTX 5080).
+- Microsoft Visual C++ x64 runtime (VCRUNTIME140, VCRUNTIME140_1, MSVCP140).
+- Your own compatible GGUF model and enough RAM/VRAM for chat plus evaluation.
+- The model is not included. Keep the packaged DLLs beside llama-server.exe.
+
+From PowerShell in the extracted folder:
+  .\llama-server.exe --version
+  .\llama-server.exe -m "C:\models\your-model.gguf" --host 127.0.0.1 --port 8080 -ngl 99 -c 4096 -np 1 -b 128 -ub 128 --jinja --evaluate --evaluate-context 4096 --evaluate-shared-prefix
+
+Sharing is experimental and optional. Omit --evaluate-shared-prefix for fresh
+evaluation. Short or otherwise ineligible requests fall back to fresh mode.
+The /evaluate endpoint accepts multiple independent Boolean, Choice, and Scale
+questions about one text. Normal chat remains available. Scores are not
+calibrated confidence. See the source documentation for examples:
+  https://github.com/loo5x/llama-modes/blob/feature/shared-context-v05/docs/evaluate.md
+
+Packaging this archive does not publish a release or establish support for
+all models or GPUs. See RELEASE_NOTES_v0.5.0.md for the validation scope.
+LICENSE covers llama.cpp/llama-modes; licenses/ preserves third-party notices.
+Some notices are embedded in the included original source headers.
+CUDA components retain the notices from their downloaded redistribution archives.

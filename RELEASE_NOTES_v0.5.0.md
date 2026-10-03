@@ -2,7 +2,13 @@
 
 Multiple independent evaluations over a shared context.
 
-These notes describe the validated experimental feature. A clean installation check, version/package preparation, tagging, and public release remain pending. The tested runtime commit is `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`, built in Actions run `37066508221`.
+These notes describe the validated experimental feature. A clean-folder runtime check passed; extraction of the final versioned ZIP, tagging, and public release remain pending. The tested runtime commit is `427d6bdfdd0f0568c4d1bf76fd58a9589cec208d`, built in Actions run `37066508221`.
+
+## Windows package preparation
+
+The Windows workflow accepts `release=true` to build version `0.5.0`; ordinary builds use `0.5.0-dev`. This does not tag or publish a release. The package includes runtime instructions, licenses/notices, and a manifest recording the source commit, Actions run, and file hashes. A separate SHA-256 file accompanies the versioned ZIP. The final archive still requires checksum, extraction, version, and runtime validation after the build.
+
+The [clean-folder check](experiments/shared_context_v05/HTTP-CLEAN-INSTALL-VALIDATION.md) used the earlier binaries on the existing Windows installation, with a minimal environment and a path containing spaces. It confirmed independent loading of packaged DLLs, evaluation/chat results, and clean shutdown. It did not test the final ZIP or a fresh Windows installation.
 
 ## Added behavior
 

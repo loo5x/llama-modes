@@ -2,6 +2,11 @@ name: Build llama-modes Windows CUDA
 
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        description: Build a release-version package (does not publish)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -20,6 +25,7 @@ jobs:
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           -DGGML_CUDA=OFF -DLLAMA_BUILD_SERVER=ON -DLLAMA_BUILD_UI=OFF
           -DLLAMA_BUILD_BORINGSSL=ON
+          -DLLAMA_BUILD_IS_DEV=${{ inputs.release && 'OFF' || 'ON' }}
 
       - name: Build CPU server
         run: cmake --build build --config Release -j 2 --target llama-server
@@ -85,6 +91,7 @@ jobs:
             -DLLAMA_BUILD_TESTS=ON ^
             -DLLAMA_BUILD_UI=OFF ^
             -DLLAMA_BUILD_BORINGSSL=ON ^
+            -DLLAMA_BUILD_IS_DEV=${{ inputs.release && 'OFF' || 'ON' }} ^
             -DCMAKE_CUDA_ARCHITECTURES=120
 
       - name: Build llama-server and decision oracle
@@ -95,6 +102,8 @@ jobs:
 
       - name: Package
         shell: powershell
+        env:
+          PACKAGE_RELEASE: ${{ inputs.release }}
         run: |
           $ErrorActionPreference = "Stop"
 
@@ -161,7 +170,56 @@ jobs:
               sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             }
           })
+          $cmake = Get-Content -LiteralPath "CMakeLists.txt" -Raw
+          $parts = @("MAJOR", "MINOR", "PATCH") | ForEach-Object {
+            $match = [regex]::Match($cmake, "set\(LLAMA_VERSION_$_ (\d+)\)")
+            if (-not $match.Success) { throw "Missing version component: $_" }
+            $match.Groups[1].Value
+          }
+          $version = $parts -join "."
+          if ($env:PACKAGE_RELEASE -ne "true") { $version += "-dev" }
+          $versionProcess = Start-Process -FilePath (Join-Path $src "llama-server.exe") -ArgumentList "--version" -WindowStyle Hidden -Wait -PassThru -RedirectStandardOutput "version-out.txt" -RedirectStandardError "version-err.txt"
+          if ($versionProcess.ExitCode -ne 0) { throw "Version check failed" }
+          $versionText = (Get-Content "version-out.txt", "version-err.txt") -join "`n"
+          if ($versionText -notmatch ("version: " + [regex]::Escape($version) + " \(")) { throw "Unexpected binary version: $versionText" }
+
+          Copy-Item -LiteralPath "LICENSE", "RELEASE_NOTES_v0.5.0.md" -Destination $dst
+          Copy-Item -LiteralPath "docs\windows-runtime.txt" -Destination (Join-Path $dst "README.txt")
+          $notices = Join-Path $dst "licenses"
+          New-Item -ItemType Directory -Path $notices | Out-Null
+          Copy-Item -Path "licenses\*" -Destination $notices
+          Copy-Item -LiteralPath "vendor\cpp-httplib\LICENSE" -Destination (Join-Path $notices "cpp-httplib-LICENSE")
+          Copy-Item -LiteralPath "build\_deps\boringssl-src\LICENSE" -Destination (Join-Path $notices "BoringSSL-LICENSE")
+          # Preserve embedded notices verbatim with their source headers.
+          foreach ($header in @("vendor\stb\stb_image.h", "vendor\miniaudio\miniaudio.h", "vendor\sheredom\subprocess.h", "vendor\hash\sha1\sha1.c")) {
+            Copy-Item -LiteralPath $header -Destination $notices
+          }
+          foreach ($component in @("xxhash", "sha256", "rotate-bits")) {
+            Get-ChildItem -Path "vendor\hash\$component\LICENSE*" | Copy-Item -Destination (Join-Path $notices "$component-LICENSE.txt")
+          }
+          foreach ($component in @("cuda_cudart", "libcublas")) {
+            $archiveDir = @(Get-ChildItem -LiteralPath $env:CUDA_PATH -Directory -Filter "$component-windows-x86_64-*-archive")
+            if ($archiveDir.Count -ne 1) { throw "Expected one CUDA component directory: $component" }
+            $cudaNotices = @(Get-ChildItem -LiteralPath $archiveDir[0].FullName -File -Recurse | Where-Object { $_.Name -match "(?i)(license|eula|notice)" })
+            if ($cudaNotices.Count -eq 0) { throw "CUDA notices missing: $component" }
+            $componentDst = Join-Path $notices $component
+            foreach ($notice in $cudaNotices) {
+              $relative = $notice.FullName.Substring($archiveDir[0].FullName.Length + 1)
+              $target = Join-Path $componentDst $relative
+              New-Item -ItemType Directory -Force -Path (Split-Path -Parent $target) | Out-Null
+              Copy-Item -LiteralPath $notice.FullName -Destination $target
+            }
+          }
+          $packageRoot = (Resolve-Path -LiteralPath $dst).Path
+          $packageFiles = @(Get-ChildItem -LiteralPath $dst -File -Recurse | Sort-Object FullName | ForEach-Object {
+            @{
+              name = $_.FullName.Substring($packageRoot.Length + 1).Replace("\", "/")
+              bytes = $_.Length
+              sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            }
+          })
           @{
+            version = $version
             commit = (git rev-parse HEAD)
             ref = $env:GITHUB_REF
             run_id = $env:GITHUB_RUN_ID
@@ -170,18 +228,24 @@ jobs:
             cuda_architectures = "120"
             oracle_sha256 = (Get-FileHash -LiteralPath $oracle -Algorithm SHA256).Hash.ToLowerInvariant()
             files = $files
+            package_files = $packageFiles
           } | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $dst "build-manifest.json") -Encoding UTF8
 
+          $zip = "llama-modes-v$version-win-cuda.zip"
           Compress-Archive `
             -Path "$dst\*" `
-            -DestinationPath "llama-modes-win-cuda.zip" `
+            -DestinationPath $zip `
             -Force
+          $checksum = (Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$checksum  $zip" | Set-Content -LiteralPath "$zip.sha256" -Encoding ASCII
 
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
           name: llama-modes-win-cuda
-          path: llama-modes-win-cuda.zip
+          path: |
+            llama-modes-v*-win-cuda.zip
+            llama-modes-v*-win-cuda.zip.sha256
           if-no-files-found: error
 
       - name: Upload decision oracle
